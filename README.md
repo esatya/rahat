@@ -22,7 +22,18 @@ To run Rahat in your system please make user you have following app and librarie
 - ```MongoDB --version >= 4.2.8```
 - ```Truffle --version == 5.1.22```
 
-## Installing
+## Complete Rahat Package
+Currently, Rahat consists four applications. For complete aid distribution process all four applications have to be installed and setup.
+
+1. **Rahat Server**: This is the main server (this project) which provides API services for other applications. It also contains source code for solidity smart contracts that needs to be compliled and deployed to Ethereum network of your choice. Please deploy this application before deploying other projects.
+
+2. **Agency Dashboard** (https://github.com/esatya/rahat-agency): This project is react-based dashboard for managing Rahat for agencies. It utilizes API to connect to the server and can directly communicate with Ethereum network using Metamask. After installing the server, you can use this app to setup Rahat in user-friendly way.
+
+3. **OTP Server** (https://github.com/esatya/rahat-otp). It is a stand alone server to manage OTP that it sent to beneficiary phone during a transaction. This service adds hash of OTP to the smart-contract that should match with the OTP sent by the vendor to complete the transaction. Use your favorite SMS service like Twilio, GOIP as plugins to send SMS.
+
+4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
+
+## Installing Rahat Server
 To setup this software on your machine locally, first clone this repository to your local machine and create a folder named ‘config’ on root of this repository and add local.json file. Click the link to see the sample.
 
 - [local.json](https://gist.github.com/esatya/f873746ef1eb1daed7c280c976b8d392)
@@ -32,12 +43,12 @@ _If you are trying this in your local machine, please install [Ganache](https://
 1.  Install required dependencies and compile smart contracts
      ```yarn setup```
 
-3. Start the server
+2. Start the server
     ```yarn start```
     
-4. Now, in your browser go to http://localhost:3800/documentation to see API endpoints that are available.
+3. Now, in your browser go to http://localhost:3800/documentation to see API endpoints that are available.
 
-5. Please install Rahat Agency (https://github.com/esatya/rahat-agency) to manage using User Interface.
+4. Please install Rahat Agency (https://github.com/esatya/rahat-agency) to manage using User Interface.
 
 ## Coding Styles
 This repository uses eslint to enforce air-bnb coding styles.
