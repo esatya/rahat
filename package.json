@@ -7,7 +7,7 @@
 		"lint": "eslint .",
 		"lintfix": "eslint --fix .",
 		"pretty": "prettier --write **/*.js **/*.sol",
-		"test": "cross-env NODE_ENV=development jest --runInBand ./tests",
+		"test": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests",
 		"start": "cross-env ENV_TYPE=development nodemon .",
 		"production": "ENV_TYPE=production node .",
 		"setup": "yarn install && truffle compile"
@@ -60,6 +60,7 @@
 		"ws": "^7.3.1"
 	},
 	"devDependencies": {
+		"@shelf/jest-mongodb": "^1.2.3",
 		"@truffle/hdwallet-provider": "^1.0.43",
 		"eslint": "^7.7.0",
 		"eslint-config-airbnb-base": "^14.2.0",
