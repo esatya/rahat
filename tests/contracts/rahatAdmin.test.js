@@ -57,7 +57,6 @@ describe("RahatAdmin", () => {
   it("should test people count", async () => {
 
     const oldVal = await testContract.methods.peopleCount().call();
-    console.log("value", oldVal)
     await testContract.methods.addPerson("Manjik", "Shrestha").send({ from: accounts[0], gas: 1000000 });
 
     const newVal = await testContract.methods.peopleCount().call();
@@ -97,7 +96,6 @@ describe("RahatAdmin", () => {
     await rahatAdminContract.methods.setProjectBudget(projectId, Number(projectCapital)).send({ from: accounts[0], gas: 1000000 });
     let projectBalance = await rahatAdminContract.methods.getProjectBalance(projectId).call({ from: accounts[0] });
     let rahatTokenBalance = await tokenContract.methods.balanceOf(rahatContract._address).call();
-    //console.log(rahatTokenBalance);
 
     expect(projectBalance).toBe(projectCapital);
     expect(rahatTokenBalance).toBe(projectBalance);

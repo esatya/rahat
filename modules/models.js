@@ -1,4 +1,3 @@
-const AgentModel = require('./agent/agent.model');
 const AgencyModel = require('./agency/agency.model');
 const ProjectModel = require('./project/project.model');
 const BeneficiaryModel = require('./beneficiary/beneficiary.model');
@@ -13,7 +12,6 @@ function registerModels(database) {
 
 module.exports = {
   registerModels,
-  AgentModel,
   AgencyModel,
   BeneficiaryModel,
   ProjectModel,
