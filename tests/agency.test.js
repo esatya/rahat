@@ -1,5 +1,6 @@
 const dbHandler = require('./db-handler');
-const agency = require('../modules/agency/agency.controllers');
+const { Agency } = require('../modules/agency/agency.controllers');
+const { getExpectedBodyHash } = require('twilio/lib/webhooks/webhooks');
 
 const payload = {
   name: 'Santosh Agency',
@@ -8,14 +9,25 @@ const payload = {
 beforeAll(() => dbHandler.connect());
 afterAll(() => dbHandler.closeDatabase());
 
-test('adds 1 + 2 to equal 3', () => {
-  expect(true).toBe(true);
-});
-
-describe('product ', () => {
+describe('Agency CRUD ', () => {
+  let agencyId;
   it('can be created correctly', async () => {
-    expect(() => agency.add({ payload }))
-      .not
-      .toThrow();
+
+    let agency = await Agency.add(payload);
+    agencyId = agency._id;
+    expect(agencyId).toBeDefined();
+    expect(agency.name).toBe(payload.name);
   });
+
+  it('can get agency by id', async () => {
+
+
+    let agency = await Agency.getById(agencyId);
+
+    expect(agency).toBeDefined();
+    expect(typeof agency).toBe('object');
+    expect(agency.name).toBe(payload.name);
+
+  })
+
 });

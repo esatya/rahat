@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
+// const { MongoMemoryServer } = require('mongodb-memory-server');
+
+// const mongod = new MongoMemoryServer();
+
 /**
  * Connect to the in-memory database.
  */
 module.exports.connect = async () => {
+
+  //const uri = await mongod.getConnectionString();
   const mongooseOpts = {
     useNewUrlParser: true,
     autoReconnect: true,
@@ -10,11 +16,12 @@ module.exports.connect = async () => {
     reconnectInterval: 1000,
   };
 
-  await mongoose.connect('mongodb://localhost:27017/unitTests', mongooseOpts);
-
-  // mongoose.connection.once('open', () => {
-  //   console.log(`MongoDB successfully connected to ${uri}`);
-  // });
+  try {
+    await mongoose.connect(global.__MONGO_URI__, mongooseOpts);
+  }
+  catch (e) {
+    throw Error(e);
+  }
 };
 
 /**
@@ -23,6 +30,7 @@ module.exports.connect = async () => {
 module.exports.closeDatabase = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
+
 };
 
 /**
