@@ -87,6 +87,37 @@ const Beneficiary = {
     // TODO
   },
 
+  async countBeneficiary(currentUser) {
+    const $match = { $and: [{ is_archived: false }, { agency: currentUser.agency }] };
+    const query = [
+      { $match },
+      {
+        $lookup:
+          {
+            from: 'projects',
+            localField: 'projects',
+            foreignField: '_id',
+            as: 'projectData',
+          },
+      },
+      {
+        $unwind: '$projectData',
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: { $first: '$projectData.name' },
+          count: { $sum: 1 },
+        },
+      },
+
+    ];
+    const totalCount = await BeneficiaryModel.find($match).count();
+    const project = await BeneficiaryModel.aggregate(query);
+
+    return { totalCount, project };
+  },
+
 };
 
 module.exports = {

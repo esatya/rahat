@@ -86,6 +86,12 @@ const Vendor = {
       { _id: id, is_archived: false }, payload, { new: true, runValidators: true },
     );
   },
+  countVendor(currentUser) {
+    const query = { is_archived: false };
+    query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
+
+    return VendorModel.find(query).count();
+  },
 };
 
 module.exports = {
