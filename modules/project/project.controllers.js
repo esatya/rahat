@@ -89,6 +89,13 @@ const Project = {
       { _id: id, is_archived: false }, payload, { new: true, runValidators: true },
     );
   },
+
+  countProject(currentUser) {
+    const query = { is_archived: false };
+    query.agency = currentUser.agency;
+
+    return ProjectModel.find(query).countDocuments();
+  },
 };
 
 module.exports = {

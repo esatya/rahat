@@ -4,6 +4,7 @@ const app = require('../../app');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { AgencyModel } = require('../models');
+const { Project, Vendor, Beneficiary } = require('../index');
 
 const logger = Logger.getInstance();
 
@@ -16,7 +17,7 @@ const Agency = {
     return AgencyModel.findOneAndUpdate({ _id: id, is_archived: false }, { is_approved: true });
   },
   async getFirst() {
-    const agencies = await AgencyModel.find({ });
+    const agencies = await AgencyModel.find({});
     if (agencies.length > 0) return agencies[0]; return null;
   },
   async list() {
@@ -45,6 +46,13 @@ const Agency = {
       }, { new: true, runValidators: true },
     );
   },
+
+  async getDashboardData(currentUser) {
+    const projectCount = await Project.countProject(currentUser);
+    const vendorCount = await Vendor.countVendor(currentUser);
+    const beneficiary = await Beneficiary.countBeneficiary(currentUser);
+    return { projectCount, vendorCount, beneficiary };
+  },
 };
 
 module.exports = {
@@ -52,4 +60,5 @@ module.exports = {
   getById: (req) => Agency.getById(req.params.id),
   update: (req) => Agency.update(req.params.id, req.payload),
   setContracts: (req) => Agency.setContracts(req.params.id, req.payload),
+  getDashboardData: (req) => Agency.getDashboardData(req.currentUser),
 };
