@@ -1,33 +1,43 @@
-const dbHandler = require('./db-handler');
+const common = require('./common');
 const { Agency } = require('../modules/agency/agency.controllers');
-const { getExpectedBodyHash } = require('twilio/lib/webhooks/webhooks');
 
 const payload = {
   name: 'Santosh Agency',
+  email: 'rahat-test@mailinator.com',
 };
 
-beforeAll(() => dbHandler.connect());
-afterAll(() => dbHandler.closeDatabase());
+describe('Agency ', () => {
+  beforeAll(async () => {
+    await common.connectDatabase();
+    await Agency.add({
+      name: 'First Agency',
+    });
+  }, 90000);
+  afterAll(() => common.closeDatabase());
 
-describe('Agency CRUD ', () => {
-  let agencyId;
+  let agency;
   it('can be created correctly', async () => {
-
-    let agency = await Agency.add(payload);
-    agencyId = agency._id;
-    expect(agencyId).toBeDefined();
+    agency = await Agency.add(payload);
+    expect(agency._id).toBeDefined();
+    expect(typeof agency).toBe('object');
     expect(agency.name).toBe(payload.name);
+  });
+  it('is approved', async () => {
+    agency = await Agency.approve(agency._id);
+    expect(agency).toBeDefined();
+    expect(agency.is_approved).toBe(true);
+  });
+  it('can list agencies', async () => {
+    const agencies = await Agency.list();
+    expect(agencies).toBeDefined();
+    expect(agencies.length).toBe(2);
   });
 
   it('can get agency by id', async () => {
-
-
-    let agency = await Agency.getById(agencyId);
-
+    agency = await Agency.getById(agency._id);
     expect(agency).toBeDefined();
     expect(typeof agency).toBe('object');
     expect(agency.name).toBe(payload.name);
-
-  })
-
+    expect(agency.email).toBe(payload.email);
+  });
 });
