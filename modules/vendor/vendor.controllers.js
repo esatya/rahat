@@ -90,7 +90,7 @@ const Vendor = {
     const query = { is_archived: false };
     query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
 
-    return VendorModel.find(query).count();
+    return VendorModel.find(query).countDocuments();
   },
 };
 

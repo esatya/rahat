@@ -112,7 +112,7 @@ const Beneficiary = {
       },
 
     ];
-    const totalCount = await BeneficiaryModel.find($match).count();
+    const totalCount = await BeneficiaryModel.find($match).countDocuments();
     const project = await BeneficiaryModel.aggregate(query);
 
     return { totalCount, project };

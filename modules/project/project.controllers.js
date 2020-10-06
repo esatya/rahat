@@ -94,7 +94,7 @@ const Project = {
     const query = { is_archived: false };
     query.agency = currentUser.agency;
 
-    return ProjectModel.find(query).count();
+    return ProjectModel.find(query).countDocuments();
   },
 };
 
