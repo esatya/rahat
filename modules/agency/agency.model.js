@@ -30,6 +30,4 @@ const agencySchema = mongoose.Schema(
   },
 );
 
-agencySchema.index({ wallet_address: 1 }, { unique: true });
-
 module.exports = mongoose.model('Agency', agencySchema);

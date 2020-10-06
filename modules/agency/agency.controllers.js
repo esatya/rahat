@@ -14,7 +14,10 @@ const Agency = {
     return AgencyModel.create(data);
   },
   approve(id) {
-    return AgencyModel.findOneAndUpdate({ _id: id, is_archived: false }, { is_approved: true });
+    return AgencyModel.findOneAndUpdate(
+      { _id: id, is_archived: false },
+      { is_approved: true }, { new: true },
+    );
   },
   async getFirst() {
     const agencies = await AgencyModel.find({});
