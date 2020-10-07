@@ -54,7 +54,10 @@ const Agency = {
     const projectCount = await Project.countProject(currentUser);
     const vendorCount = await Vendor.countVendor(currentUser);
     const beneficiary = await Beneficiary.countBeneficiary(currentUser);
-    return { projectCount, vendorCount, beneficiary };
+    const tokenAllocation = await Project.getTokenAllocated(currentUser);
+    return {
+      projectCount, vendorCount, beneficiary, tokenAllocation,
+    };
   },
 };
 

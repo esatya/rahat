@@ -96,6 +96,29 @@ const Project = {
 
     return ProjectModel.find(query).countDocuments();
   },
+
+  async getTokenAllocated(currentUser) {
+    const $match = { $and: [{ is_archived: false }, { agency: currentUser.agency }] };
+
+    const query = [{
+      $match,
+    },
+    {
+      $unwind: '$allocations',
+    },
+    {
+      $group: {
+        _id: '$_id',
+        name: { $first: '$name' },
+        token: { $sum: '$allocations.amount' },
+      },
+    },
+    ];
+    const projectAllocation = await ProjectModel.aggregate(query);
+    const totalAllocation = projectAllocation.reduce((acc, { token }) => acc + token, 0);
+
+    return { totalAllocation, projectAllocation };
+  },
 };
 
 module.exports = {

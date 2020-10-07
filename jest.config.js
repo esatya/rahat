@@ -4,6 +4,7 @@ module.exports = {
 
   // Stop running tests after `n` failures
   bail: 1,
+  verbose: true,
 
   // Respect "browser" field in package.json when resolving modules
   // browser: false,
