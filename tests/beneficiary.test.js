@@ -1,5 +1,5 @@
-const { connectDatabase, closeDatabase } = require('./common');
-const { Beneficiary, User } = require('../modules');
+const { connectDatabase, closeDatabase, clearDatabase } = require('./common');
+const { Beneficiary, User, Project } = require('../modules');
 
 const userData = {
   name: 'Manjik',
@@ -19,18 +19,18 @@ const payload = {
   project_id: '5f7bdb391c01bfbb1a6b5965',
 };
 let currentUser;
-
-beforeAll(async () => {
-  await connectDatabase();
-  currentUser = await User.create(userData);
-  payload.currentUser = currentUser;
-});
-afterAll(async () => {
-  await closeDatabase();
-});
-
+jest.useFakeTimers();
 describe('Beneficiary CRUD', () => {
   let beneficiary;
+
+  beforeAll(async () => {
+    await connectDatabase();
+    currentUser = await User.create(userData);
+    payload.currentUser = currentUser;
+  }, 10000);
+  afterAll(async () => {
+    await closeDatabase();
+  });
   it('can be created correctly', async () => {
     beneficiary = await Beneficiary.add(payload);
     expect(beneficiary._id).toBeDefined();
@@ -71,6 +71,23 @@ describe('Beneficiary CRUD', () => {
 
     expect(updatedData.name).toBe(dataToUpdate.name);
     expect(updatedData.address).toBe(dataToUpdate.address);
+  });
+
+  it('should add beneficiary to new project', async () => {
+    const projectData = {
+      name: 'rahat',
+      end_date: '2020-10-07',
+    };
+    projectData.currentUser = currentUser;
+    const project = await Project.add(projectData);
+
+    const beforeAddingProject = await Beneficiary.getbyId(beneficiary._id);
+    await Beneficiary.addToProject({ id: beneficiary._id, project_id: project._id });
+
+    const afterAddingProject = await Beneficiary.getbyId(beneficiary._id);
+
+    expect(beforeAddingProject.projects).not.toContain(project._id);
+    expect(afterAddingProject.projects).toContainEqual(project._id);
   });
 
   it('should archive a beneficiary', async () => {

@@ -1,4 +1,4 @@
-const { connectDatabase, closeDatabase } = require('./common');
+const { connectDatabase, closeDatabase, clearDatabase } = require('./common');
 const { Vendor, User } = require('../modules');
 
 const userData = {
@@ -19,17 +19,17 @@ const payload = {
 };
 let currentUser;
 
-beforeAll(async () => {
-  await connectDatabase();
-  currentUser = await User.create(userData);
-  payload.currentUser = currentUser;
-});
-afterAll(async () => {
-  await closeDatabase();
-});
-
+jest.useFakeTimers();
 describe('Vendor CRUD', () => {
   let vendor;
+  beforeAll(async () => {
+    await connectDatabase();
+    currentUser = await User.create(userData);
+    payload.currentUser = currentUser;
+  }, 10000);
+  afterAll(async () => {
+    await closeDatabase();
+  });
   it('can be created correctly', async () => {
     vendor = await Vendor.add(payload);
     expect(vendor._id).toBeDefined();

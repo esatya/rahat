@@ -9,7 +9,6 @@ describe('RahatAdmin', () => {
   let rahatContract;
   let tokenContract;
   let rahatAdminContract;
-  let testContract;
   beforeAll(async () => {
     const test = {};
     const token = {};
@@ -33,9 +32,6 @@ describe('RahatAdmin', () => {
     rahat.instance = new web3.eth.Contract(rahat.abi);
     rahatAdmin.instance = new web3.eth.Contract(rahatAdmin.abi);
 
-    testContract = await test.instance
-      .deploy({ data: test.bytecode })
-      .send({ from: accounts[0], gas: 1500000 });
     tokenContract = await token.instance
       .deploy({ data: token.bytecode, arguments: ['MANZ', 'MZ', accounts[0]] })
       .send({ from: accounts[0], gas: 1500000 });
@@ -49,16 +45,6 @@ describe('RahatAdmin', () => {
 
   afterAll(async () => {
     provider.stop();
-  });
-
-  it('should test people count', async () => {
-    const oldVal = await testContract.methods.peopleCount().call();
-    await testContract.methods.addPerson('Manjik', 'Shrestha').send({ from: accounts[0], gas: 1000000 });
-
-    const newVal = await testContract.methods.peopleCount().call();
-
-    expect(oldVal).toBe('0');
-    expect(newVal).toBe('1');
   });
 
   it('should check token name, symbol and  balance of admin ', async () => {
