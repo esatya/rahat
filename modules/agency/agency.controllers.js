@@ -4,7 +4,9 @@ const app = require('../../app');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { AgencyModel } = require('../models');
-const { Project, Vendor, Beneficiary } = require('../index');
+const { Project } = require('../project/project.controllers');
+const { Vendor } = require('../vendor/vendor.controllers');
+const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 
 const logger = Logger.getInstance();
 
