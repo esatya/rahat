@@ -19,7 +19,6 @@ const payload = {
   project_id: '5f7bdb391c01bfbb1a6b5965',
 };
 let currentUser;
-jest.useFakeTimers();
 describe('Beneficiary CRUD', () => {
   let beneficiary;
 
@@ -27,7 +26,7 @@ describe('Beneficiary CRUD', () => {
     await connectDatabase();
     currentUser = await User.create(userData);
     payload.currentUser = currentUser;
-  }, 10000);
+  });
   afterAll(async () => {
     await closeDatabase();
   });

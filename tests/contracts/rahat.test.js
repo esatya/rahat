@@ -2,7 +2,7 @@ const Ganache = require('ganache-core');
 const Web3 = require('web3');
 const { getAbi, getBytecode } = require('../../helpers/blockchain/abi');
 
-describe('RahatAdmin', () => {
+describe('Rahat', () => {
   let provider;
   let web3;
   let accounts;
