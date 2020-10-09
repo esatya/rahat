@@ -1,5 +1,6 @@
-const { connectDatabase, closeDatabase } = require('./common');
+const { connectDatabase, closeDatabase, clearDatabase } = require('./common');
 const { User, Project } = require('../modules');
+const { ProjectConstants } = require('../constants/index');
 
 const userData = {
   name: 'Manjik',
@@ -15,18 +16,18 @@ const payload = {
 
 };
 let currentUser;
-
-beforeAll(async () => {
-  await connectDatabase();
-  currentUser = await User.create(userData);
-  payload.currentUser = currentUser;
-});
-afterAll(async () => {
-  await closeDatabase();
-});
+jest.useFakeTimers();
 
 describe('Project CRUD', () => {
   let project;
+  beforeAll(async () => {
+    await connectDatabase();
+    currentUser = await User.create(userData);
+    payload.currentUser = currentUser;
+  }, 10000);
+  afterAll(async () => {
+    await closeDatabase();
+  });
   it('can be created correctly', async () => {
     project = await Project.add(payload);
     expect(project._id).toBeDefined();
@@ -58,6 +59,19 @@ describe('Project CRUD', () => {
 
     expect(updatedData.name).toBe(dataToUpdate.name);
     expect(updatedData.address).toBe(dataToUpdate.address);
+  });
+
+  it('should update project status', async () => {
+    const statusToUpdate = {
+      status: ProjectConstants.status.Active,
+    };
+
+    const beforeUpdate = await Project.getById(project._id);
+    await Project.changeStatus(project._id, statusToUpdate);
+    const afterUpdate = await Project.getById(project._id);
+
+    expect(beforeUpdate.status).toBe(ProjectConstants.status.Draft);
+    expect(afterUpdate.status).toBe(ProjectConstants.status.Active);
   });
 
   it('should archive a project', async () => {
