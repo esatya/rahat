@@ -6,14 +6,17 @@ const payload = {
   email: 'rahat-test@mailinator.com',
 };
 
-describe('Agency ', () => {
+jest.useFakeTimers();
+describe('Agency', () => {
   beforeAll(async () => {
     await common.connectDatabase();
     await Agency.add({
       name: 'First Agency',
     });
-  }, 90000);
-  afterAll(() => common.closeDatabase());
+  }, 10000);
+  afterAll(async () => {
+    await common.closeDatabase();
+  });
 
   let agency;
   it('can be created correctly', async () => {

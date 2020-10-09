@@ -8,10 +8,10 @@ const userData = {
   wallet_address: '0x7c0179776BB143a36C9d338F3Fa6149F40BaAc30',
   agency: '5f770576880d16420eaedefb',
 };
-
+jest.useFakeTimers();
 describe('User Model Test', () => {
-  beforeAll(() => common.connectDatabase(), 90000);
-  afterAll(() => common.closeDatabase());
+  beforeAll(async () => { await common.connectDatabase(); }, 10000);
+  afterAll(async () => { await common.closeDatabase(); });
 
   it('create & save user successfully', async () => {
     const savedUser = await User.create(userData);

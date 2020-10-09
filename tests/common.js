@@ -27,16 +27,15 @@ module.exports = {
 
     mongoServer = new MongoMemoryServer({
       binary: {
-        version: '4.2.10',
+        version: '4.0.20',
       },
     });
     const URI = await mongoServer.getUri();
-
     await mongoose.connect(URI, mongooseOpts);
   },
 
   async closeDatabase(done) {
-    mongoose.disconnect(done);
+    await mongoose.disconnect(done);
     await mongoServer.stop();
   },
 
