@@ -108,6 +108,9 @@ const App = {
         rahatAdminBytecode,
         [token, rahat, initialSupply, adminAccount],
       );
+      this.saveSetting('token', token);
+      this.saveSetting('rahat', rahat);
+      this.saveSetting('rahatAdmin', rahat_admin);
 
       return { token, rahat, rahat_admin };
     } catch (e) {
