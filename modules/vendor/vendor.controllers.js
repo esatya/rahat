@@ -6,6 +6,7 @@ const { DataUtils } = require('../../helpers/utils');
 const { VendorModel } = require('../models');
 const { VendorConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
+const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 
 const logger = Logger.getInstance();
 
@@ -92,10 +93,15 @@ const Vendor = {
 
     return VendorModel.find(query).countDocuments();
   },
+
+  async getTransactions(id, tokenAddress) {
+    const vendor = await this.getbyId(id);
+    const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
+    return transactions;
+  },
 };
 
 module.exports = {
-  Agency,
   Vendor,
   add: (req) => Vendor.add(req.payload),
   getbyId: (req) => {
@@ -111,5 +117,9 @@ module.exports = {
   register: async (req) => {
     const { _id: agencyId } = await Agency.getFirst();
     return Vendor.register(agencyId, req.payload);
+  },
+  getTransactions: async (req) => {
+    const { contracts: { token: tokenAddress } } = await Agency.getFirst();
+    return Vendor.getTransactions(req.params.id, tokenAddress);
   },
 };
