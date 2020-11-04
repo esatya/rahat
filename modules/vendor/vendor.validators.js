@@ -64,4 +64,9 @@ module.exports = {
       govt_id: Vendor.govt_id.example('99988777nepal'),
     }),
   },
+  getTransactions: {
+    params: Joi.object({
+      id: Joi.string(),
+    }),
+  },
 };
