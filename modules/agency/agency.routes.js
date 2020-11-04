@@ -15,11 +15,7 @@ const routes = {
     'Update contract addresses controlled by the agency',
     [AGENCY.WRITE, AGENCY.ADMIN],
   ],
-  getDashboardData: [
-    'GET', '/{id}/dashboards', 'Get the dashboard informations',
-    [AGENCY.WRITE, AGENCY.ADMIN],
 
-  ],
 };
 
 /**
