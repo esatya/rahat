@@ -1,42 +1,20 @@
+const config = require('config');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
-
-const agency = {
-  name: 'Test agency',
-  phone: '9801101234',
-  email: 'rahat_test@mailinator.com',
-  address: 'Kathmandu',
-  token: {
-    name: 'Test Token',
-    symbol: 'TKN',
-    supply: 100000,
-  },
-};
-
-let mongoServer;
 
 module.exports = {
-
   async connectDatabase() {
-    const mongooseOpts = {
+    await mongoose.connect(config.get('test.db'), {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true,
-    };
-
-    mongoServer = new MongoMemoryServer({
-      binary: {
-        version: '4.0.20',
-      },
     });
-    const URI = await mongoServer.getUri();
-    await mongoose.connect(URI, mongooseOpts);
+    await mongoose.connection.db.dropDatabase();
   },
 
   async closeDatabase(done) {
+    await mongoose.connection.db.dropDatabase();
     await mongoose.disconnect(done);
-    await mongoServer.stop();
   },
 
   async clearDatabase() {

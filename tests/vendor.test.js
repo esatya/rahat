@@ -19,14 +19,13 @@ const payload = {
 };
 let currentUser;
 
-jest.useFakeTimers();
 describe('Vendor CRUD', () => {
   let vendor;
   beforeAll(async () => {
     await connectDatabase();
     currentUser = await User.create(userData);
     payload.currentUser = currentUser;
-  }, 10000);
+  });
   afterAll(async () => {
     await closeDatabase();
   });

@@ -2,18 +2,24 @@ const common = require('./common');
 const { Agency } = require('../modules/agency/agency.controllers');
 
 const payload = {
-  name: 'Santosh Agency',
-  email: 'rahat-test@mailinator.com',
+  name: 'Test agency',
+  phone: '9801101234',
+  email: 'rahat_test@mailinator.com',
+  address: 'Kathmandu',
+  token: {
+    name: 'Test Token',
+    symbol: 'TKN',
+    supply: 100000,
+  },
 };
 
-jest.useFakeTimers();
 describe('Agency', () => {
   beforeAll(async () => {
     await common.connectDatabase();
     await Agency.add({
       name: 'First Agency',
     });
-  }, 10000);
+  });
   afterAll(async () => {
     await common.closeDatabase();
   });
