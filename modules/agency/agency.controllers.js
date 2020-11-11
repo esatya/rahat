@@ -4,9 +4,6 @@ const app = require('../../app');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { AgencyModel } = require('../models');
-const { Project } = require('../project/project.controllers');
-const { Vendor } = require('../vendor/vendor.controllers');
-const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 
 const logger = Logger.getInstance();
 
@@ -52,15 +49,6 @@ const Agency = {
     );
   },
 
-  async getDashboardData(currentUser) {
-    const projectCount = await Project.countProject(currentUser);
-    const vendorCount = await Vendor.countVendor(currentUser);
-    const beneficiary = await Beneficiary.countBeneficiary(currentUser);
-    const tokenAllocation = await Project.getTokenAllocated(currentUser);
-    return {
-      projectCount, vendorCount, beneficiary, tokenAllocation,
-    };
-  },
 };
 
 module.exports = {
