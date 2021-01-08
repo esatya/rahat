@@ -17,10 +17,11 @@ async function tokenTransaction(tokenAddress, account) {
     filterTokenSent.topic = [];
     const tokenSentTx = await provider.getLogs(filterTokenSent);
     const tokenSentLogs = tokenSentTx.map((el) => {
-      const { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+      let { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+      value = value.toNumber();
       const { blockNumber, transactionHash } = el;
       return {
-        from, to, value, blockNumber, transactionHash,
+        from, to, value, blockNumber, transactionHash, tag: 'sent',
       };
     });
 
@@ -30,10 +31,11 @@ async function tokenTransaction(tokenAddress, account) {
     filterTokenReceived.topic = [];
     const tokenReceivedTx = await provider.getLogs(filterTokenReceived);
     const tokenReceivedLogs = tokenReceivedTx.map((el) => {
-      const { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+      let { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+      value = value.toNumber();
       const { blockNumber, transactionHash } = el;
       return {
-        from, to, value, blockNumber, transactionHash,
+        from, to, value, blockNumber, transactionHash, tag: 'received',
       };
     });
 
