@@ -2,6 +2,7 @@ const { Agency } = require('./agency/agency.controllers');
 const { Beneficiary } = require('./beneficiary/beneficiary.controllers');
 const { Vendor } = require('./vendor/vendor.controllers');
 const { Project } = require('./project/project.controllers');
+const { Institution } = require('./institution/institution.controllers');
 const { Role } = require('./user/role.controllers');
 const { User } = require('./user/user.controllers');
 const { App } = require('./app/app.controllers');
@@ -11,6 +12,7 @@ module.exports = {
   Beneficiary,
   Vendor,
   Project,
+  Institution,
   Role,
   User,
   App,

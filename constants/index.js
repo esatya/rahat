@@ -11,6 +11,7 @@ module.exports = {
     Beneficiary: 'beneficiary',
     Vendor: 'vendor',
     Project: 'project',
+    Institution: 'institution',
   },
   Contract: {
     RahatAdmin: 'RahatAdmin',
@@ -20,6 +21,13 @@ module.exports = {
   ProjectConstants: {
     status: {
       Draft: 'draft',
+      Active: 'active',
+      Suspended: 'suspended',
+      Closed: 'closed',
+    },
+  },
+  InstitutionConstants: {
+    status: {
       Active: 'active',
       Suspended: 'suspended',
       Closed: 'closed',
