@@ -33,6 +33,8 @@ Currently, Rahat consists four applications. For complete aid distribution proce
 
 4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
 
+![Rahat - System Workflow](https://pbs.twimg.com/media/Erl_kZdUUAActLM?format=jpg&name=medium)
+
 ## Installing Rahat Server
 To setup this software on your machine locally, first clone this repository to your local machine and create a folder named ‘config’ on root of this repository and add local.json file. Click the link to see the sample.
 
