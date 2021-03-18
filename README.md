@@ -1,6 +1,6 @@
 # Rahat - Blockchain-based Aid Distribution
 
-Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahat.esatya.io.
+Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahatapp.com.
 
 Rahat’s main features are:
 - Dashboard for aid agencies to issue relief tokens to recipients & to onboard local community vendors. Agencies can audit all transactional information real-time. 
@@ -32,6 +32,8 @@ Currently, Rahat consists four applications. For complete aid distribution proce
 3. **OTP Server** (https://github.com/esatya/rahat-otp). It is a stand alone server to manage OTP that it sent to beneficiary phone during a transaction. This service adds hash of OTP to the smart-contract that should match with the OTP sent by the vendor to complete the transaction. Use your favorite SMS service like Twilio, GOIP as plugins to send SMS.
 
 4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
+
+![Rahat - System Workflow](https://pbs.twimg.com/media/Erl_kZdUUAActLM?format=jpg&name=medium)
 
 ## Installing Rahat Server
 To setup this software on your machine locally, first clone this repository to your local machine and create a folder named ‘config’ on root of this repository and add local.json file. Click the link to see the sample.
