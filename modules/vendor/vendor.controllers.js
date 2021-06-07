@@ -1,6 +1,7 @@
 const ethers = require('ethers');
 const { ObjectId, Types } = require('mongoose');
-const app = require('../../app');
+const { create } = require('ipfs-http-client');
+const config = require('config');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { VendorModel } = require('../models');
@@ -10,15 +11,44 @@ const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction'
 
 const logger = Logger.getInstance();
 
+const ipfs = create({
+  host: config.get('services.ipfs.host'),
+  port: config.get('services.ipfs.port'),
+  protocol: config.get('services.ipfs.protocol'),
+});
+
 const Vendor = {
-  add(payload) {
+  async add(payload) {
     payload.agencies = [{ agency: payload.currentUser.agency }];
+    const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
+    const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+    payload.govt_id_image = ipfsIdHash;
+    payload.photo = ipfsPhotoHash;
     return VendorModel.create(payload);
   },
 
-  register(agencyId, payload) {
+  async register(agencyId, payload) {
     payload.agencies = [{ agency: agencyId }];
+    const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
+    const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+    payload.govt_id_image = ipfsIdHash;
+    payload.photo = ipfsPhotoHash;
     return VendorModel.create(payload);
+  },
+
+  decodeBase64Image(dataString) {
+    const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const response = {};
+    if (matches.length !== 3) {
+      return new Error('Invalid input string');
+    }
+    response.type = matches[1];
+    response.data = new Buffer(matches[2], 'base64');
+    return response;
+  },
+  async uploadToIpfs(file) {
+    const ipfsHash = await ipfs.add(file);
+    return ipfsHash.path;
   },
 
   // Approve after event from Blockchain
