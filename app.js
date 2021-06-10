@@ -118,20 +118,37 @@ class App {
     // else
 
     const {
-      method, path, description, notes,
+      method, path, description, notes, uploadPayload,
     } = route;
+    const config = {
+      description,
+      notes,
+      tags,
+      validate: this.validate(operation),
+      handler: route.handler ? route.handler : this.handle.bind(this, operation),
+    };
+
+    if (method === 'POST' || method === 'PUT') {
+      config.payload = { maxBytes: 10000000 };
+    }
+
+    if (uploadPayload) {
+      config.payload = config.payload || {};
+      config.payload = Object.assign(config.payload, uploadPayload);
+      config.plugins = {
+        'hapi-swagger': {
+          payloadType: 'form',
+          consumes: ['multipart/form-data'],
+        },
+      };
+    }
 
     operation.route = {
       method,
       path: `${this.apiPath}/${featName}${path}`,
-      config: {
-        description,
-        notes,
-        tags,
-        validate: this.validate(operation),
-        handler: route.handler ? route.handler : this.handle.bind(this, operation),
-      },
+      config,
     };
+
     return operation.route;
   }
 
