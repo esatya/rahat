@@ -43,7 +43,9 @@ const controllers = {
     }
 
     const accessToken = await User.generateToken(user);
-    ws.sendToClient(id, { action: 'access-granted', accessToken });
+    const authData = { action: 'access-granted', accessToken };
+    if (payload.encryptedWallet) authData.encryptedWallet = payload.encryptedWallet;
+    ws.sendToClient(id, authData);
     return 'You have successfully logged on to Rahat Systems.';
   },
 
