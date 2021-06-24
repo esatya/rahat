@@ -1,23 +1,56 @@
 const ethers = require('ethers');
 const { ObjectId, Types } = require('mongoose');
-const app = require('../../app');
+const { create } = require('ipfs-http-client');
+const config = require('config');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { VendorModel } = require('../models');
 const { VendorConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
+const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 
 const logger = Logger.getInstance();
 
+const ipfs = create({
+  host: config.get('services.ipfs.host'),
+  port: config.get('services.ipfs.port'),
+  protocol: config.get('services.ipfs.protocol'),
+});
+
 const Vendor = {
-  add(payload) {
+  async add(payload) {
     payload.agencies = [{ agency: payload.currentUser.agency }];
+    const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
+    const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+    payload.govt_id_image = ipfsIdHash;
+    payload.photo = ipfsPhotoHash;
     return VendorModel.create(payload);
   },
 
-  register(agencyId, payload) {
+  async register(agencyId, payload) {
     payload.agencies = [{ agency: agencyId }];
+    const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
+    const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+    payload.govt_id_image = ipfsIdHash;
+    payload.photo = ipfsPhotoHash;
     return VendorModel.create(payload);
+  },
+
+  decodeBase64Image(dataString) {
+    if (!dataString) return { type: null, data: null };
+    const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const response = {};
+    if (matches.length !== 3) {
+      return new Error('Invalid input string');
+    }
+    response.type = matches[1];
+    response.data = new Buffer(matches[2], 'base64');
+    return response;
+  },
+  async uploadToIpfs(file) {
+    if (!file) return '';
+    const ipfsHash = await ipfs.add(file);
+    return ipfsHash.path;
   },
 
   // Approve after event from Blockchain
@@ -56,7 +89,7 @@ const Vendor = {
     if (query.phone) $match.phone = { $regex: new RegExp(`${query.phone}`), $options: 'i' };
     if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
 
-    const sort = { };
+    const sort = {};
     if (query.sort === 'address' || query.sort === 'name') sort[query.sort] = 1;
     else sort.created_at = -1;
 
@@ -71,7 +104,9 @@ const Vendor = {
 
   async remove(id, curUserId) {
     const ben = await VendorModel.findOneAndUpdate(
-      { _id: id }, { is_archived: true, updated_by: curUserId }, { new: true },
+      { _id: id },
+      { is_archived: true, updated_by: curUserId },
+      { new: true },
     );
     // TODO blockchain call
     return ben;
@@ -82,14 +117,26 @@ const Vendor = {
     delete payload.balance;
     delete payload.agency;
 
-    return VendorModel.findOneAndUpdate(
-      { _id: id, is_archived: false }, payload, { new: true, runValidators: true },
-    );
+    return VendorModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
+      new: true,
+      runValidators: true,
+    });
+  },
+  countVendor(currentUser) {
+    const query = { is_archived: false };
+    query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
+
+    return VendorModel.find(query).countDocuments();
+  },
+
+  async getTransactions(id, tokenAddress) {
+    const vendor = await this.getbyId(id);
+    const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
+    return transactions;
   },
 };
 
 module.exports = {
-  Agency,
   Vendor,
   add: (req) => Vendor.add(req.payload),
   getbyId: (req) => {
@@ -105,5 +152,11 @@ module.exports = {
   register: async (req) => {
     const { _id: agencyId } = await Agency.getFirst();
     return Vendor.register(agencyId, req.payload);
+  },
+  getTransactions: async (req) => {
+    const {
+      contracts: { token: tokenAddress },
+    } = await Agency.getFirst();
+    return Vendor.getTransactions(req.params.id, tokenAddress);
   },
 };
