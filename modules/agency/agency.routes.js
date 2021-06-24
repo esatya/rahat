@@ -15,6 +15,7 @@ const routes = {
     'Update contract addresses controlled by the agency',
     [AGENCY.WRITE, AGENCY.ADMIN],
   ],
+
 };
 
 /**

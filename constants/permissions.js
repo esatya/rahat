@@ -23,6 +23,12 @@ module.exports = {
     REMOVE: 'vendor_remove',
     ADMIN: 'vendor_admin',
   },
+  INSTITUTION: {
+    READ: 'institution_read',
+    WRITE: 'institution_write',
+    REMOVE: 'institution_remove',
+    ADMIN: 'institution_admin',
+  },
   USER: {
     READ: 'user_read',
     WRITE: 'user_write',

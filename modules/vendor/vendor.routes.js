@@ -39,6 +39,11 @@ const routes = {
     'POST', '/register',
     'register a vendor.',
   ],
+  getTransactions: [
+    'GET',
+    '/{id}/transactions',
+    'Get the token transactions by current vendor',
+  ],
 };
 
 function register(app) {

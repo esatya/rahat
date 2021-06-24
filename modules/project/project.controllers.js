@@ -3,7 +3,7 @@ const app = require('../../app');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { ethersContract } = require('../../helpers/blockchain/contract');
-const { abi } = require('../../helpers/blockchain/abi');
+const { getAbi } = require('../../helpers/blockchain/abi');
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 const { Vendor } = require('../vendor/vendor.controllers');
@@ -88,6 +88,36 @@ const Project = {
     return ProjectModel.findOneAndUpdate(
       { _id: id, is_archived: false }, payload, { new: true, runValidators: true },
     );
+  },
+
+  countProject(currentUser) {
+    const query = { is_archived: false };
+    query.agency = currentUser.agency;
+
+    return ProjectModel.find(query).countDocuments();
+  },
+
+  async getTokenAllocated(currentUser) {
+    const $match = { $and: [{ is_archived: false }, { agency: currentUser.agency }] };
+
+    const query = [{
+      $match,
+    },
+    {
+      $unwind: '$allocations',
+    },
+    {
+      $group: {
+        _id: '$_id',
+        name: { $first: '$name' },
+        token: { $sum: '$allocations.amount' },
+      },
+    },
+    ];
+    const projectAllocation = await ProjectModel.aggregate(query);
+    const totalAllocation = projectAllocation.reduce((acc, { token }) => acc + token, 0);
+
+    return { totalAllocation, projectAllocation };
   },
 };
 

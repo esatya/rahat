@@ -5,7 +5,6 @@ const { getAbi } = require('./abi');
 
 const network = config.get('blockchain.httpProvider');
 const provider = new ethers.providers.JsonRpcProvider(network);
-const { privateKey } = require('../../config/privateKey.json');
 
 function ethersContract(artifact, contractAddress) {
   try {
@@ -33,6 +32,7 @@ function wsWeb3Contract(contractName, contractAddress) {
   return wsInstance;
 }
 async function deployContract(abi, bytecode, args) {
+  const { privateKey } = require('../../config/privateKey.json');
   const signer = new ethers.Wallet(privateKey, provider);
   const factory = new ethers.ContractFactory(abi, bytecode, signer);
   const contract = await factory.deploy(...args);

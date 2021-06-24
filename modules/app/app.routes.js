@@ -1,5 +1,6 @@
 const controllers = require('./app.controllers');
 const validators = require('./app.validators');
+const { AGENCY } = require('../../constants/permissions');
 
 const routes = {
   listSettings: {
@@ -32,6 +33,11 @@ const routes = {
     path: '/setup/contracts',
     description: 'setup a contracts and deploy to blockchain',
   },
+  getDashboardData: [
+    'GET', '/dashboards', 'Get the dashboard informations',
+    [AGENCY.WRITE, AGENCY.ADMIN],
+
+  ],
 
 };
 

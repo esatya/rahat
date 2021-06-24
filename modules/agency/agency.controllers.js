@@ -13,10 +13,13 @@ const Agency = {
     return AgencyModel.create(data);
   },
   approve(id) {
-    return AgencyModel.findOneAndUpdate({ _id: id, is_archived: false }, { is_approved: true });
+    return AgencyModel.findOneAndUpdate(
+      { _id: id, is_archived: false },
+      { is_approved: true }, { new: true },
+    );
   },
   async getFirst() {
-    const agencies = await AgencyModel.find({ });
+    const agencies = await AgencyModel.find({});
     if (agencies.length > 0) return agencies[0]; return null;
   },
   async list() {
@@ -45,6 +48,7 @@ const Agency = {
       }, { new: true, runValidators: true },
     );
   },
+
 };
 
 module.exports = {
@@ -52,4 +56,5 @@ module.exports = {
   getById: (req) => Agency.getById(req.params.id),
   update: (req) => Agency.update(req.params.id, req.payload),
   setContracts: (req) => Agency.setContracts(req.params.id, req.payload),
+  getDashboardData: (req) => Agency.getDashboardData(req.currentUser),
 };

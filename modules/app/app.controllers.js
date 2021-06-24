@@ -1,9 +1,13 @@
 const fs = require('fs');
 const ethers = require('ethers');
+const config = require('config');
 const app = require('../../app');
 
 const packageJson = require('../../package.json');
 const { Agency } = require('../agency/agency.controllers');
+const { Project } = require('../project/project.controllers');
+const { Vendor } = require('../vendor/vendor.controllers');
+const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 const PermissionsConstants = require('../../constants/permissions');
 const { ObjectUtils } = require('../../helpers/utils');
 
@@ -80,6 +84,7 @@ const App = {
     return Object.assign(settings, {
       isSetup: agency != null,
       version: packageJson.version,
+      networkUrl: config.get('blockchain.httpProvider'),
       agency,
     });
   },
@@ -114,6 +119,15 @@ const App = {
       throw Error(`ERROR:${e}`);
     }
   },
+  async getDashboardData(currentUser) {
+    const projectCount = await Project.countProject(currentUser);
+    const vendorCount = await Vendor.countVendor(currentUser);
+    const beneficiary = await Beneficiary.countBeneficiary(currentUser);
+    const tokenAllocation = await Project.getTokenAllocated(currentUser);
+    return {
+      projectCount, vendorCount, beneficiary, tokenAllocation,
+    };
+  },
 
 };
 
@@ -125,4 +139,5 @@ module.exports = {
   getContractAbi: (req) => App.getContractAbi(req.params.contractName),
   getContractBytecode: (req) => App.getContractBytecode(req.params.contractName),
   setupContracts: (req) => App.setupContracts(),
+  getDashboardData: (req) => App.getDashboardData(req.currentUser),
 };
