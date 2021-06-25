@@ -16,7 +16,8 @@ module.exports = {
       email: Vendor.email.example('rastra@gmail.com'),
       address: Vendor.address.example('nepal'),
       govt_id: Vendor.govt_id.example('99988777nepal'),
-      govt_id_image: Vendor.govt_id_image.example('http://source'),
+      govt_id_image: Joi.string().description('ID Image').optional(),
+      photo: Joi.string().description('Photo').optional(),
     }).label('Vendor'),
   },
   getbyId: {
@@ -62,6 +63,8 @@ module.exports = {
       email: Vendor.email.example('rastra@gmail.com'),
       address: Vendor.address.example('nepal'),
       govt_id: Vendor.govt_id.example('99988777nepal'),
+      govt_id_image: Joi.string().description('ID Image').optional(),
+      photo: Joi.string().description('Photo').optional(),
     }),
   },
   getTransactions: {

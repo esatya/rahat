@@ -1,5 +1,6 @@
 const fs = require('fs');
 const ethers = require('ethers');
+const config = require('config');
 const app = require('../../app');
 
 const packageJson = require('../../package.json');
@@ -83,6 +84,7 @@ const App = {
     return Object.assign(settings, {
       isSetup: agency != null,
       version: packageJson.version,
+      networkUrl: config.get('blockchain.httpProvider'),
       agency,
     });
   },
