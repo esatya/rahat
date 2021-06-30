@@ -1,7 +1,6 @@
 const ethers = require('ethers');
-const { ObjectId, Types } = require('mongoose');
-const { create } = require('ipfs-http-client');
-const config = require('config');
+const { Types } = require('mongoose');
+const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { VendorModel } = require('../models');
@@ -10,12 +9,6 @@ const { Agency } = require('../agency/agency.controllers');
 const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 
 const logger = Logger.getInstance();
-
-const ipfs = create({
-  host: config.get('services.ipfs.host'),
-  port: config.get('services.ipfs.port'),
-  protocol: config.get('services.ipfs.protocol'),
-});
 
 const Vendor = {
   async add(payload) {
@@ -49,8 +42,8 @@ const Vendor = {
   },
   async uploadToIpfs(file) {
     if (!file) return '';
-    const ipfsHash = await ipfs.add(file);
-    return ipfsHash.path;
+    const ipfsHash = await addFileToIpfs(file);
+    return ipfsHash.cid.toString();
   },
 
   // Approve after event from Blockchain
