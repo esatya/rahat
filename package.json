@@ -49,7 +49,7 @@
 		"ethers": "^5.0.9",
 		"hapi-swagger": "^14.0.0",
 		"hapi-swagger-static": "^2.0.13",
-		"ipfs-http-client": "^50.1.1",
+		"ipfs-http-client": "^50.1.2",
 		"joi": "^17.2.1",
 		"joigoose": "^8.0.0",
 		"mongoose": "^5.10.2",
