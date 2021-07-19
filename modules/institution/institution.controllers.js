@@ -1,3 +1,4 @@
+const { Types } = require('mongoose');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { InstitutionModel } = require('../models');
@@ -57,6 +58,13 @@ const Institution = {
     return InstitutionModel.findOneAndUpdate(
       { _id: id, is_archived: false }, payload, { new: true, runValidators: true },
     );
+  },
+
+  countInstitution(currentUser) {
+    const query = { is_archived: false };
+    query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
+
+    return InstitutionModel.find(query).countDocuments();
   },
 
 };
