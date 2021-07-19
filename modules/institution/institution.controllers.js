@@ -60,10 +60,8 @@ const Institution = {
     );
   },
 
-  countInstitution(currentUser) {
-    const query = { is_archived: false };
-    query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
-
+  async countInstitution(currentUser) {
+    const query = { is_archived: false, agency: Types.ObjectId(currentUser.agency) };
     return InstitutionModel.find(query).countDocuments();
   },
 
