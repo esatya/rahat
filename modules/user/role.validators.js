@@ -6,4 +6,13 @@ module.exports = {
       id: Joi.string(),
     }),
   },
+
+  addPermissions: {
+    params: Joi.object({
+      id: Joi.string(),
+    }),
+    payload: Joi.object({
+      permissions: Joi.array(),
+    }),
+  },
 };
