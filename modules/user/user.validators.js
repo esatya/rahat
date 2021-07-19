@@ -7,9 +7,8 @@ module.exports = {
   add: {
     payload: Joi.object({
       name: Joi.string(),
-      email: Joi.string(),
+      email: Joi.string().optional(),
       phone: Joi.string(),
-      password: Joi.string(),
       wallet_address: Joi.string(),
       agency: Joi.string(),
       roles: Joi.array().items(Joi.string()),
