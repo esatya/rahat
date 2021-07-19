@@ -8,6 +8,7 @@ const { Agency } = require('../agency/agency.controllers');
 const { Project } = require('../project/project.controllers');
 const { Vendor } = require('../vendor/vendor.controllers');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
+const { Institution } = require('../institution/institution.controllers');
 const PermissionsConstants = require('../../constants/permissions');
 const { ObjectUtils } = require('../../helpers/utils');
 
@@ -124,8 +125,10 @@ const App = {
     const vendorCount = await Vendor.countVendor(currentUser);
     const beneficiary = await Beneficiary.countBeneficiary(currentUser);
     const tokenAllocation = await Project.getTokenAllocated(currentUser);
+    const tokenRedemption = await Vendor.countVendorTokenRedemption();
+    const institutionCount = await Institution.countInstitution(currentUser);
     return {
-      projectCount, vendorCount, beneficiary, tokenAllocation,
+      projectCount, vendorCount, institutionCount, beneficiary, tokenAllocation, tokenRedemption,
     };
   },
 
