@@ -26,6 +26,10 @@ const routes = {
     'Find a user by id',
     [USER.READ, USER.ADMIN],
   ],
+  checkUser: [
+    'POST', '/check',
+    'Check If user Exists',
+  ],
   update: [
     'POST', '/{id}',
     'Update user data',
