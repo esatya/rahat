@@ -27,9 +27,7 @@ const controllers = {
     const client = ws.getClient(id);
     if (!client) throw Error('WebSocket client does not exist.');
 
-    const publicKey = ethers.utils.recoverAddress(
-      ethers.utils.hashMessage(client.token), signature,
-    );
+    const publicKey = ethers.utils.recoverAddress(ethers.utils.hashMessage(client.token), signature);
     const user = await controllers.getByWalletAddress(publicKey);
 
     if (user && !user.is_active) {
@@ -65,11 +63,18 @@ const controllers = {
     return User.addRoles({ user_id: userId, roles });
   },
 
-  list({
-    start, limit, sort, filter, paging = true,
-  }) {
+  list(request) {
+    let {
+      start, limit, sort, filter, name, paging = true,
+    } = request.query;
     const query = [];
+    const $match = {};
     if (filter) query.push({ $match: filter });
+    // if (name) query.push({ $match: { 'name.first': { $regex: new RegExp(`${name}`), $options: 'i' } } });
+    // console.log(name);
+    // if (name) {
+    //   $match.name.first = { $regex: new RegExp(`${name}`), $options: 'i' };
+    // }
     query.push(
       {
         $addFields: { full_name: { $concat: ['$name.first', ' ', '$name.last'] } },
@@ -86,7 +91,7 @@ const controllers = {
         limit,
         sort,
         model: User.model,
-        query,
+        query: [],
       });
     }
 
@@ -94,10 +99,31 @@ const controllers = {
     return User.model.aggregate(query);
   },
 
+  async checkUser(request) {
+    const data = request.payload;
+    data.wallet_address = data.wallet_address.toLowerCase();
+    const [user] = await User.model.find({
+      $or: [
+        { wallet_address: data.wallet_address },
+        { email: data.email },
+        { phone: data.phone },
+      ],
+    });
+    if (user) {
+      if (user.phone === data.phone) throw new Error('Phone Number Already Exists');
+      if (user.wallet_address.toLowerCase() === data.wallet_address.toLowerCase()) throw Error('Wallet Address Already Exists');
+      if (user.email === data.email) throw Error('Email Already Exists');
+      return false;
+    }
+    return { isNew: true };
+  },
+
   async add(request) {
     const data = request.payload;
 
     try {
+      await controllers.checkUser(request);
+      data.wallet_address = data.wallet_address.toLowerCase();
       const user = await User.create(data);
       return user;
     } catch (e) {
@@ -110,9 +136,10 @@ const controllers = {
       const token = request.query.access_token || request.headers.access_token || request.cookies.access_token;
       const { user, permissions } = await User.validateToken(token);
 
-      return ({
-        user, permissions,
-      });
+      return {
+        user,
+        permissions,
+      };
     } catch (e) {
       throw Error(`ERROR: ${e}`);
     }
