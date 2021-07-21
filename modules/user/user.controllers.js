@@ -70,8 +70,15 @@ const controllers = {
     const query = [];
     const $match = {};
     if (filter) query.push({ $match: filter });
-    // if (name) query.push({ $match: { 'name.first': { $regex: new RegExp(`${name}`), $options: 'i' } } });
-    // console.log(name);
+    if (name) {
+      query.push({
+
+        $match: {
+          'name.first': { $regex: new RegExp(`${name}`), $options: 'i' },
+        },
+      });
+      // query.push({ $match: { 'name.last': { $regex: new RegExp(`${name}`), $options: 'i' } } });
+    }
     // if (name) {
     //   $match.name.first = { $regex: new RegExp(`${name}`), $options: 'i' };
     // }
@@ -91,7 +98,7 @@ const controllers = {
         limit,
         sort,
         model: User.model,
-        query: [],
+        query,
       });
     }
 
