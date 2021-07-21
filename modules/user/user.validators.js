@@ -4,7 +4,7 @@ module.exports = {
   list: {
 
     query: Joi.object({
-      // name: Joi.string(),
+      name: Joi.string(),
       start: Joi.number(),
       limit: Joi.number(),
     }),
