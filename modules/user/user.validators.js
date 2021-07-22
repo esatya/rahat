@@ -1,8 +1,8 @@
 const Joi = require('joi');
+const GooseJoi = require('../../helpers/utils/goosejoi');
 
 module.exports = {
   list: {
-
     query: Joi.object({
       name: Joi.string(),
       start: Joi.number(),
@@ -17,6 +17,26 @@ module.exports = {
       wallet_address: Joi.string(),
       agency: Joi.string(),
       roles: Joi.array().items(Joi.string()),
+    }),
+  },
+  findById: {
+    params: GooseJoi.id(),
+
+  },
+
+  addRoles: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      roles: Joi.array(),
+    }),
+  },
+
+  update: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      name: Joi.string().optional(),
+      email: Joi.string().optional(),
+      phone: Joi.string().optional(),
     }),
   },
 
