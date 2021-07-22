@@ -57,10 +57,27 @@ const controllers = {
     return User.model.findOne({ wallet_address: walletAddress });
   },
 
-  async addRoles({ userId, roles }) {
+  findById(request) {
+    const isObjectId = mongoose.Types.ObjectId;
+
+    if (isObjectId.isValid(request.params.id)) {
+      return User.getById(request.params.id);
+    }
+    return controllers.getByWalletAddress(request.params.id);
+  },
+
+  async addRoles(request) {
+    const userId = request.params.id;
+    const { roles } = request.payload;
     const isValid = await Role.isValidRole(roles);
     if (!isValid) throw Error('role does not exist');
     return User.addRoles({ user_id: userId, roles });
+  },
+
+  async update(request) {
+    const userId = request.params.id;
+    await controllers.checkUser(request);
+    return User.update(userId, request.payload);
   },
 
   list(request) {
@@ -72,16 +89,12 @@ const controllers = {
     if (filter) query.push({ $match: filter });
     if (name) {
       query.push({
-
         $match: {
           'name.first': { $regex: new RegExp(`${name}`), $options: 'i' },
         },
       });
-      // query.push({ $match: { 'name.last': { $regex: new RegExp(`${name}`), $options: 'i' } } });
     }
-    // if (name) {
-    //   $match.name.first = { $regex: new RegExp(`${name}`), $options: 'i' };
-    // }
+
     query.push(
       {
         $addFields: { full_name: { $concat: ['$name.first', ' ', '$name.last'] } },
@@ -108,17 +121,18 @@ const controllers = {
 
   async checkUser(request) {
     const data = request.payload;
+    if (!data.wallet_address) data.wallet_address = '';
+    if (!data.phone) data.phone = '';
+    if (!data.email) data.email = '';
     data.wallet_address = data.wallet_address.toLowerCase();
     const [user] = await User.model.find({
-      $or: [
-        { wallet_address: data.wallet_address },
-        { email: data.email },
-        { phone: data.phone },
-      ],
+      $or: [{ wallet_address: data.wallet_address }, { email: data.email }, { phone: data.phone }],
     });
     if (user) {
       if (user.phone === data.phone) throw new Error('Phone Number Already Exists');
-      if (user.wallet_address.toLowerCase() === data.wallet_address.toLowerCase()) throw Error('Wallet Address Already Exists');
+      if (user.wallet_address.toLowerCase() === data.wallet_address.toLowerCase()) {
+        throw Error('Wallet Address Already Exists');
+      }
       if (user.email === data.email) throw Error('Email Already Exists');
       return false;
     }
@@ -127,7 +141,6 @@ const controllers = {
 
   async add(request) {
     const data = request.payload;
-
     try {
       await controllers.checkUser(request);
       data.wallet_address = data.wallet_address.toLowerCase();
