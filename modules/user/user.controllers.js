@@ -76,8 +76,8 @@ const controllers = {
 
   async update(request) {
     const userId = request.params.id;
-    await controllers.checkUser(request);
-    return User.update(userId, request.payload);
+    const data = request.payload;
+    return User.update(userId, data);
   },
 
   list(request) {
