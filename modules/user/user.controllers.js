@@ -54,7 +54,7 @@ const controllers = {
   },
 
   getByWalletAddress(walletAddress) {
-    return User.model.findOne({ wallet_address: walletAddress });
+    return User.model.findOne({ wallet_address: walletAddress.toLowerCase() });
   },
 
   findById(request) {
