@@ -64,6 +64,7 @@ const Project = {
     if (query.show_archive) $match = {};
     $match.agency = currentUser.agency;
     if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
+    if (query.status) $match.status = query.status;
 
     return DataUtils.paging({
       start,
