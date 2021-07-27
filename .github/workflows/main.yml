@@ -23,4 +23,6 @@ jobs:
                   cache: 'npm'
             - run: npm i
             - run: npm run setup --if-present
-            - run: npm test
+            - run: npm test:controllers
+            - run: npm test:contracts
+            - run: npm test:helpers
