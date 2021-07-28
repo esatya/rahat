@@ -12,7 +12,18 @@ module.exports = {
     payload: Joi.object({
       name: Project.name,
       end_date: Project.end_date,
+      project_manager: Project.project_manager,
+      location: Project.location,
+      financial_institutions: Project.financial_institutions,
     }).label('Project'),
+  },
+  list: {
+    query: Joi.object({
+      start: Joi.number(),
+      limit: Joi.number(),
+      name: Joi.string(),
+      status: Joi.string(),
+    }),
   },
   changeStatus: {
     params: GooseJoi.id(),
