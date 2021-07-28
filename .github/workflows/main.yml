@@ -1,0 +1,27 @@
+# its basically what the job is
+name: build-test-stage CI
+# describe event for trigger
+on:
+    push:
+        branches: [stage]
+    pull_request:
+        branches: [stage]
+# task to do
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        #only enable for multiple ubuntu version check
+        # strategy:
+        #  matrix:
+        #    node-version: [12.x, 14.x]
+        steps:
+            - uses: actions/checkout@v2
+            - name: Setup Node.js 14.17.3
+              uses: actions/setup-node@v2
+              with:
+                  node-version: 14.17.3
+                  cache: 'npm'
+            - run: npm i
+            - run: npm run setup --if-present
+            - run: npm run test:contracts
+            - run: npm run test:helpers

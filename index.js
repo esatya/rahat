@@ -6,6 +6,7 @@ const path = require('path');
 const Vision = require('@hapi/vision');
 const HapiSwagger = require('hapi-swagger');
 
+const ethers = require('ethers');
 const Logger = require('./helpers/logger');
 const app = require('./app');
 const registerFeats = require('./helpers/register-modules');
@@ -13,6 +14,10 @@ const ws = require('./helpers/utils/socket');
 
 const logger = Logger.getInstance();
 const port = config.get('app.port');
+const { listenTokenTx, stopListener } = require('./helpers/blockchain/tokenTxListener');
+
+const network = config.get('blockchain.httpProvider');
+const provider = new ethers.providers.JsonRpcProvider(network);
 
 mongoose.connect(config.get('app.db'), {
   useNewUrlParser: true,
@@ -117,6 +122,8 @@ async function startServer() {
   });
   await server.start();
   logger.info(`Server running at: ${server.info.uri}`);
+  logger.info('Listening to Token Transfer events...');
+  listenTokenTx();
 }
 
 // eslint-disable-next-line no-shadow, no-unused-vars
@@ -135,6 +142,8 @@ server.ext('onPostStop', (server) => {
 let isStopping = false;
 async function shutDown() {
   if (!isStopping) {
+    logger.info('closing all listeners...');
+    stopListener();
     logger.info('shutDown...');
     isStopping = true;
     const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;

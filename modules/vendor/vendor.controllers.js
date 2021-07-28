@@ -4,9 +4,11 @@ const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { VendorModel } = require('../models');
+const { TokenRedemption } = require('./vendorTokenRedemption.model');
 const { VendorConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
 const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
+const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
 const logger = Logger.getInstance();
 
@@ -126,6 +128,19 @@ const Vendor = {
     const vendor = await this.getbyId(id);
     const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
     return transactions;
+  },
+
+  async addTokenRedemption(payload) {
+    return tokenRedemptionModel.create(payload);
+  },
+
+  async countVendorTokenRedemption() {
+    // const query = { vendor_wallet: vendorWallet };
+    const total = await tokenRedemptionModel.aggregate([
+      { $group: { _id: '$vendor_wallet', totalSum: { $sum: '$amount' } } },
+    ]);
+    const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
+    return { totalTokenRedemption: totalToken, tokenRedemption: total };
   },
 };
 
