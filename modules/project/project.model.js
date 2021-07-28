@@ -24,6 +24,9 @@ const schema = {
     txhash: { type: String },
     success: { type: Boolean, required: true, default: false },
   }],
+  project_manager: { type: String },
+  location: { type: String, joi: Joi.string().example('kupondole') },
+  financial_institutions: [{ type: ObjectId, ref: 'Institution' }],
   agency: {
     type: ObjectId,
     required: true,
