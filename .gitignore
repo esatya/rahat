@@ -6,6 +6,8 @@ temp/
 public/
 contracts/build
 
+uploads/
+
 # Logs
 logs
 *.log
