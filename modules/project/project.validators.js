@@ -10,6 +10,7 @@ module.exports = {
 	add: {
 		payload: Joi.object({
 			name: Project.name,
+			file: Joi.any(),
 			end_date: Project.end_date,
 			project_manager: Project.project_manager,
 			location: Project.location,
