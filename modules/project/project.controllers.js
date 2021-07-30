@@ -1,5 +1,4 @@
 const { Types } = require('mongoose');
-const crypto = require('crypto');
 const { DataUtils } = require('../../helpers/utils');
 
 const { ProjectModel } = require('../models');
@@ -34,14 +33,12 @@ const Project = {
 		let upload_counter = 0;
 		rows.shift();
 		for (const r of rows) {
-			const temp_wallet_address = crypto.randomBytes(20).toString('hex');
 			const payload = {
 				name: r[0],
 				address_temporary: r[1],
 				address: r[2],
 				phone: r[3],
-				govt_id: r[4],
-				wallet_address: `0x0${temp_wallet_address}`
+				govt_id: r[4]
 			};
 			payload.project_id = projectId;
 			payload.currentUser = currentUser;

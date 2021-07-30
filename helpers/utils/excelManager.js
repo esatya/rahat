@@ -28,13 +28,14 @@ exports.readExcelFile = fileName => {
 };
 
 exports.removeExcelFile = fileName => {
-	if (!fileName) throw Error('Filename is required');
-	const file_path = `${UPLOAD_PATH}/${fileName}`;
-
-	return new Promise((resolve, reject) => {
-		fs.unlink(file_path, err => {
-			if (err) reject(err);
-			resolve({ success: true, message: `${fileName} deleted` });
+	if (fileName) {
+		const file_path = `${UPLOAD_PATH}/${fileName}`;
+		return new Promise((resolve, reject) => {
+			fs.unlink(file_path, err => {
+				if (err) reject(err);
+				console.log('SUCCESS');
+				resolve({ success: true, message: `${fileName} deleted` });
+			});
 		});
-	});
+	}
 };
