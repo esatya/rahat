@@ -1,15 +1,57 @@
-const { ObjectId, Types } = require('mongoose');
+const { Types } = require('mongoose');
+const crypto = require('crypto');
 const { DataUtils } = require('../../helpers/utils');
 
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
+const { readExcelFile, removeExcelFile, uploadExcelFile } = require('../../helpers/utils/excelManager');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
 	async add(payload) {
-		payload.agency = payload.currentUser.agency;
-		const project = await ProjectModel.create(payload);
-		return project;
+		try {
+			let uploaded_beneficiaries = 0;
+			const { file, currentUser } = payload;
+			payload.agency = currentUser.agency;
+			const project = await ProjectModel.create(payload);
+			if (file) {
+				const uploaded = await uploadExcelFile(file);
+				const rows = await readExcelFile(uploaded.file);
+				if (rows.length) {
+					uploaded_beneficiaries = await this.addBeneficiariesToProject(rows, project._id, currentUser);
+				}
+				await removeExcelFile(uploaded.file);
+			}
+			return { project, uploaded_beneficiaries };
+		} catch (err) {
+			throw Error(err);
+		}
+	},
+
+	// TODO: remove temp wallet address
+	async addBeneficiariesToProject(rows, projectId, currentUser) {
+		// SKIP HEADER
+		let upload_counter = 0;
+		rows.shift();
+		for (const r of rows) {
+			const temp_wallet_address = crypto.randomBytes(20).toString('hex');
+			const payload = {
+				name: r[0],
+				address_temporary: r[1],
+				address: r[2],
+				phone: r[3],
+				govt_id: r[4],
+				wallet_address: `0x0${temp_wallet_address}`
+			};
+			payload.project_id = projectId;
+			payload.currentUser = currentUser;
+			const { name, phone } = payload;
+			if (name && phone) {
+				await Beneficiary.add(payload);
+				upload_counter++;
+			}
+		}
+		return upload_counter;
 	},
 
 	async changeStatus(id, payload) {
