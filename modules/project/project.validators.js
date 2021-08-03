@@ -14,7 +14,7 @@ module.exports = {
 			end_date: Project.end_date,
 			project_manager: Project.project_manager,
 			location: Project.location,
-			description: Project.description,
+			description: Joi.string().allow(''),
 			financial_institutions: Joi.string()
 		}).label('Project')
 	},

@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const UPLOAD_PATH = `${__dirname}/../../uploads`;
 
-exports.uploadExcelFile = file => {
+exports.uploadFile = file => {
 	const { _data, hapi } = file;
 	const timestamp = Date.now();
 	const ext = hapi.filename.split('.').pop();
@@ -27,13 +27,13 @@ exports.readExcelFile = fileName => {
 	});
 };
 
-exports.removeExcelFile = fileName => {
+exports.removeFile = fileName => {
 	if (fileName) {
 		const file_path = `${UPLOAD_PATH}/${fileName}`;
 		return new Promise((resolve, reject) => {
 			fs.unlink(file_path, err => {
 				if (err) reject(err);
-				console.log('SUCCESS');
+				console.log('Removed==>', fileName);
 				resolve({ success: true, message: `${fileName} deleted` });
 			});
 		});
