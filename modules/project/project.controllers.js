@@ -12,6 +12,9 @@ const Project = {
 			let uploaded_beneficiaries = 0;
 			const { file, currentUser } = payload;
 			payload.agency = currentUser.agency;
+			payload.financial_institutions = payload.financial_institutions
+				? payload.financial_institutions.split(',')
+				: [];
 			const project = await ProjectModel.create(payload);
 			if (file) {
 				const uploaded = await uploadExcelFile(file);
@@ -131,6 +134,9 @@ const Project = {
 	update(id, payload) {
 		delete payload.status;
 		delete payload.agency;
+		if (payload.financial_institutions) {
+			payload.financial_institutions = payload.financial_institutions.split(',');
+		}
 		return ProjectModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
 			new: true,
 			runValidators: true

@@ -15,7 +15,7 @@ module.exports = {
 			project_manager: Project.project_manager,
 			location: Project.location,
 			description: Project.description,
-			financial_institutions: Project.financial_institutions
+			financial_institutions: Joi.string()
 		}).label('Project')
 	},
 	list: {
@@ -53,7 +53,7 @@ module.exports = {
 			project_manager: Project.project_manager,
 			location: Project.location,
 			description: Project.description,
-			financial_institutions: Project.financial_institutions
+			financial_institutions: Joi.string()
 		}).label('Project')
 	},
 	listBeneficiaries: {
