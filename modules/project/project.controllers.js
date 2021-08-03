@@ -3,7 +3,7 @@ const { DataUtils } = require('../../helpers/utils');
 
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
-const { readExcelFile, removeExcelFile, uploadExcelFile } = require('../../helpers/utils/excelManager');
+const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
@@ -17,12 +17,12 @@ const Project = {
 				: [];
 			const project = await ProjectModel.create(payload);
 			if (file) {
-				const uploaded = await uploadExcelFile(file);
+				const uploaded = await uploadFile(file);
 				const rows = await readExcelFile(uploaded.file);
 				if (rows.length) {
+					await removeFile(uploaded.file);
 					uploaded_beneficiaries = await this.addBeneficiariesToProject(rows, project._id, currentUser);
 				}
-				await removeExcelFile(uploaded.file);
 			}
 			return { project, uploaded_beneficiaries };
 		} catch (err) {
