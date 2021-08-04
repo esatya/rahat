@@ -22,7 +22,7 @@ module.exports = {
   },
   addPermissions: (req) => Role.addPermission({
     id: req.params.id,
-    permissions: req.payload,
+    permissions: req.payload.permissions,
   }),
   removePermissions: (req) => Role.removePermission({
     id: req.params.id,

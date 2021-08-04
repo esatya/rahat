@@ -6,6 +6,7 @@ const { Institution } = require('./institution/institution.controllers');
 const { Role } = require('./user/role.controllers');
 const { User } = require('./user/user.controllers');
 const { App } = require('./app/app.controllers');
+const { Mobilizer } = require('./mobilizer/mobilizer.controllers');
 
 module.exports = {
   Agency,
@@ -16,4 +17,5 @@ module.exports = {
   Role,
   User,
   App,
+  Mobilizer,
 };

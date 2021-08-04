@@ -8,6 +8,7 @@ const role = require('./user/role.routes');
 const user = require('./user/user.routes');
 const setting = require('./app/app.routes');
 const transactions = require('./blockchain/blockchain.routes');
+const Mobilizer = require('./mobilizer/mobilizer.routes');
 
 module.exports = {
   setting,
@@ -20,4 +21,5 @@ module.exports = {
   role,
   user,
   transactions,
+  Mobilizer,
 };
