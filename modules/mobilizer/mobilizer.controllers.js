@@ -3,23 +3,22 @@ const { Types } = require('mongoose');
 const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
-const { VendorModel } = require('../models');
-const { TokenRedemption } = require('./vendorTokenRedemption.model');
-const { VendorConstants } = require('../../constants');
+const { MobilizerModel } = require('../models');
+const { MobilizerConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
-const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
-const tokenRedemptionModel = require('./vendorTokenRedemption.model');
+// const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
+// const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
 const logger = Logger.getInstance();
 
-const Vendor = {
+const Mobilizer = {
   async add(payload) {
     payload.agencies = [{ agency: payload.currentUser.agency }];
     const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return VendorModel.create(payload);
+    return MobilizerModel.create(payload);
   },
 
   async register(agencyId, payload) {
@@ -28,7 +27,7 @@ const Vendor = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return VendorModel.create(payload);
+    return MobilizerModel.create(payload);
   },
 
   decodeBase64Image(dataString) {
@@ -50,15 +49,15 @@ const Vendor = {
 
   // Approve after event from Blockchain
   async approve(wallet_address, currentUser) {
-    return VendorModel.findOneAndUpdate(
+    return MobilizerModel.findOneAndUpdate(
       { wallet_address, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
-      { $set: { 'agencies.$.status': VendorConstants.status.Active } },
+      { $set: { 'agencies.$.status': MobilizerConstants.status.Active } },
       { new: true },
     );
   },
   async changeStatus(id, payload, currentUser) {
     const { status } = payload;
-    return VendorModel.findOneAndUpdate(
+    return MobilizerModel.findOneAndUpdate(
       { _id: id, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
       { $set: { 'agencies.$.status': status } },
       { new: true },
@@ -66,11 +65,11 @@ const Vendor = {
   },
 
   getbyId(id, currentUser) {
-    return VendorModel.findOne({ _id: id });
+    return MobilizerModel.findOne({ _id: id });
   },
 
   getbyWallet(wallet_address, currentUser) {
-    return VendorModel.findOne({ wallet_address });
+    return MobilizerModel.findOne({ wallet_address });
   },
 
   list(query, currentUser) {
@@ -92,13 +91,13 @@ const Vendor = {
       start,
       limit,
       sort,
-      model: VendorModel,
+      model: MobilizerModel,
       query: [{ $match }],
     });
   },
 
   async remove(id, curUserId) {
-    const ben = await VendorModel.findOneAndUpdate(
+    const ben = await MobilizerModel.findOneAndUpdate(
       { _id: id },
       { is_archived: true, updated_by: curUserId },
       { new: true },
@@ -112,59 +111,59 @@ const Vendor = {
     delete payload.balance;
     delete payload.agency;
 
-    return VendorModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
+    return MobilizerModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
       new: true,
       runValidators: true,
     });
   },
-  countVendor(currentUser) {
+  countMobilizer(currentUser) {
     const query = { is_archived: false };
     query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
 
-    return VendorModel.find(query).countDocuments();
+    return MobilizerModel.find(query).countDocuments();
   },
 
-  async getTransactions(id, tokenAddress) {
-    const vendor = await this.getbyId(id);
-    const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
-    return transactions;
-  },
+  // async getTransactions(id, tokenAddress) {
+  //   const mobilizer = await this.getbyId(id);
+  //   const transactions = await tokenTransaction(tokenAddress, mobilizer.wallet_address);
+  //   return transactions;
+  // },
 
-  async addTokenRedemption(payload) {
-    return tokenRedemptionModel.create(payload);
-  },
+  // async addTokenRedemption(payload) {
+  //   return tokenRedemptionModel.create(payload);
+  // },
 
-  async countVendorTokenRedemption() {
-    // const query = { vendor_wallet: vendorWallet };
-    const total = await tokenRedemptionModel.aggregate([
-      { $group: { _id: '$vendor_wallet', totalSum: { $sum: '$amount' } } },
-    ]);
-    const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
-    return { totalTokenRedemption: totalToken, tokenRedemption: total };
-  },
+  // async countVendorTokenRedemption() {
+  //   // const query = { vendor_wallet: vendorWallet };
+  //   const total = await tokenRedemptionModel.aggregate([
+  //     { $group: { _id: '$vendor_wallet', totalSum: { $sum: '$amount' } } },
+  //   ]);
+  //   const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
+  //   return { totalTokenRedemption: totalToken, tokenRedemption: total };
+  // },
 };
 
 module.exports = {
-  Vendor,
-  add: (req) => Vendor.add(req.payload),
+  Mobilizer,
+  add: (req) => Mobilizer.add(req.payload),
   getbyId: (req) => {
     const { id } = req.params;
-    if (ethers.utils.isAddress(id)) return Vendor.getbyWallet(id, req.currentUser);
-    return Vendor.getbyId(req.params.id, req.currentUser);
+    if (ethers.utils.isAddress(id)) return Mobilizer.getbyWallet(id, req.currentUser);
+    return Mobilizer.getbyId(req.params.id, req.currentUser);
   },
-  list: (req) => Vendor.list(req.query, req.currentUser),
-  remove: (req) => Vendor.remove(req.params.id, req.currentUserId),
-  update: (req) => Vendor.update(req.params.id, req.payload),
-  approve: (req) => Vendor.approve(req.payload.wallet_address, req.currentUser),
-  changeStatus: (req) => Vendor.changeStatus(req.params.id, req.payload, req.currentUser),
+  list: (req) => Mobilizer.list(req.query, req.currentUser),
+  remove: (req) => Mobilizer.remove(req.params.id, req.currentUserId),
+  update: (req) => Mobilizer.update(req.params.id, req.payload),
+  approve: (req) => Mobilizer.approve(req.payload.wallet_address, req.currentUser),
+  changeStatus: (req) => Mobilizer.changeStatus(req.params.id, req.payload, req.currentUser),
   register: async (req) => {
-    const { _id: agencyId } = await Agency.getFirst();
-    return Vendor.register(agencyId, req.payload);
+    const { _id: agencyId } = await Agency.getFirst(); s;
+    return Mobilizer.register(agencyId, req.payload);
   },
-  getTransactions: async (req) => {
-    const {
-      contracts: { token: tokenAddress },
-    } = await Agency.getFirst();
-    return Vendor.getTransactions(req.params.id, tokenAddress);
-  },
+  // getTransactions: async (req) => {
+  //   const {
+  //     contracts: { token: tokenAddress },
+  //   } = await Agency.getFirst();
+  //   return Mobilizer.getTransactions(req.params.id, tokenAddress);
+  // },
 };

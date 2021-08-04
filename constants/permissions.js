@@ -29,6 +29,12 @@ module.exports = {
     REMOVE: 'institution_remove',
     ADMIN: 'institution_admin',
   },
+  MOBILIZER: {
+    READ: 'mobilizer_read',
+    WRITE: 'mobilizer_write',
+    REMOVE: 'mobilizer_remove',
+    ADMIN: 'mobilizer_admin',
+  },
   USER: {
     READ: 'user_read',
     WRITE: 'user_write',
