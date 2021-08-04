@@ -3,7 +3,7 @@ const { DataUtils } = require('../../helpers/utils');
 
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
-const { readExcelFile, removeExcelFile, uploadExcelFile } = require('../../helpers/utils/excelManager');
+const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
@@ -12,14 +12,17 @@ const Project = {
 			let uploaded_beneficiaries = 0;
 			const { file, currentUser } = payload;
 			payload.agency = currentUser.agency;
+			payload.financial_institutions = payload.financial_institutions
+				? payload.financial_institutions.split(',')
+				: [];
 			const project = await ProjectModel.create(payload);
 			if (file) {
-				const uploaded = await uploadExcelFile(file);
+				const uploaded = await uploadFile(file);
 				const rows = await readExcelFile(uploaded.file);
 				if (rows.length) {
+					await removeFile(uploaded.file);
 					uploaded_beneficiaries = await this.addBeneficiariesToProject(rows, project._id, currentUser);
 				}
-				await removeExcelFile(uploaded.file);
 			}
 			return { project, uploaded_beneficiaries };
 		} catch (err) {
@@ -131,6 +134,9 @@ const Project = {
 	update(id, payload) {
 		delete payload.status;
 		delete payload.agency;
+		if (payload.financial_institutions) {
+			payload.financial_institutions = payload.financial_institutions.split(',');
+		}
 		return ProjectModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
 			new: true,
 			runValidators: true

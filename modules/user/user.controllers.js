@@ -9,161 +9,189 @@ const { DataUtils } = require('../../helpers/utils');
 const { Role } = require('./role.controllers');
 
 const User = new RSUser.User({
-  mongoose,
-  controllers: {
-    role: Role,
-  },
-  schema: {
-    agency: { type: ObjectId, required: true, ref: 'Agency' },
-    wallet_address: { type: String, required: true, unique: true },
-  },
+	mongoose,
+	controllers: {
+		role: Role
+	},
+	schema: {
+		agency: { type: ObjectId, required: true, ref: 'Agency' },
+		wallet_address: { type: String, required: true, unique: true }
+	}
 });
 
 const controllers = {
-  User,
-  async loginWallet(req) {
-    const { payload } = req;
-    const { id, signature } = payload;
-    const client = ws.getClient(id);
-    if (!client) throw Error('WebSocket client does not exist.');
+	User,
+	async loginWallet(req) {
+		const { payload } = req;
+		const { id, signature } = payload;
+		const client = ws.getClient(id);
+		if (!client) throw Error('WebSocket client does not exist.');
 
-    const publicKey = ethers.utils.recoverAddress(ethers.utils.hashMessage(client.token), signature);
-    const user = await controllers.getByWalletAddress(publicKey);
+		const publicKey = ethers.utils.recoverAddress(ethers.utils.hashMessage(client.token), signature);
+		const user = await controllers.getByWalletAddress(publicKey);
 
-    if (user && !user.is_active) {
-      ws.sendToClient(id, { action: 'account-locked' });
-      return 'Your account is locked, please contact administrator.';
-    }
+		if (user && !user.is_active) {
+			ws.sendToClient(id, { action: 'account-locked' });
+			return 'Your account is locked, please contact administrator.';
+		}
 
-    if (!user) {
-      ws.sendToClient(id, { action: 'unauthorized', publicKey });
-      return 'You are unathorized to use this service';
-    }
+		if (!user) {
+			ws.sendToClient(id, { action: 'unauthorized', publicKey });
+			return 'You are unathorized to use this service';
+		}
 
-    const accessToken = await User.generateToken(user);
-    const authData = { action: 'access-granted', accessToken };
-    if (payload.encryptedWallet) authData.encryptedWallet = payload.encryptedWallet;
-    ws.sendToClient(id, authData);
-    return 'You have successfully logged on to Rahat Systems.';
-  },
+		const accessToken = await User.generateToken(user);
+		const authData = { action: 'access-granted', accessToken };
+		if (payload.encryptedWallet) authData.encryptedWallet = payload.encryptedWallet;
+		ws.sendToClient(id, authData);
+		return 'You have successfully logged on to Rahat Systems.';
+	},
 
-  setWalletAddress(userId, walletAddress) {
-    return User.update(userId, {
-      wallet_address: walletAddress,
-    });
-  },
+	setWalletAddress(userId, walletAddress) {
+		return User.update(userId, {
+			wallet_address: walletAddress
+		});
+	},
 
-  getByWalletAddress(walletAddress) {
-    return User.model.findOne({ wallet_address: walletAddress.toLowerCase() });
-  },
+	getByWalletAddress(walletAddress) {
+		return User.model.findOne({ wallet_address: walletAddress.toLowerCase() });
+	},
 
-  findById(request) {
-    const isObjectId = mongoose.Types.ObjectId;
+	findById(request) {
+		const isObjectId = mongoose.Types.ObjectId;
 
-    if (isObjectId.isValid(request.params.id)) {
-      return User.getById(request.params.id);
-    }
-    return controllers.getByWalletAddress(request.params.id);
-  },
+		if (isObjectId.isValid(request.params.id)) {
+			return User.getById(request.params.id);
+		}
+		return controllers.getByWalletAddress(request.params.id);
+	},
 
-  async addRoles(request) {
-    const userId = request.params.id;
-    const { roles } = request.payload;
-    const isValid = await Role.isValidRole(roles);
-    if (!isValid) throw Error('role does not exist');
-    return User.addRoles({ user_id: userId, roles });
-  },
+	async addRoles(request) {
+		const userId = request.params.id;
+		const { roles } = request.payload;
+		const isValid = await Role.isValidRole(roles);
+		if (!isValid) throw Error('role does not exist');
+		return User.addRoles({ user_id: userId, roles });
+	},
 
-  async update(request) {
-    const userId = request.params.id;
-    const data = request.payload;
-    return User.update(userId, data);
-  },
+	async update(request) {
+		const userId = request.params.id;
+		const data = request.payload;
+		return User.update(userId, data);
+	},
 
-  list(request) {
-    let {
-      start, limit, sort, filter, name, paging = true,
-    } = request.query;
-    const query = [];
-    const $match = {};
-    if (filter) query.push({ $match: filter });
-    if (name) {
-      query.push({
-        $match: {
-          'name.first': { $regex: new RegExp(`${name}`), $options: 'i' },
-        },
-      });
-    }
+	async listByRole(req) {
+		const { limit = 500, start = 0 } = req.query;
+		const { role } = req.params;
+		const query = [
+			{
+				$match: {
+					roles: {
+						$in: [role]
+					}
+				}
+			},
+			{
+				$project: {
+					name: 1,
+					_id: 1,
+					wallet_address: 1,
+					fullname: { $concat: ['$name.first', ' ', '$name.last'] }
+				}
+			}
+		];
 
-    query.push(
-      {
-        $addFields: { full_name: { $concat: ['$name.first', ' ', '$name.last'] } },
-      },
-      {
-        $unset: ['password'],
-      },
-    );
-    sort = sort || { 'name.first': 1 };
+		return DataUtils.paging({
+			start,
+			limit,
+			sort: { 'name.first': 1 },
+			model: User.model,
+			query
+		});
+	},
 
-    if (paging) {
-      return DataUtils.paging({
-        start,
-        limit,
-        sort,
-        model: User.model,
-        query,
-      });
-    }
+	list(request) {
+		let { start, limit, sort, filter, name, paging = true } = request.query;
+		const query = [];
+		const $match = {};
+		if (filter) query.push({ $match: filter });
+		if (name) {
+			query.push({
+				$match: {
+					'name.first': { $regex: new RegExp(`${name}`), $options: 'i' }
+				}
+			});
+		}
 
-    query.push({ $sort: sort });
-    return User.model.aggregate(query);
-  },
+		query.push(
+			{
+				$addFields: { full_name: { $concat: ['$name.first', ' ', '$name.last'] } }
+			},
+			{
+				$unset: ['password']
+			}
+		);
+		sort = sort || { 'name.first': 1 };
 
-  async checkUser(request) {
-    const data = request.payload;
-    if (!data.wallet_address) data.wallet_address = '';
-    if (!data.phone) data.phone = '';
-    if (!data.email) data.email = '';
-    data.wallet_address = data.wallet_address.toLowerCase();
-    const [user] = await User.model.find({
-      $or: [{ wallet_address: data.wallet_address }, { email: data.email }, { phone: data.phone }],
-    });
-    if (user) {
-      if (user.phone === data.phone) throw new Error('Phone Number Already Exists');
-      if (user.wallet_address.toLowerCase() === data.wallet_address.toLowerCase()) {
-        throw Error('Wallet Address Already Exists');
-      }
-      if (user.email === data.email) throw Error('Email Already Exists');
-      return false;
-    }
-    return { isNew: true };
-  },
+		if (paging) {
+			return DataUtils.paging({
+				start,
+				limit,
+				sort,
+				model: User.model,
+				query
+			});
+		}
 
-  async add(request) {
-    const data = request.payload;
-    try {
-      await controllers.checkUser(request);
-      data.wallet_address = data.wallet_address.toLowerCase();
-      const user = await User.create(data);
-      return user;
-    } catch (e) {
-      return e;
-    }
-  },
+		query.push({ $sort: sort });
+		return User.model.aggregate(query);
+	},
 
-  async auth(request) {
-    try {
-      const token = request.query.access_token || request.headers.access_token || request.cookies.access_token;
-      const { user, permissions } = await User.validateToken(token);
+	async checkUser(request) {
+		const data = request.payload;
+		if (!data.wallet_address) data.wallet_address = '';
+		if (!data.phone) data.phone = '';
+		if (!data.email) data.email = '';
+		data.wallet_address = data.wallet_address.toLowerCase();
+		const [user] = await User.model.find({
+			$or: [{ wallet_address: data.wallet_address }, { email: data.email }, { phone: data.phone }]
+		});
+		if (user) {
+			if (user.phone === data.phone) throw new Error('Phone Number Already Exists');
+			if (user.wallet_address.toLowerCase() === data.wallet_address.toLowerCase()) {
+				throw Error('Wallet Address Already Exists');
+			}
+			if (user.email === data.email) throw Error('Email Already Exists');
+			return false;
+		}
+		return { isNew: true };
+	},
 
-      return {
-        user,
-        permissions,
-      };
-    } catch (e) {
-      throw Error(`ERROR: ${e}`);
-    }
-  },
+	async add(request) {
+		const data = request.payload;
+		try {
+			await controllers.checkUser(request);
+			data.wallet_address = data.wallet_address.toLowerCase();
+			const user = await User.create(data);
+			return user;
+		} catch (e) {
+			return e;
+		}
+	},
+
+	async auth(request) {
+		try {
+			const token = request.query.access_token || request.headers.access_token || request.cookies.access_token;
+			const { user, permissions } = await User.validateToken(token);
+
+			return {
+				user,
+				permissions
+			};
+		} catch (e) {
+			throw Error(`ERROR: ${e}`);
+		}
+	}
 };
 
 module.exports = controllers;
