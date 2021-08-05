@@ -6,6 +6,7 @@ const { DataUtils } = require('../../helpers/utils');
 const { MobilizerModel } = require('../models');
 const { MobilizerConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
+const UserController = require('../user/user.controllers');
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
@@ -49,6 +50,11 @@ const Mobilizer = {
 
   // Approve after event from Blockchain
   async approve(wallet_address, currentUser) {
+    const { name, email, phone } = await this.getbyWallet(wallet_address);
+    const userData = {
+      name, email, phone, wallet_address, agency: currentUser.agency, roles: 'manager',
+    };
+    await UserController.add({ payload: userData });
     return MobilizerModel.findOneAndUpdate(
       { wallet_address, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
       { $set: { 'agencies.$.status': MobilizerConstants.status.Active } },
@@ -64,11 +70,11 @@ const Mobilizer = {
     );
   },
 
-  getbyId(id, currentUser) {
+  getbyId(id) {
     return MobilizerModel.findOne({ _id: id });
   },
 
-  getbyWallet(wallet_address, currentUser) {
+  getbyWallet(wallet_address) {
     return MobilizerModel.findOne({ wallet_address });
   },
 
