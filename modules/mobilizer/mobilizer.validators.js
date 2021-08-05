@@ -62,6 +62,7 @@ module.exports = {
       wallet_address: Mobilizer.wallet_address.example('0x172d77Ff5cB061FE2dc77C149f5608789152d642'),
       email: Mobilizer.email.example('rastra@gmail.com'),
       address: Mobilizer.address.example('nepal'),
+      organization: Mobilizer.organization.example('rumsan'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
       photo: Joi.string().description('Photo').optional(),

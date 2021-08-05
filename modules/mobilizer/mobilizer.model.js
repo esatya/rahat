@@ -9,6 +9,9 @@ const schema = {
   name: {
     type: String, required: true, trim: true, description: 'Name of Mobilizer',
   },
+  organization: {
+    type: String, trim: true, description: 'Name of Organization mobilizer is involved with',
+  },
   wallet_address: {
     type: String, required: true, trim: true, lowercase: true, description: 'Mobilizer wallet address',
   },
