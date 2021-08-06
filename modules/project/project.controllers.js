@@ -4,6 +4,7 @@ const { DataUtils } = require('../../helpers/utils');
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
+const { getByWalletAddress } = require('../user/user.controllers');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
@@ -30,7 +31,6 @@ const Project = {
 		}
 	},
 
-	// TODO: remove temp wallet address
 	async addBeneficiariesToProject(rows, projectId, currentUser) {
 		// SKIP HEADER
 		let upload_counter = 0;
@@ -56,17 +56,31 @@ const Project = {
 
 	async changeStatus(id, payload) {
 		const { status, updated_by } = payload;
-		const project = await ProjectModel.findOneAndUpdate(
+		let project = await ProjectModel.findOneAndUpdate(
 			{ _id: id, is_archived: false },
 			{ status, updated_by },
 			{ new: true, runValidators: true }
 		);
+		if (project && project.project_manager) {
+			project = await this.appendProjectManager(project, project.project_manager);
+		}
 		// TODO implement blockchain function using project._id
 		return project;
 	},
 
-	getById(id) {
-		return ProjectModel.findOne({ _id: id });
+	async appendProjectManager(doc, project_manager) {
+		const existing_doc = doc.toObject();
+		const user = await getByWalletAddress(project_manager);
+		existing_doc.project_manager = user || null;
+		return existing_doc;
+	},
+
+	async getById(id) {
+		let doc = await ProjectModel.findOne({ _id: id });
+		if (doc && doc.project_manager) {
+			doc = await this.appendProjectManager(doc, doc.project_manager);
+		}
+		return doc;
 	},
 
 	async addTokenAllocation(id, payload) {
