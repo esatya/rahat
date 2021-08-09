@@ -44,6 +44,7 @@ module.exports = {
   approve: {
     payload: Joi.object({
       wallet_address: Joi.string().required().example('0x00'),
+      projectId: Joi.string(),
     }),
   },
   changeStatus: {
