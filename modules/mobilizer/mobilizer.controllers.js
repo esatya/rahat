@@ -6,6 +6,7 @@ const { DataUtils } = require('../../helpers/utils');
 const { MobilizerModel } = require('../models');
 const { MobilizerConstants } = require('../../constants');
 const { Agency } = require('../agency/agency.controllers');
+const UserController = require('../user/user.controllers');
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
@@ -48,10 +49,16 @@ const Mobilizer = {
   },
 
   // Approve after event from Blockchain
-  async approve(wallet_address, currentUser) {
+  async approve(wallet_address, projectId, currentUser) {
+    const { name, email, phone } = await this.getbyWallet(wallet_address);
+    const userData = {
+      name, email, phone, wallet_address, agency: currentUser.agency, roles: 'Manager',
+    };
+    const projects = { project: projectId, status: 'active' };
+    await UserController.add({ payload: userData });
     return MobilizerModel.findOneAndUpdate(
       { wallet_address, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
-      { $set: { 'agencies.$.status': MobilizerConstants.status.Active } },
+      { $set: { 'agencies.$.status': MobilizerConstants.status.Active }, $addToSet: { projects } },
       { new: true },
     );
   },
@@ -64,12 +71,12 @@ const Mobilizer = {
     );
   },
 
-  getbyId(id, currentUser) {
-    return MobilizerModel.findOne({ _id: id });
+  getbyId(id) {
+    return MobilizerModel.findOne({ _id: id }).populate('projects.project');
   },
 
-  getbyWallet(wallet_address, currentUser) {
-    return MobilizerModel.findOne({ wallet_address });
+  getbyWallet(wallet_address) {
+    return MobilizerModel.findOne({ wallet_address }).populate('projects.project');
   },
 
   list(query, currentUser) {
@@ -154,10 +161,10 @@ module.exports = {
   list: (req) => Mobilizer.list(req.query, req.currentUser),
   remove: (req) => Mobilizer.remove(req.params.id, req.currentUserId),
   update: (req) => Mobilizer.update(req.params.id, req.payload),
-  approve: (req) => Mobilizer.approve(req.payload.wallet_address, req.currentUser),
+  approve: (req) => Mobilizer.approve(req.payload.wallet_address, req.payload.projectId, req.currentUser),
   changeStatus: (req) => Mobilizer.changeStatus(req.params.id, req.payload, req.currentUser),
   register: async (req) => {
-    const { _id: agencyId } = await Agency.getFirst(); s;
+    const { _id: agencyId } = await Agency.getFirst();
     return Mobilizer.register(agencyId, req.payload);
   },
   // getTransactions: async (req) => {
