@@ -11,7 +11,7 @@ const GetAddressFromSignature = (signatureWithData) => {
   const [data, signature] = signatureWithData.split('.');
   const dateDiff = (Date.now() - parseInt(data, 10)) / 1000;
 
-  if (dateDiff > config.get('app.signatureValidityMinutes')) throw Error('Signature has expired.');
+  if (dateDiff > config.get('app.signatureValidity')) throw Error('Signature has expired.');
   return ethers.utils.verifyMessage(data, signature);
 };
 
@@ -19,8 +19,7 @@ const Secure = async (reoutePermissions, req) => {
   if (reoutePermissions.length === 0) return true;
 
   const token = req.query.access_token || req.headers.access_token;
-  const authSignature = req.query.authSignature || req.headers.authSignature;
-
+  const authSignature = req.query.auth_signature || req.headers.auth_signature;
   let user;
   let permissions;
   const updateUserReq = async () => {
@@ -43,7 +42,6 @@ const Secure = async (reoutePermissions, req) => {
 
   if (authSignature) {
     const wallet_address = GetAddressFromSignature(authSignature);
-
     user = await getByWalletAddress(wallet_address);
     return updateUserReq();
   }
