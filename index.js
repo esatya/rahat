@@ -34,7 +34,7 @@ const server = new Hapi.Server({
   routes: {
     cors: {
       origin: config.has('app.cors') ? config.get('app.cors') : ['*'],
-      additionalHeaders: ['cache-control', 'x-requested-with', 'access_token'],
+      additionalHeaders: ['cache-control', 'x-requested-with', 'access_token', 'auth_signature', 'data_signature'],
     },
     files: {
       relativeTo: path.join(__dirname, 'public/build'),

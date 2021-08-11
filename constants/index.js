@@ -40,6 +40,13 @@ module.exports = {
       Suspended: 'suspended',
     },
   },
+  MobilizerConstants: {
+    status: {
+      New: 'new',
+      Active: 'active',
+      Suspended: 'suspended',
+    },
+  },
   TransactionConstants: {
     status: {
       New: 'new', Signed: 'signed', Pending: 'pending', Rejected: 'rejected', Error: 'error', Complete: 'complete',
