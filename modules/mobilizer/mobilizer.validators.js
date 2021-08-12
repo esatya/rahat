@@ -18,6 +18,7 @@ module.exports = {
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
       photo: Joi.string().description('Photo').optional(),
+      organization: Mobilizer.organization.example('rumsan'),
     }).label('Mobilizer'),
   },
   getbyId: {
