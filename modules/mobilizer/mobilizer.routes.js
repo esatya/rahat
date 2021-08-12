@@ -16,7 +16,7 @@ const routes = {
   getbyId: [
     'GET', '/{id}',
     'Get an MOBILIZER by Wallet Adress or id.',
-    [VENDOR.WRITE, VENDOR.ADMIN],
+
   ],
   update: [
     'PUT', '/{id}',
