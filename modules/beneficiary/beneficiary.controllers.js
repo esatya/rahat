@@ -1,10 +1,13 @@
 const ObjectId = require('mongodb').ObjectID;
+const mongoose = require('mongoose');
 const app = require('../../app');
 const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { BeneficiaryModel, TokenRedemptionModel, TokenDistributionModel } = require('../models');
 
 const logger = Logger.getInstance();
+
+const isObjectId = mongoose.Types.ObjectId;
 
 const Beneficiary = {
   async add(payload) {
@@ -24,8 +27,20 @@ const Beneficiary = {
     );
   },
 
-  getbyId(id) {
-    return BeneficiaryModel.findOne({ _id: id, is_archived: false });
+  async getbyId(id) {
+    let ben;
+    if (isObjectId.isValid(id)) {
+      ben = await BeneficiaryModel.findOne({ _id: id, is_archived: false });
+      if (!ben) {
+        return false;
+      }
+      return ben;
+    }
+    ben = await BeneficiaryModel.findOne({ phone: id, is_archived: false });
+    if (!ben) {
+      return false;
+    }
+    return ben;
   },
 
   getbyWallet(wallet_address) {

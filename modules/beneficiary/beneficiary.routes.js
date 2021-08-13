@@ -15,7 +15,7 @@ const routes = {
   ],
   getbyId: [
     'GET', '/{id}',
-    'Get an beneficiary by Wallet Adress or id.',
+    'Get an beneficiary by Phone , Wallet Adress or id.',
     [BENEFICIARY.READ, BENEFICIARY.ADMIN],
   ],
   update: [
