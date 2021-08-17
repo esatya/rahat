@@ -17,7 +17,7 @@ module.exports = {
 			govt_id: Joi.string().allow('').optional().example('9799'),
 			govt_id_image: Joi.string().allow('').optional().example('http://source'),
 			photo: Joi.string().allow('').optional().example('http://source'),
-			project_id: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8'),
+			projects: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8,2f6b2f815685931cbfe4dad7'),
 			extras: Joi.object().optional()
 		}).label('Beneficiary')
 	},
@@ -40,7 +40,7 @@ module.exports = {
 			govt_id: Joi.string().allow('').optional().example('9799'),
 			govt_id_image: Joi.string().allow('').optional().example('http://source'),
 			photo: Joi.string().allow('').optional().example('http://source'),
-			project_id: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8'),
+			projects: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8,2f6b2f815685931cbfe4dad7'),
 			extras: Joi.object().optional()
 		}).label('Beneficiary')
 	},
