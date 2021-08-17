@@ -12,7 +12,7 @@ const isObjectId = mongoose.Types.ObjectId;
 const Beneficiary = {
 	async add(payload) {
 		payload.agency = payload.currentUser.agency;
-		if (payload.project_id) payload.projects = [payload.project_id];
+		payload.projects = payload.projects ? payload.projects.split(',') : [];
 		return BeneficiaryModel.create(payload);
 	},
 
@@ -85,6 +85,7 @@ const Beneficiary = {
 		delete payload.status;
 		delete payload.balance;
 		delete payload.agency;
+		if (payload.projects) payload.projects = payload.projects.split(',');
 
 		return BeneficiaryModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
 			new: true,
