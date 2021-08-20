@@ -36,6 +36,7 @@ const schema = {
 	bank_name: { type: String, joi: Joi.string().allow('').optional().description('Bank name') },
 	bank_branch: { type: String, joi: Joi.string().allow('').optional().description('Bank branch name') },
 	bank_account: { type: String, joi: Joi.string().allow('').optional().description('Bank account number') },
+	education: { type: String, joi: Joi.string().allow('').optional().description('Vendor eductaion') },
 	govt_id_image: {
 		type: String,
 		joi: Joi.string().uri().optional().description('Vendor government issued ID image url')

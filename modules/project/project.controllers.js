@@ -115,9 +115,24 @@ const Project = {
 		);
 	},
 
-	list(query, currentUser) {
+	async addProjectManageDetails(projects) {
+		const appended_result = [];
+		for (const p of projects) {
+			if (p.project_manager) {
+				const user = await getByWalletAddress(p.project_manager);
+				if (user) p.project_manager = user;
+				else p.project_manager = null;
+				appended_result.push(p);
+			} else {
+				appended_result.push(p);
+			}
+		}
+		return appended_result;
+	},
+
+	async list(query, currentUser) {
 		const start = query.start || 0;
-		const limit = query.limit || 20;
+		const limit = query.limit || 10;
 
 		let $match = { is_archived: false };
 		if (query.show_archive) $match = {};
@@ -125,13 +140,19 @@ const Project = {
 		if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
 		if (query.status) $match.status = query.status;
 
-		return DataUtils.paging({
+		const result = await DataUtils.paging({
 			start,
 			limit,
-			sort: { name: 1 },
+			sort: { created_at: -1 },
 			model: ProjectModel,
 			query: [{ $match }]
 		});
+
+		if (result && result.data.length) {
+			const appended = await this.addProjectManageDetails(result.data);
+			result.data = appended;
+		}
+		return result;
 	},
 
 	async remove(id, currentUser) {
