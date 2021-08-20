@@ -24,6 +24,7 @@ module.exports = {
 			bank_account: Vendor.bank_account.example('2354394935034395'),
 			projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
 			govt_id_image: Vendor.govt_id_image,
+			education: Vendor.education,
 			extra_files: Joi.object().keys({
 				identity_photo: Joi.string().optional(),
 				signature_photo: Joi.string().optional(),
@@ -57,6 +58,7 @@ module.exports = {
 			bank_account: Vendor.bank_account.example('2354394935034395'),
 			projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
 			govt_id_image: Vendor.govt_id_image,
+			education: Vendor.education,
 			extra_files: Joi.object().keys({
 				identity_photo: Joi.string().optional(),
 				signature_photo: Joi.string().optional(),

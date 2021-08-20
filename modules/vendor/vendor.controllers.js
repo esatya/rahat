@@ -25,11 +25,30 @@ const Vendor = {
 				const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(photo).data);
 				payload.photo = ipfsPhotoHash;
 			}
+			if (payload.extra_files) payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
 			payload.projects = payload.projects ? payload.projects.split(',') : [];
 			return VendorModel.create(payload);
 		} catch (err) {
 			throw Error(err);
 		}
+	},
+
+	async uploadExtraFiles(extra_files) {
+		const result = {};
+		const { identity_photo, signature_photo, mou_file } = extra_files;
+		if (identity_photo) {
+			const decoded = this.decodeBase64Image(identity_photo);
+			result.identity_photo = await this.uploadToIpfs(decoded.data);
+		}
+		if (signature_photo) {
+			const decoded = this.decodeBase64Image(signature_photo);
+			result.signature_photo = await this.uploadToIpfs(decoded.data);
+		}
+		if (mou_file) {
+			const decoded = this.decodeBase64Image(mou_file);
+			result.mou_file = await this.uploadToIpfs(decoded.data);
+		}
+		return result;
 	},
 
 	async register(agencyId, payload) {
