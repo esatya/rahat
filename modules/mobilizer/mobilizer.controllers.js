@@ -39,7 +39,7 @@ const Mobilizer = {
       return new Error('Invalid input string');
     }
     response.type = matches[1];
-    response.data = new Buffer(matches[2], 'base64');
+    response.data = Buffer.from(matches[2], 'base64');
     return response;
   },
   async uploadToIpfs(file) {
@@ -52,7 +52,7 @@ const Mobilizer = {
   async approve(wallet_address, projectId, currentUser) {
     const { name, email, phone } = await this.getbyWallet(wallet_address);
     const userData = {
-      name, email, phone, wallet_address, agency: currentUser.agency, roles: 'Manager',
+      name, email, phone, wallet_address, agency: currentUser.agency, roles: 'Mobilizer',
     };
     const projects = { project: projectId, status: 'active' };
     await UserController.add({ payload: userData });
