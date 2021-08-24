@@ -26,9 +26,9 @@ module.exports = {
 			govt_id_image: Vendor.govt_id_image,
 			education: Vendor.education,
 			extra_files: Joi.object().keys({
-				identity_photo: Joi.string().optional(),
-				signature_photo: Joi.string().optional(),
-				mou_file: Joi.string().optional()
+				identity_photo: Joi.string().allow('').allow(null).optional(),
+				signature_photo: Joi.string().allow('').allow(null).optional(),
+				mou_file: Joi.string().allow('').allow(null).optional()
 			})
 		}).label('Vendor')
 	},
@@ -60,9 +60,9 @@ module.exports = {
 			govt_id_image: Vendor.govt_id_image,
 			education: Vendor.education,
 			extra_files: Joi.object().keys({
-				identity_photo: Joi.string().optional(),
-				signature_photo: Joi.string().optional(),
-				mou_file: Joi.string().optional()
+				identity_photo: Joi.string().allow('').allow(null).optional(),
+				signature_photo: Joi.string().allow('').allow(null).optional(),
+				mou_file: Joi.string().allow('').allow(null).optional()
 			})
 		}).label('Vendor')
 	},
