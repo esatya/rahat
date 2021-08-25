@@ -25,11 +25,12 @@ module.exports = {
 			projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
 			govt_id_image: Vendor.govt_id_image,
 			education: Vendor.education,
-			extra_files: Joi.object().keys({
-				identity_photo: Joi.string().allow('').allow(null).optional(),
-				signature_photo: Joi.string().allow('').allow(null).optional(),
-				mou_file: Joi.string().allow('').allow(null).optional()
-			})
+			extra_files: Joi.object()
+				.optional()
+				.keys({
+					signature_photo: Joi.string().allow('').allow(null).optional(),
+					mou_file: Joi.string().allow('').allow(null).optional()
+				})
 		}).label('Vendor')
 	},
 	getbyId: {
@@ -59,11 +60,12 @@ module.exports = {
 			projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
 			govt_id_image: Vendor.govt_id_image,
 			education: Vendor.education,
-			extra_files: Joi.object().keys({
-				identity_photo: Joi.string().allow('').allow(null).optional(),
-				signature_photo: Joi.string().allow('').allow(null).optional(),
-				mou_file: Joi.string().allow('').allow(null).optional()
-			})
+			extra_files: Joi.object()
+				.optional()
+				.keys({
+					signature_photo: Joi.string().allow('').allow(null).optional(),
+					mou_file: Joi.string().allow('').allow(null).optional()
+				})
 		}).label('Vendor')
 	},
 

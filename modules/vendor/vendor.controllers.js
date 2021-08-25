@@ -19,13 +19,20 @@ const Vendor = {
 		try {
 			payload.agencies = [{ agency: payload.currentUser.agency }];
 			const { govt_id_image, photo } = payload;
+
 			if (govt_id_image) {
-				const govt_img_hash = await this.uploadToIpfs(this.decodeBase64Image(govt_id_image).data);
-				payload.govt_id_image = govt_img_hash;
+				const decoded = this.decodeBase64Image(govt_id_image);
+				if (decoded.data) {
+					const govt_img_hash = await this.uploadToIpfs(decoded.data);
+					payload.govt_id_image = govt_img_hash;
+				}
 			}
 			if (photo) {
-				const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(photo).data);
-				payload.photo = ipfsPhotoHash;
+				const decoded = this.decodeBase64Image(photo);
+				if (decoded.data) {
+					const ipfsPhotoHash = await this.uploadToIpfs(decoded.data);
+					payload.photo = [ipfsPhotoHash];
+				}
 			}
 			if (payload.extra_files) payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
 			payload.projects = payload.projects ? payload.projects.split(',') : [];
@@ -37,18 +44,14 @@ const Vendor = {
 
 	async uploadExtraFiles(extra_files) {
 		const result = {};
-		const { identity_photo, signature_photo, mou_file } = extra_files;
-		if (identity_photo) {
-			const decoded = this.decodeBase64Image(identity_photo);
-			result.identity_photo = await this.uploadToIpfs(decoded.data);
-		}
+		const { signature_photo, mou_file } = extra_files;
 		if (signature_photo) {
 			const decoded = this.decodeBase64Image(signature_photo);
-			result.signature_photo = await this.uploadToIpfs(decoded.data);
+			if (decoded.data) result.signature_photo = await this.uploadToIpfs(decoded.data);
 		}
 		if (mou_file) {
 			const decoded = this.decodeBase64Image(mou_file);
-			result.mou_file = await this.uploadToIpfs(decoded.data);
+			if (decoded.data) result.mou_file = await this.uploadToIpfs(decoded.data);
 		}
 		return result;
 	},
@@ -139,10 +142,33 @@ const Vendor = {
 		return ben;
 	},
 
-	update(id, payload) {
+	async update(id, payload) {
 		delete payload.status;
 		delete payload.balance;
 		delete payload.agency;
+
+		const existingDoc = await this.getbyId(id);
+		const { extra_files } = existingDoc;
+
+		if (payload.projects) payload.projects = payload.projects.split(',');
+		const { govt_id_image, photo } = payload;
+
+		if (govt_id_image) {
+			const decoded = this.decodeBase64Image(govt_id_image);
+			if (decoded.data) {
+				const govt_img_hash = await this.uploadToIpfs(decoded.data);
+				payload.govt_id_image = govt_img_hash;
+			}
+		}
+		if (photo) {
+			const decoded = this.decodeBase64Image(photo);
+			if (decoded.data) {
+				const ipfsPhotoHash = await this.uploadToIpfs(decoded.data);
+				payload.photo = ipfsPhotoHash;
+			}
+		}
+		const uploaded_files = await this.uploadExtraFiles(payload.extra_files);
+		if (payload.extra_files) payload.extra_files = { ...extra_files, ...uploaded_files };
 
 		return VendorModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
 			new: true,
