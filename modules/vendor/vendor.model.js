@@ -42,7 +42,6 @@ const schema = {
 		joi: Joi.string().uri().optional().description('Vendor government issued ID image url')
 	},
 	extra_files: {
-		identity_photo: String,
 		signature_photo: String,
 		mou_file: String
 	},
