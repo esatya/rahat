@@ -15,12 +15,18 @@ const Beneficiary = {
 		payload.agency = payload.currentUser.agency;
 		payload.projects = payload.projects ? payload.projects.split(',') : [];
 		if (payload.govt_id_image) {
-			const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
-			payload.govt_id_image = ipfsIdHash;
+			const decoded = await this.decodeBase64Image(payload.govt_id_image);
+			if (decoded.data) {
+				const ipfsIdHash = await this.uploadToIpfs(decoded.data);
+				payload.govt_id_image = ipfsIdHash;
+			}
 		}
 		if (payload.photo) {
-			const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
-			payload.photo = ipfsPhotoHash;
+			const decoded = await this.decodeBase64Image(payload.photo);
+			if (decoded.data) {
+				const ipfsPhotoHash = await this.uploadToIpfs(decoded.data);
+				payload.photo = ipfsPhotoHash;
+			}
 		}
 
 		return BeneficiaryModel.create(payload);
@@ -108,11 +114,26 @@ const Beneficiary = {
 		return ben;
 	},
 
-	update(id, payload) {
+	async update(id, payload) {
 		delete payload.status;
 		delete payload.balance;
 		delete payload.agency;
 		if (payload.projects) payload.projects = payload.projects.split(',');
+
+		if (payload.govt_id_image) {
+			const decoded = await this.decodeBase64Image(payload.govt_id_image);
+			if (decoded.data) {
+				const ipfsIdHash = await this.uploadToIpfs(decoded.data);
+				payload.govt_id_image = ipfsIdHash;
+			}
+		}
+		if (payload.photo) {
+			const decoded = await this.decodeBase64Image(payload.photo);
+			if (decoded.data) {
+				const ipfsPhotoHash = await this.uploadToIpfs(decoded.data);
+				payload.photo = ipfsPhotoHash;
+			}
+		}
 
 		return BeneficiaryModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
 			new: true,

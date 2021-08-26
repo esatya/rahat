@@ -6,6 +6,7 @@ const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
 const { Vendor } = require('../vendor/vendor.controllers');
 const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
 const { getByWalletAddress } = require('../user/user.controllers');
+const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
