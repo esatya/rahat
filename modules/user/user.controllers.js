@@ -80,6 +80,36 @@ const controllers = {
     return User.update(userId, data);
   },
 
+  async listByRole(req) {
+    const { limit = 500, start = 0 } = req.query;
+    const { role } = req.params;
+    const query = [
+      {
+        $match: {
+          roles: {
+            $in: [role],
+          },
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          _id: 1,
+          wallet_address: 1,
+          fullname: { $concat: ['$name.first', ' ', '$name.last'] },
+        },
+      },
+    ];
+
+    return DataUtils.paging({
+      start,
+      limit,
+      sort: { 'name.first': 1 },
+      model: User.model,
+      query,
+    });
+  },
+
   list(request) {
     let {
       start, limit, sort, filter, name, paging = true,
@@ -142,7 +172,7 @@ const controllers = {
   async add(request) {
     const data = request.payload;
     try {
-      await controllers.checkUser(request);
+      //   await controllers.checkUser(request);
       data.wallet_address = data.wallet_address.toLowerCase();
       const user = await User.create(data);
       return user;
@@ -167,3 +197,14 @@ const controllers = {
 };
 
 module.exports = controllers;
+
+// module.exports = {
+//   userControllers,
+//   loginWallet: (req) => userControllers.loginWallet(req.payload),
+//   findById: (req) => {
+//     const { id } = req.params;
+//     if (ethers.utils.isAddress(id)) return userControllers.getByWalletAddress(id, req.currentUser);
+//     return userControllers.findById(req.params.id, req.currentUser);
+//   },
+//   list: (req) => userControllers.list(req.query),
+// };
