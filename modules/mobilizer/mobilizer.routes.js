@@ -5,7 +5,7 @@ const { MOBILIZER, VENDOR } = require('../../constants/permissions');
 const routes = {
   list: [
     'GET', '',
-    'List all vendors.',
+    'List all Mobilizers.',
     [VENDOR.READ, VENDOR.ADMIN],
   ],
   add: [
