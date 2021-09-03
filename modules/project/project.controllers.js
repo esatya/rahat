@@ -3,8 +3,10 @@ const { DataUtils } = require('../../helpers/utils');
 
 const { ProjectModel } = require('../models');
 const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
+const { Vendor } = require('../vendor/vendor.controllers');
 const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
 const { getByWalletAddress } = require('../user/user.controllers');
+const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 
 const Project = {
 	// TODO: implement blockchain function using project._id
@@ -224,6 +226,10 @@ module.exports = {
 	listBeneficiaries: req => {
 		req.query.projectId = req.params.id;
 		return Beneficiary.list(req.query, req.currentUser);
+	},
+	listVendors: req => {
+		req.query.projectId = req.params.id;
+		return Vendor.list(req.query, req.currentUser);
 	},
 	remove: req => Project.remove(req.params.id, req.currentUser),
 	update: req => Project.update(req.params.id, req.payload, req.currentUser)
