@@ -1,6 +1,6 @@
 const validators = require('./project.validators');
 const controllers = require('./project.controllers');
-const { PROJECT, BENEFICIARY } = require('../../constants/permissions');
+const { PROJECT, BENEFICIARY, VENDOR } = require('../../constants/permissions');
 
 const UPLOAD_SIZE_MB = 10;
 
@@ -36,7 +36,8 @@ const routes = {
 		'/{id}/beneficiaries',
 		'List beneficiaries registered to the project',
 		[BENEFICIARY.READ, BENEFICIARY.ADMIN]
-	]
+	],
+	listVendors: ['GET', '/{id}/vendors', 'List vendors registered to the project', [VENDOR.READ, VENDOR.ADMIN]]
 };
 
 /**
