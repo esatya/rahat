@@ -29,13 +29,12 @@ const controllers = {
 
     const publicKey = ethers.utils.recoverAddress(ethers.utils.hashMessage(client.token), signature);
     const user = await controllers.getByWalletAddress(publicKey);
-
     if (user && !user.is_active) {
-      ws.sendToClient(id, { action: 'account-locked' });
+      ws.sendToClient(id, { action: 'account-locked', publicKey });
       return 'Your account is locked, please contact administrator.';
     }
 
-    if (!user) {
+    if (!user || !user.roles) {
       ws.sendToClient(id, { action: 'unauthorized', publicKey });
       return 'You are unathorized to use this service';
     }
@@ -61,7 +60,7 @@ const controllers = {
     const isObjectId = mongoose.Types.ObjectId;
 
     if (isObjectId.isValid(request.params.id)) {
-      return User.getById(request.params.id);
+      return User.model.findOne({ _id: request.params.id });
     }
     return controllers.getByWalletAddress(request.params.id);
   },
@@ -71,6 +70,7 @@ const controllers = {
     const { roles } = request.payload;
     const isValid = await Role.isValidRole(roles);
     if (!isValid) throw Error('role does not exist');
+    await User.model.findByIdAndUpdate(userId, { is_active: true });
     return User.addRoles({ user_id: userId, roles });
   },
 
@@ -171,6 +171,19 @@ const controllers = {
 
   async add(request) {
     const data = request.payload;
+    try {
+      //   await controllers.checkUser(request);
+      data.wallet_address = data.wallet_address.toLowerCase();
+      const user = await User.create(data);
+      return user;
+    } catch (e) {
+      return e;
+    }
+  },
+
+  async register(request) {
+    const data = request.payload;
+    data.is_active = false;
     try {
       //   await controllers.checkUser(request);
       data.wallet_address = data.wallet_address.toLowerCase();
