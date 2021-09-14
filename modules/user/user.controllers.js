@@ -139,7 +139,7 @@ const controllers = {
       return DataUtils.paging({
         start,
         limit,
-        sort,
+        sort: { created_at: -1 },
         model: User.model,
         query,
       });
