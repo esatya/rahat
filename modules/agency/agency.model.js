@@ -18,6 +18,14 @@ const schema = {
     rahat_admin: { type: String },
     token: { type: String },
   },
+  kobotoolbox: {
+    kpi: { type: String },
+    token: { type: String },
+    assets: [{
+      asset_id: { type: String, unique: true },
+      maps: { type: Object },
+    }],
+  },
   ...commonSchema,
 };
 

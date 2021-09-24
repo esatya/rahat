@@ -1,6 +1,7 @@
 const fs = require('fs');
 const ethers = require('ethers');
 const config = require('config');
+const axios = require('axios');
 const app = require('../../app');
 
 const packageJson = require('../../package.json');
@@ -132,6 +133,40 @@ const App = {
     };
   },
 
+  async setKobotoolbox(payload) {
+    const { currentUser } = payload;
+    const agency = await Agency.update(currentUser.agency,
+      { kobotoolbox: { kpi: payload.kpi, token: payload.token } });
+    return agency;
+  },
+
+  async getKoboForms(currentUser) {
+    try {
+      const { kobotoolbox } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotoolbox.kpi}/api/v2/assets.json`,
+        { headers: { Authorization: `Token ${kobotoolbox.token}` } });
+      data.results = data.results.filter((el) => el.has_deployment);
+      return { count: data.results.length, data: data.results };
+    } catch (e) {
+      return e;
+    }
+  },
+
+  async getKoboFormsData(assetId, currentUser) {
+    try {
+      const { kobotoolbox } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotoolbox.kpi}/api/v2/assets/${assetId}/data?format=json`,
+        { headers: { Authorization: `Token ${kobotoolbox.token}` } });
+      return { count: data.count, data: data.results };
+    } catch (e) {
+      return e;
+    }
+  },
+
+  async setAssetMappings() {
+
+  },
+
 };
 
 module.exports = {
@@ -143,4 +178,8 @@ module.exports = {
   getContractBytecode: (req) => App.getContractBytecode(req.params.contractName),
   setupContracts: (req) => App.setupContracts(),
   getDashboardData: (req) => App.getDashboardData(req.currentUser),
+  setKobotoolbox: (req) => App.setKobotoolbox(req.payload),
+  getKoboForms: (req) => App.getKoboForms(req.currentUser),
+  getKoboFormsData: (req) => App.getKoboFormsData(req.params.assetId, req.currentUser),
+
 };
