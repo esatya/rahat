@@ -82,13 +82,29 @@ const Mobilizer = {
   list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 20;
-    const $match = {
+    let $match = {
       is_archived: false,
       agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } },
     };
     if (query.show_archive) $match.is_archived = true;
     if (query.phone) $match.phone = { $regex: new RegExp(`${query.phone}`), $options: 'i' };
     if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
+    if (query.projectId) {
+      $match = {
+        projects: {
+          $elemMatch:
+           { project: Types.ObjectId(query.projectId) },
+        },
+      };
+    }
+    if (query.status) {
+      $match = {
+        agencies: {
+          $elemMatch:
+           { agency: Types.ObjectId(currentUser.agency), status: query.status },
+        },
+      };
+    }
 
     const sort = {};
     if (query.sort === 'address' || query.sort === 'name') sort[query.sort] = 1;

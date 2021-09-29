@@ -26,6 +26,16 @@ module.exports = {
       id: Joi.string(),
     }),
   },
+  list: {
+    query: Joi.object({
+      start: Joi.number(),
+      limit: Joi.number(),
+      name: Joi.string(),
+      projectId: Joi.string(),
+      status: Joi.string(),
+      show_archive: Joi.bool(),
+    }),
+  },
   remove: {
     params: GooseJoi.id(),
   },
@@ -39,6 +49,7 @@ module.exports = {
       address: Mobilizer.address.example('nepal'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
       govt_id_image: Mobilizer.govt_id_image.example('http://source'),
+      organization: Mobilizer.organization.example('rumsan'),
     }).label('Mobilizer'),
   },
 
