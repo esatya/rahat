@@ -18,14 +18,16 @@ const schema = {
     rahat_admin: { type: String },
     token: { type: String },
   },
-  kobotoolbox: {
+  kobotool_auth: {
     kpi: { type: String },
     token: { type: String },
-    assets: [{
-      asset_id: { type: String, unique: true },
-      maps: { type: Object },
-    }],
   },
+  kobotool_assets: [{
+    asset_id: { type: String, unique: true },
+    asset_name: { type: String },
+    labels: [{ type: String }],
+    maps: { type: Object },
+  }],
   ...commonSchema,
 };
 

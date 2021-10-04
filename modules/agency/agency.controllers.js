@@ -49,6 +49,36 @@ const Agency = {
     );
   },
 
+  async getAllKoboAssetsIds(id) {
+    const agency = await this.getById(id);
+    console.log({ agency });
+    const assetsIds = agency.kobotool_assets.map((el) => el.asset_id);
+    return assetsIds;
+  },
+
+  async setKoboAssets(id, assets) {
+    const assetIds = await this.getAllKoboAssetsIds(id);
+    console.log({ assets });
+    try {
+      assets.forEach(async (el) => {
+        console.log(el.summary.labels);
+        const kobotool_assets = { asset_id: el.uid, asset_name: el.name, labels: el.summary.labels };
+        console.log({ kobotool_assets });
+        await AgencyModel.findOneAndUpdate({ _id: id, 'kobotool_assets.asset_id': { $nin: assetIds } },
+          {
+            $addToSet: { kobotool_assets },
+          }, { new: true });
+      });
+      // console.log(agency);
+      const { kobotool_assets } = await this.getById(id);
+
+      return kobotool_assets;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  },
+
 };
 
 module.exports = {
