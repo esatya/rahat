@@ -136,27 +136,29 @@ const App = {
   async setKobotoolbox(payload) {
     const { currentUser } = payload;
     const agency = await Agency.update(currentUser.agency,
-      { kobotoolbox: { kpi: payload.kpi, token: payload.token } });
+      { kobotool_auth: { kpi: payload.kpi, token: payload.token } });
     return agency;
   },
 
   async getKoboForms(currentUser) {
     try {
-      const { kobotoolbox } = await Agency.getById(currentUser.agency);
-      const { data } = await axios.get(`https://${kobotoolbox.kpi}/api/v2/assets.json`,
-        { headers: { Authorization: `Token ${kobotoolbox.token}` } });
-      data.results = data.results.filter((el) => el.has_deployment);
-      return { count: data.results.length, data: data.results };
+      const { kobotool_auth } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotool_auth.kpi}/api/v2/assets.json`,
+        { headers: { Authorization: `Token ${kobotool_auth.token}` } });
+      data.results = data.results.filter((el) => el.has_deployment && el.name === 'Beneficiary Onboard');
+      const assets = await Agency.setKoboAssets(currentUser.agency, data.results);
+      return assets;
     } catch (e) {
+      console.log(e);
       return e;
     }
   },
 
-  async getKoboFormsData(assetId, currentUser) {
+  async getKoboFormsData(currentUser, assetId) {
     try {
-      const { kobotoolbox } = await Agency.getById(currentUser.agency);
-      const { data } = await axios.get(`https://${kobotoolbox.kpi}/api/v2/assets/${assetId}/data?format=json`,
-        { headers: { Authorization: `Token ${kobotoolbox.token}` } });
+      const { kobotool_auth, kobotool_assets } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotool_auth.kpi}/api/v2/assets/${assetId || kobotool_assets[0].asset_id}/data?format=json`,
+        { headers: { Authorization: `Token ${kobotool_auth.token}` } });
       return { count: data.count, data: data.results };
     } catch (e) {
       return e;
@@ -180,6 +182,6 @@ module.exports = {
   getDashboardData: (req) => App.getDashboardData(req.currentUser),
   setKobotoolbox: (req) => App.setKobotoolbox(req.payload),
   getKoboForms: (req) => App.getKoboForms(req.currentUser),
-  getKoboFormsData: (req) => App.getKoboFormsData(req.params.assetId, req.currentUser),
+  getKoboFormsData: (req) => App.getKoboFormsData(req.currentUser, req.params.assetId),
 
 };
