@@ -39,6 +39,26 @@ const routes = {
 
   ],
 
+  setKobotoolbox: [
+    'PUT', '/kobotoolbox/setup', 'SetUp the kobotoolbox',
+    [AGENCY.WRITE, AGENCY.ADMIN],
+  ],
+
+  getKoboForms: [
+    'GET', '/kobotoolbox', 'Get all kobotoolbox forms',
+    [AGENCY.WRITE, AGENCY.ADMIN],
+  ],
+
+  getKoboFormsData: [
+    'GET', '/kobotoolbox/{assetId}', 'Get kobotoolbox data',
+    [AGENCY.WRITE, AGENCY.ADMIN],
+  ],
+
+  setAssetMappings: [
+    'PUT', '/kobotoolbox/maps', 'Set Kobo forms maps to rahat',
+    [AGENCY.WRITE, AGENCY.ADMIN],
+  ],
+
 };
 
 function register(app) {

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const ethers = require('ethers');
 const config = require('config');
+const axios = require('axios');
 const app = require('../../app');
 
 const packageJson = require('../../package.json');
@@ -132,6 +133,42 @@ const App = {
     };
   },
 
+  async setKobotoolbox(payload) {
+    const { currentUser } = payload;
+    const agency = await Agency.update(currentUser.agency,
+      { kobotool_auth: { kpi: payload.kpi, token: payload.token } });
+    return agency;
+  },
+
+  async getKoboForms(currentUser) {
+    try {
+      const { kobotool_auth } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotool_auth.kpi}/api/v2/assets.json`,
+        { headers: { Authorization: `Token ${kobotool_auth.token}` } });
+      data.results = data.results.filter((el) => el.has_deployment && el.name === 'Beneficiary Onboard');
+      const assets = await Agency.setKoboAssets(currentUser.agency, data.results);
+      return assets;
+    } catch (e) {
+      console.log(e);
+      return e;
+    }
+  },
+
+  async getKoboFormsData(currentUser, assetId) {
+    try {
+      const { kobotool_auth, kobotool_assets } = await Agency.getById(currentUser.agency);
+      const { data } = await axios.get(`https://${kobotool_auth.kpi}/api/v2/assets/${assetId || kobotool_assets[0].asset_id}/data?format=json`,
+        { headers: { Authorization: `Token ${kobotool_auth.token}` } });
+      return { count: data.count, data: data.results };
+    } catch (e) {
+      return e;
+    }
+  },
+
+  async setAssetMappings() {
+
+  },
+
 };
 
 module.exports = {
@@ -143,4 +180,8 @@ module.exports = {
   getContractBytecode: (req) => App.getContractBytecode(req.params.contractName),
   setupContracts: (req) => App.setupContracts(),
   getDashboardData: (req) => App.getDashboardData(req.currentUser),
+  setKobotoolbox: (req) => App.setKobotoolbox(req.payload),
+  getKoboForms: (req) => App.getKoboForms(req.currentUser),
+  getKoboFormsData: (req) => App.getKoboFormsData(req.currentUser, req.params.assetId),
+
 };
