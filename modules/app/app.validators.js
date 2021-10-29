@@ -42,4 +42,16 @@ module.exports = {
       contractName: Joi.string(),
     }),
   },
+
+  setKobotoolbox: {
+    payload: Joi.object({
+      kpi: Joi.string(),
+      token: Joi.string(),
+    }),
+  },
+  getKoboFormsData: {
+    params: Joi.object({
+      assetId: Joi.string(),
+    }),
+  },
 };

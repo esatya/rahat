@@ -13,6 +13,11 @@ const routes = {
     'Add a beneficiary.',
     [BENEFICIARY.WRITE, BENEFICIARY.ADMIN],
   ],
+  addMany: [
+    'POST', '/bulk',
+    'Add a beneficiary in bulk',
+    [BENEFICIARY.WRITE, BENEFICIARY.ADMIN],
+  ],
   getbyId: [
     'GET', '/{id}',
     'Get an beneficiary by Phone , Wallet Adress or id.',
