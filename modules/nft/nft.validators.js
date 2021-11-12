@@ -1,0 +1,45 @@
+const Joi = require('joi');
+const { NftModel } = require('../models');
+
+const GooseJoi = require('../../helpers/utils/goosejoi');
+
+const Nft = GooseJoi.convert(NftModel);
+
+module.exports = {
+	add: {
+		payload: Joi.object({
+			name: Nft.name.example('Test Nft'),
+			symbol: Nft.symbol.example('TST'),
+			tokenId: Nft.tokenId.example('1'),
+			metadataUri: Nft.metadataUri,
+			metadata: Nft.metadata,
+			project: Nft.project.example('5ff99cebc00c1432b1ecd904')
+		}).label('nft')
+	},
+	listByProject: {
+		params: GooseJoi.id(),
+		query: Joi.object({
+			start: Joi.number(),
+			limit: Joi.number(),
+			name: Joi.string()
+		})
+	},
+	getById: {
+		params: GooseJoi.id()
+	},
+
+	remove: {
+		params: GooseJoi.id()
+	},
+	update: {
+		params: GooseJoi.id(),
+		payload: Joi.object({
+			name: Nft.name.example('Test Nft'),
+			symbol: Nft.symbol.example('TST'),
+			tokenId: Nft.tokenId.example('1'),
+			metadataUri: Nft.metadataUri,
+			metadata: Nft.metadata,
+			project: Nft.project
+		}).label('nft')
+	}
+};
