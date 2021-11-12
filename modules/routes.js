@@ -9,17 +9,19 @@ const user = require('./user/user.routes');
 const setting = require('./app/app.routes');
 const transactions = require('./blockchain/blockchain.routes');
 const Mobilizer = require('./mobilizer/mobilizer.routes');
+const Nft = require('./nft/nft.routes');
 
 module.exports = {
-  setting,
-  project,
-  institution,
-  vendor,
-  beneficiary,
-  agency,
-  auth,
-  role,
-  user,
-  transactions,
-  Mobilizer,
+	setting,
+	project,
+	institution,
+	vendor,
+	beneficiary,
+	agency,
+	auth,
+	role,
+	user,
+	transactions,
+	Mobilizer,
+	Nft
 };
