@@ -7,20 +7,20 @@ const TxModel = require('./blockchain/transaction.model');
 const TokenDistributionModel = require('./beneficiary/tokenDistribution.model');
 const TokenRedemptionModel = require('./beneficiary/tokenRedemption.model');
 const MobilizerModel = require('./mobilizer/mobilizer.model');
+const NftModel = require('./nft/nft.model');
 
-function registerModels(database) {
-
-}
+function registerModels(database) {}
 
 module.exports = {
-  registerModels,
-  AgencyModel,
-  BeneficiaryModel,
-  InstitutionModel,
-  ProjectModel,
-  VendorModel,
-  TokenDistributionModel,
-  TokenRedemptionModel,
-  TxModel,
-  MobilizerModel,
+	registerModels,
+	AgencyModel,
+	BeneficiaryModel,
+	InstitutionModel,
+	ProjectModel,
+	VendorModel,
+	TokenDistributionModel,
+	TokenRedemptionModel,
+	TxModel,
+	MobilizerModel,
+	NftModel
 };
