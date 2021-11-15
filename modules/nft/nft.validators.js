@@ -10,8 +10,9 @@ module.exports = {
 		payload: Joi.object({
 			name: Nft.name.example('Test Nft'),
 			symbol: Nft.symbol.example('TST'),
-			tokenId: Nft.tokenId.example('1'),
-			metadataUri: Nft.metadataUri,
+			totalSupply: Nft.totalSupply.example(100),
+			tokenId: Nft.tokenId.example(1),
+			packageImg: Joi.string(),
 			metadata: Nft.metadata,
 			project: Nft.project.example('5ff99cebc00c1432b1ecd904')
 		}).label('nft')
@@ -37,7 +38,7 @@ module.exports = {
 			name: Nft.name.example('Test Nft'),
 			symbol: Nft.symbol.example('TST'),
 			tokenId: Nft.tokenId.example('1'),
-			metadataUri: Nft.metadataUri,
+			packageImg: Joi.string(),
 			metadata: Nft.metadata,
 			project: Nft.project
 		}).label('nft')
