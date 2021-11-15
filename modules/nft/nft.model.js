@@ -16,13 +16,18 @@ const schema = {
 		required: true,
 		joi: Joi.string()
 	},
+	totalSupply: {
+		type: Number,
+		required: true,
+		joi: Joi.number()
+	},
 	tokenId: {
-		type: String,
+		type: Number,
 		required: true,
 		unique: true,
-		joi: Joi.string()
+		joi: Joi.number()
 	},
-	metadataUri: {
+	metadataURI: {
 		type: String,
 		required: true,
 		joi: Joi.string()
@@ -33,6 +38,11 @@ const schema = {
 		ref: 'Project',
 		required: true,
 		joi: Joi.string()
+	},
+	createdBy: {
+		type: ObjectId,
+		ref: 'user',
+		required: true
 	},
 	...commonSchema
 };

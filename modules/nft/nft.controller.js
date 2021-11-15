@@ -3,11 +3,26 @@ const { ObjectId } = require('mongoose').Types;
 const { DataUtils } = require('../../helpers/utils');
 const { NftModel } = require('../models');
 
-// const { addFileToIpfs } = require('../../helpers/utils/ipfs');
+const { addFileToIpfs } = require('../../helpers/utils/ipfs');
+const { decodeBase64Url } = require('../../helpers/utils/fileManager');
 
 const Nft = {
 	async add(payload) {
 		try {
+			const { currentUser } = payload;
+			// Upload image to IPFS and get CID
+			const decoded = await decodeBase64Url(payload.packageImg);
+			const img = await addFileToIpfs(decoded.data);
+			const uploadedImgId = img.cid;
+			// Upload metadata with image_cid and get metadata_URI
+			const metaInfo = { ...payload.metadata, packageImgURI: uploadedImgId };
+			const uploadedMeta = await addFileToIpfs(JSON.stringify(metaInfo));
+			// Payload cleanups
+			payload.metadataURI = uploadedMeta.cid;
+			payload.metadata.packageImgURI = uploadedImgId;
+			delete payload.packageImg;
+			payload.createdBy = currentUser._id;
+			// Save details to DB
 			return NftModel.create(payload);
 		} catch (err) {
 			throw Error(err);
