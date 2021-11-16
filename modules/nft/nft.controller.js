@@ -13,13 +13,13 @@ const Nft = {
 			// Upload image to IPFS and get CID
 			const decoded = await decodeBase64Url(payload.packageImg);
 			const img = await addFileToIpfs(decoded.data);
-			const uploadedImgId = img.cid;
+			const uploadedImg = img.cid.toString();
 			// Upload metadata with image_cid and get metadata_URI
-			const metaInfo = { ...payload.metadata, packageImgURI: uploadedImgId };
+			const metaInfo = { ...payload.metadata, packageImgURI: uploadedImg };
 			const uploadedMeta = await addFileToIpfs(JSON.stringify(metaInfo));
 			// Payload cleanups
-			payload.metadataURI = uploadedMeta.cid;
-			payload.metadata.packageImgURI = uploadedImgId;
+			payload.metadataURI = uploadedMeta.cid.toString();
+			payload.metadata.packageImgURI = uploadedImg;
 			delete payload.packageImg;
 			payload.createdBy = currentUser._id;
 			// Save details to DB
@@ -48,7 +48,20 @@ const Nft = {
 			limit,
 			sort: { created_at: -1 },
 			model: NftModel,
-			query: [{ $match }]
+			query: [
+				{ $match },
+				{
+					$lookup: {
+						from: 'users',
+						localField: 'createdBy',
+						foreignField: '_id',
+						as: 'createdBy'
+					}
+				},
+				{
+					$unwind: { path: '$createdBy', preserveNullAndEmptyArrays: true }
+				}
+			]
 		});
 
 		return result;

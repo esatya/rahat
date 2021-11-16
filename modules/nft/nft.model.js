@@ -14,6 +14,7 @@ const schema = {
 	symbol: {
 		type: String,
 		required: true,
+		unique: true,
 		joi: Joi.string()
 	},
 	totalSupply: {
