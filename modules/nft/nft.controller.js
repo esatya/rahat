@@ -9,7 +9,6 @@ const { decodeBase64Url } = require('../../helpers/utils/fileManager');
 const Nft = {
 	async add(payload) {
 		try {
-			const { currentUser } = payload;
 			// Upload image to IPFS and get CID
 			const decoded = await decodeBase64Url(payload.packageImg);
 			const img = await addFileToIpfs(decoded.data);
@@ -21,7 +20,6 @@ const Nft = {
 			payload.metadataURI = uploadedMeta.cid.toString();
 			payload.metadata.packageImgURI = uploadedImg;
 			delete payload.packageImg;
-			payload.createdBy = currentUser._id;
 			// Save details to DB
 			return NftModel.create(payload);
 		} catch (err) {
@@ -53,7 +51,7 @@ const Nft = {
 				{
 					$lookup: {
 						from: 'users',
-						localField: 'createdBy',
+						localField: 'created_by',
 						foreignField: '_id',
 						as: 'createdBy'
 					}
@@ -76,7 +74,23 @@ const Nft = {
 		return doc;
 	},
 
-	update(id, payload) {}
+	update(id, payload) {
+		const { currentUser } = payload;
+		payload.updated_by = currentUser._id;
+		return NftModel.findByIdAndUpdate(id, { $set: payload }, { new: true });
+	},
+
+	async mintTokens(packageId, payload) {
+		const { currentUser, mintQty } = payload;
+		const doc = await this.getById(packageId);
+		if (!doc) throw Error('Package not found');
+		const existingTokens = parseInt(doc.totalSupply);
+		const updatedSupply = parseInt(mintQty) + existingTokens;
+		delete payload.mintQty;
+		payload.totalSupply = updatedSupply;
+		payload.updated_by = currentUser._id;
+		return NftModel.findByIdAndUpdate(packageId, { $set: payload }, { new: true });
+	}
 };
 
 module.exports = {
@@ -85,5 +99,6 @@ module.exports = {
 	getById: req => Nft.getById(req.params.id),
 	listByProject: req => Nft.listByProject(req),
 	remove: req => Nft.remove(req.params.id, req.currentUser),
-	update: req => Nft.update(req.params.id, req.payload, req.currentUser)
+	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
+	mintTokens: req => Nft.mintTokens(req.params.id, req.payload)
 };

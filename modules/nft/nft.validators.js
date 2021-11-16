@@ -32,6 +32,12 @@ module.exports = {
 	remove: {
 		params: GooseJoi.id()
 	},
+	mintTokens: {
+		params: GooseJoi.id(),
+		payload: Joi.object({
+			mintQty: Joi.number()
+		})
+	},
 	update: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
