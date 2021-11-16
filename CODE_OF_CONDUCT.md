@@ -1,8 +1,3 @@
----
-id: Code of Conduct
-sidebar_position: 2
-
----
 # Code of Conduct
 
 ## Our Pledge
