@@ -39,3 +39,15 @@ exports.removeFile = fileName => {
 		});
 	}
 };
+
+exports.decodeBase64Url = dataString => {
+	if (!dataString) return { type: null, data: null };
+	const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+	const response = {};
+	if (matches.length !== 3) {
+		return new Error('Invalid input string');
+	}
+	response.type = matches[1];
+	response.data = Buffer.from(matches[2], 'base64');
+	return response;
+};
