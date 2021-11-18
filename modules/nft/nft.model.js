@@ -40,11 +40,6 @@ const schema = {
 		required: true,
 		joi: Joi.string()
 	},
-	createdBy: {
-		type: ObjectId,
-		ref: 'user',
-		required: true
-	},
 	...commonSchema
 };
 
