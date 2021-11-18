@@ -1,14 +1,14 @@
 const ObjectId = require('mongodb').ObjectID;
 const mongoose = require('mongoose');
 const app = require('../../app');
-const Logger = require('../../helpers/logger');
 const { DataUtils } = require('../../helpers/utils');
 const { BeneficiaryModel, TokenRedemptionModel, TokenDistributionModel } = require('../models');
 
-const logger = Logger.getInstance();
 const { addFileToIpfs } = require('../../helpers/utils/ipfs');
+const { updateTotalSupply } = require('../nft/nft.controller');
 
 const isObjectId = mongoose.Types.ObjectId;
+const DEF_PACKAGE_ISSUE_QTY = 1;
 
 const Beneficiary = {
 	async add(payload) {
@@ -144,12 +144,11 @@ const Beneficiary = {
 		return ben;
 	},
 
+	// issued_packges = [2,3]
 	async updateIssuedPackages(benfId, payload) {
-		return BeneficiaryModel.findByIdAndUpdate(
-			benfId,
-			{ $addToSet: { issued_packages: payload.issued_packages } },
-			{ new: true }
-		);
+		const { issued_packages } = payload;
+		await updateTotalSupply(issued_packages, DEF_PACKAGE_ISSUE_QTY);
+		return BeneficiaryModel.findByIdAndUpdate(benfId, { $addToSet: { issued_packages } }, { new: true });
 	},
 
 	async update(id, payload) {
