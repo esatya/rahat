@@ -27,6 +27,19 @@ const Nft = {
 		}
 	},
 
+	async updateTotalSupply(tokenIds, updateQty) {
+		if (tokenIds.length) {
+			for (const tId of tokenIds) {
+				const doc = await NftModel.findOne({ tokenId: tId });
+				if (doc) {
+					const existingSupply = doc.totalSupply;
+					const newSupply = existingSupply - updateQty;
+					await NftModel.findOneAndUpdate({ tokenId: tId }, { totalSupply: newSupply });
+				}
+			}
+		}
+	},
+
 	async getById(id) {
 		return NftModel.findOne({ _id: id });
 	},
@@ -100,5 +113,6 @@ module.exports = {
 	listByProject: req => Nft.listByProject(req),
 	remove: req => Nft.remove(req.params.id, req.currentUser),
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
-	mintTokens: req => Nft.mintTokens(req.params.id, req.payload)
+	mintTokens: req => Nft.mintTokens(req.params.id, req.payload),
+	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty)
 };
