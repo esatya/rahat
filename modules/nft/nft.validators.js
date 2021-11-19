@@ -40,6 +40,12 @@ module.exports = {
 		})
 	},
 
+	getTokenIdsByProjects: {
+		payload: Joi.object({
+			projects: Joi.array()
+		})
+	},
+
 	mintTokens: {
 		params: GooseJoi.id(),
 		payload: Joi.object({

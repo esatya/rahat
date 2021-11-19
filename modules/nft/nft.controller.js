@@ -64,6 +64,22 @@ const Nft = {
 		return { currency: fiatCurrency, grandTotal };
 	},
 
+	async getTokenIdsByProjects(payload) {
+		let tokenIds = [];
+		const { projects } = payload;
+		if (projects.length) {
+			for (const p of projects) {
+				const docs = await NftModel.find({ project: p }, { tokenId: 1 });
+				if (docs.length) {
+					const ids = docs.map(d => d.tokenId);
+					tokenIds = [...tokenIds, ...ids];
+				}
+			}
+		}
+		const uniqueIdsOnly = [...new Set(tokenIds)];
+		return uniqueIdsOnly;
+	},
+
 	async getById(id) {
 		return NftModel.findOne({ _id: id });
 	},
@@ -143,5 +159,6 @@ module.exports = {
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
 	mintTokens: req => Nft.mintTokens(req.params.id, req.payload),
 	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty),
-	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload)
+	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload),
+	getTokenIdsByProjects: req => Nft.getTokenIdsByProjects(req.payload)
 };
