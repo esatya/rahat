@@ -40,8 +40,36 @@ const Nft = {
 		}
 	},
 
+	async getTotalPackageBalance(payload) {
+		const { tokenIds, tokenQtys } = payload;
+		const allTokens = [];
+		let fiatCurrency = '';
+
+		for (let i = 0; i < tokenIds.length; i++) {
+			const nft = await this.getByIdTokenId(tokenIds[i]);
+
+			if (nft) {
+				const { fiatValue, currency } = nft.metadata;
+				fiatCurrency = currency;
+				for (let j = 0; j < tokenQtys.length; j++) {
+					if (i === j) {
+						const totalPerToken = parseInt(tokenQtys[j]) * fiatValue;
+						allTokens.push(totalPerToken);
+					}
+				}
+			}
+		}
+
+		const grandTotal = allTokens.reduce((acc, cur) => acc + cur, 0);
+		return { currency: fiatCurrency, grandTotal };
+	},
+
 	async getById(id) {
 		return NftModel.findOne({ _id: id });
+	},
+
+	async getByIdTokenId(tokenId) {
+		return NftModel.findOne({ tokenId });
 	},
 
 	async listByProject(req) {
@@ -114,5 +142,6 @@ module.exports = {
 	remove: req => Nft.remove(req.params.id, req.currentUser),
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
 	mintTokens: req => Nft.mintTokens(req.params.id, req.payload),
-	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty)
+	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty),
+	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload)
 };
