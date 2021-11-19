@@ -33,7 +33,7 @@ module.exports = {
 		params: GooseJoi.id()
 	},
 
-	getProjectBalanceInFiat: {
+	getTotalPackageBalance: {
 		payload: Joi.object({
 			tokenIds: Joi.array(),
 			tokenQtys: Joi.array()
