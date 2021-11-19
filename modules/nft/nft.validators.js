@@ -32,12 +32,21 @@ module.exports = {
 	remove: {
 		params: GooseJoi.id()
 	},
+
+	getProjectBalanceInFiat: {
+		payload: Joi.object({
+			tokenIds: Joi.array(),
+			tokenQtys: Joi.array()
+		})
+	},
+
 	mintTokens: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
 			mintQty: Joi.number()
 		})
 	},
+
 	update: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
