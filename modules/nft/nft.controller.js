@@ -40,7 +40,7 @@ const Nft = {
 		}
 	},
 
-	async getProjectBalanceInFiat(payload) {
+	async getTotalPackageBalance(payload) {
 		const { tokenIds, tokenQtys } = payload;
 		const allTokens = [];
 		let fiatCurrency = '';
@@ -143,5 +143,5 @@ module.exports = {
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
 	mintTokens: req => Nft.mintTokens(req.params.id, req.payload),
 	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty),
-	getProjectBalanceInFiat: req => Nft.getProjectBalanceInFiat(req.payload)
+	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload)
 };

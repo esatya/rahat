@@ -7,7 +7,7 @@ const routes = {
 	add: ['POST', '', 'Add new nft', [PROJECT.WRITE]],
 	getById: ['GET', '/{id}', 'Get nft by Id', [PROJECT.READ]],
 	mintTokens: ['PATCH', '/{id}/mint', 'Mint nft', [PROJECT.WRITE]],
-	getProjectBalanceInFiat: ['POST', '/project-balance-fiat', 'Fetch total project balance in fiat', [PROJECT.READ]]
+	getTotalPackageBalance: ['POST', '/total-package-balance', 'Fetch total project balance in fiat', [PROJECT.READ]]
 };
 
 /**
