@@ -40,6 +40,18 @@ module.exports = {
 		})
 	},
 
+	getTokenIdsByProjects: {
+		payload: Joi.object({
+			projects: Joi.array()
+		})
+	},
+
+	getVendorPackageBalance: {
+		payload: Joi.object({
+			tokenIds: Joi.array()
+		})
+	},
+
 	mintTokens: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
