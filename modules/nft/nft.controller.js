@@ -6,6 +6,8 @@ const { NftModel } = require('../models');
 const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 const { decodeBase64Url } = require('../../helpers/utils/fileManager');
 
+const DEF_TOKEN_QTY = 1;
+
 const Nft = {
 	async add(payload) {
 		try {
@@ -61,6 +63,43 @@ const Nft = {
 		}
 
 		const grandTotal = allTokens.reduce((acc, cur) => acc + cur, 0);
+		return { currency: fiatCurrency, grandTotal };
+	},
+
+	async getTokenIdsByProjects(payload) {
+		let tokenIds = [];
+		const { projects } = payload;
+		if (projects.length) {
+			for (const p of projects) {
+				const docs = await NftModel.find({ project: p }, { tokenId: 1 });
+				if (docs.length) {
+					const ids = docs.map(d => d.tokenId);
+					tokenIds = [...tokenIds, ...ids];
+				}
+			}
+		}
+		const uniqueIdsOnly = [...new Set(tokenIds)];
+		return uniqueIdsOnly;
+	},
+
+	async getVendorPackageBalance(payload) {
+		const { tokenIds } = payload;
+		const amounts = [];
+		let fiatCurrency = '';
+
+		if (tokenIds.length) {
+			for (const t of tokenIds) {
+				const nft = await this.getByIdTokenId(t);
+				if (nft) {
+					const { fiatValue, currency } = nft.metadata;
+					fiatCurrency = currency;
+					amounts.push(fiatValue * DEF_TOKEN_QTY);
+				}
+			}
+		}
+
+		if (!amounts.length) return null;
+		const grandTotal = amounts.reduce((acc, cur) => acc + cur, 0);
 		return { currency: fiatCurrency, grandTotal };
 	},
 
@@ -143,5 +182,7 @@ module.exports = {
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
 	mintTokens: req => Nft.mintTokens(req.params.id, req.payload),
 	updateTotalSupply: (tokenIds, updateQty) => Nft.updateTotalSupply(tokenIds, updateQty),
-	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload)
+	getTotalPackageBalance: req => Nft.getTotalPackageBalance(req.payload),
+	getTokenIdsByProjects: req => Nft.getTokenIdsByProjects(req.payload),
+	getVendorPackageBalance: req => Nft.getVendorPackageBalance(req.payload)
 };
