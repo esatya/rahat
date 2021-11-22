@@ -6,7 +6,7 @@ const { token } = require('../../config/settings.json');
 
 const network = config.get('blockchain.httpProvider');
 const provider = new ethers.providers.JsonRpcProvider(network);
-const abi = getAbi('AidToken');
+const abi = getAbi('RahatERC20');
 
 async function tokenTransaction(tokenAddress, account) {
   try {
