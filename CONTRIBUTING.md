@@ -28,12 +28,6 @@ In general, all pull requests must:
 If you find any bug and you're not sure how to fix it, or you don't know how to do a pull request, then you can create an Issue. Filing an Issue will help us see the problem and fix it.
 Issues in Rahat’s[ ](https://github.com/orgs/esatya)[Github repositories](https://github.com/orgs/esatya) are the primary means by which bug reports, feedback, and general discussions are made. A contributor is invited to create an issue, discuss it, and provide a fix if needed.
 - https://github.com/esatya/rahat
-- https://github.com/esatya/rahat-agency
-- [https://github.com/esatya/rahat-mobilizer](https://github.com/esatya/rahat-mobilizer)
-- [https://github.com/esatya/rahat-vendor](https://github.com/esatya/rahat-vendor)
-- https://github.com/esatya/rahat-otp
-- https://github.com/esatya/rahat-documentation
-- https://github.com/esatya/rahat-contracts
 ## Reporting Bugs
 This section guides you through submitting a bug report for Rahat. Following these guidelines helps maintainers and the community understand your report 📝, reproduce the behavior 💻 💻, and find related reports 🔎.
 Before creating bug reports, please check [this list](https://github.com/orgs/esatya/projects/2) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report). 
