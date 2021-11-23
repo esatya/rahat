@@ -177,6 +177,7 @@ module.exports = {
 	Nft,
 	add: req => Nft.add(req.payload),
 	getById: req => Nft.getById(req.params.id),
+	getByTokenId: req => Nft.getByIdTokenId(req.params.id),
 	listByProject: req => Nft.listByProject(req),
 	remove: req => Nft.remove(req.params.id, req.currentUser),
 	update: req => Nft.update(req.params.id, req.payload, req.currentUser),
