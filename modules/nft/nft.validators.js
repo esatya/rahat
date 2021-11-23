@@ -29,6 +29,11 @@ module.exports = {
 		params: GooseJoi.id()
 	},
 
+	getByTokenId: {
+		params: GooseJoi.id()
+	},
+
+
 	remove: {
 		params: GooseJoi.id()
 	},
