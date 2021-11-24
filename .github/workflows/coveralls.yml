@@ -20,7 +20,7 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: npm install
+            - run: yarn install
 
     coverage:
         name: Coveralls
@@ -35,11 +35,11 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: npm install
-            - run: npm run coverage
+            - run: yarn setup
+            - run: yarn run coverage
             - uses: coverallsapp/github-action@master
               env:
                   COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
-            - run: npm run send-coverage
+            - run: yarn run send-coverage
