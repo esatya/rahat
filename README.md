@@ -1,5 +1,14 @@
 # Rahat - Blockchain-based Aid Distribution
 
+<p align="center">
+  <a href="https://github.com/esatya/rahat/blob/main/CONTRIBUTING.md">
+    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome!" />
+  </a>
+  <a href="https://github.com/esatya/rahat/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/License-AGPL_v3-blue.svg" alt="License" />
+  </a>
+</p>
+
 Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahatapp.com.
 
 Rahat’s main features are:
