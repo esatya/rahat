@@ -7,6 +7,8 @@
 		"lint": "eslint .",
 		"lintfix": "eslint --fix .",
 		"pretty": "prettier --write **/*.js **/*.sol",
+		"coverage": "jest --coverage",
+		"send-coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:controllers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/controllers --coverage",
 		"test:contracts": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/contracts --coverage",
 		"test:helpers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/helpers --coverage",
@@ -37,9 +39,6 @@
 			"test1/*"
 		]
 	},
-	"jest": {
-		"testEnvironment": "node"
-	},
 	"dependencies": {
 		"@hapi/hapi": "^20.0.0",
 		"@hapi/inert": "^6.0.2",
@@ -66,6 +65,7 @@
 	},
 	"devDependencies": {
 		"@truffle/hdwallet-provider": "^1.0.43",
+		"coveralls": "^3.1.1",
 		"eslint": "^7.7.0",
 		"eslint-config-airbnb-base": "^14.2.0",
 		"eslint-config-prettier": "^6.11.0",
