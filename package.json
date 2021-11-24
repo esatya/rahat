@@ -8,7 +8,7 @@
 		"lintfix": "eslint --fix .",
 		"pretty": "prettier --write **/*.js **/*.sol",
 		"coverage": "jest --coverage",
-		"send-coverage": "jest --coverage && cat ./tests/coverage/lcov.info | coveralls",
+		"send-coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:controllers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/controllers --coverage",
 		"test:contracts": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/contracts --coverage",
 		"test:helpers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/helpers --coverage",
@@ -38,10 +38,6 @@
 			"play/*",
 			"test1/*"
 		]
-	},
-	"jest": {
-		"coverageDirectory": "../coverage",
-		"collectCoverage": true
 	},
 	"dependencies": {
 		"@hapi/hapi": "^20.0.0",
