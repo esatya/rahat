@@ -7,15 +7,17 @@ const { Role } = require('./user/role.controllers');
 const { User } = require('./user/user.controllers');
 const { App } = require('./app/app.controllers');
 const { Mobilizer } = require('./mobilizer/mobilizer.controllers');
+const { Nft } = require('./nft/nft.controller');
 
 module.exports = {
-  Agency,
-  Beneficiary,
-  Vendor,
-  Project,
-  Institution,
-  Role,
-  User,
-  App,
-  Mobilizer,
+	Agency,
+	Beneficiary,
+	Vendor,
+	Project,
+	Institution,
+	Role,
+	User,
+	App,
+	Mobilizer,
+	Nft
 };

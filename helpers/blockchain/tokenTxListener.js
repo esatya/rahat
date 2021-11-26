@@ -6,13 +6,13 @@ const { token } = require('../../config/settings.json');
 
 const network = config.get('blockchain.httpProvider');
 const provider = new ethers.providers.JsonRpcProvider(network);
-const abi = getAbi('AidToken');
+const abi = getAbi('RahatERC20');
 const { Vendor, Agency } = require('../../modules');
 
 const listenTokenTx = async () => {
   try {
     const {
-      contracts: { token: tokenAddress, rahat_admin: rahatAdmin },
+      contracts: { rahat_erc20: tokenAddress, rahat_admin: rahatAdmin },
     } = await Agency.getFirst();
     const filter = {
       address: tokenAddress,
