@@ -36,6 +36,8 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
             - run: yarn setup
+            - name: Run a one-line script
+              run: sudo mkdir config
             - name: Setup Temp Config File
               id: create-json
               uses: jsdaniell/create-json@1.1.2
