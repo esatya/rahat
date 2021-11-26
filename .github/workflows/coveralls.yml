@@ -36,6 +36,24 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
             - run: yarn setup
+            - name: Run a mkdir script for config folder
+              run: |
+                  mkdir -p config && echo 'Local Sample' > local.json && echo 'Settings' > settings.json
+                  ls config
+            - name: Setup Temporary local config file
+              id: create-json-1
+              uses: jsdaniell/create-json@1.1.2
+              with:
+                  name: 'local.json'
+                  json: ${{ secrets.CONFIG_LOCAL }}
+                  dir: 'config/'
+            - name: Setup Temporary setting config file
+              id: create-json-2
+              uses: jsdaniell/create-json@1.1.2
+              with:
+                  name: 'settings.json'
+                  json: ${{ secrets.CONFIG_SETTINGS }}
+                  dir: 'config/'
             - run: yarn run coverage
             - uses: coverallsapp/github-action@master
               env:
