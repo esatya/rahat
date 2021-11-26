@@ -42,7 +42,7 @@ jobs:
               with:
                   name: 'local.json'
                   json: ${{ secrets.CONFIG_LOCAL }}
-                  dir: '/home/runner/work/rakimsth/rahat/config'
+                  dir: 'config/'
             - run: yarn run coverage
             - uses: coverallsapp/github-action@master
               env:
