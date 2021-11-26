@@ -36,6 +36,13 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
             - run: yarn setup
+            - name: Setup Temp Config File
+                id: create-json
+                uses: jsdaniell/create-json@1.1.2
+                with:
+                    name: "local.json"
+                    json: ${{ secrets.CONFIG_LOCAL }}
+                    dir: '/home/runner/work/rahat/rahat/config'
             - run: yarn run coverage
             - uses: coverallsapp/github-action@master
               env:
