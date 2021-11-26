@@ -36,9 +36,11 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
             - run: yarn setup
-            - name: Run a one-line script
-              run: sudo mkdir config
-            - name: Setup Temp Config File
+            - name: Run a mkdir script for config folder
+              run: |
+                  mkdir -p config && echo 'Random sample text' > local.json
+                  ls config
+            - name: Setup Temporary config file
               id: create-json
               uses: jsdaniell/create-json@1.1.2
               with:
