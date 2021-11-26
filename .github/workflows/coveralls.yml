@@ -1,0 +1,60 @@
+name: Coveralls CI/CD
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+jobs:
+    build:
+        name: Build
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x]
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: yarn install
+
+    coverage:
+        name: Coveralls
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x]
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: yarn setup
+            - name: Run a mkdir script for config folder
+              run: |
+                  mkdir -p config && echo 'Local Sample' > local.json && echo 'Settings' > settings.json
+                  ls config
+            - name: Setup Temporary local config file
+              id: create-json-1
+              uses: jsdaniell/create-json@1.1.2
+              with:
+                  name: 'local.json'
+                  json: ${{ secrets.CONFIG_LOCAL }}
+                  dir: 'config/'
+            - name: Setup Temporary setting config file
+              id: create-json-2
+              uses: jsdaniell/create-json@1.1.2
+              with:
+                  name: 'settings.json'
+                  json: ${{ secrets.CONFIG_SETTINGS }}
+                  dir: 'config/'
+            - run: yarn run coverage
+            - uses: coverallsapp/github-action@master
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
