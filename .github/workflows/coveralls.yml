@@ -56,8 +56,6 @@ jobs:
                   dir: 'config/'
             - run: yarn run coverage
             - uses: coverallsapp/github-action@master
-              env:
-                  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}
             - run: yarn run send-coverage
