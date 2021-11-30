@@ -17,8 +17,8 @@ module.exports = {
 		RahatAdmin: 'RahatAdmin',
 		Rahat: 'Rahat',
 		AidToken: 'AidToken',
-		Rahat_ERC20: 'rahat_erc20',
-		Rahat_ERC1155: 'rahat_erc1155'
+		RahatERC20: 'RahatERC20',
+		RahatERC1155: 'RahatERC1155'
 	},
 	ProjectConstants: {
 		status: {
