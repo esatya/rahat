@@ -1,6 +1,6 @@
 module.exports = {
 	migrations_directory: './contracts/src/migrations',
-	contracts_build_directory: './build',
+	contracts_build_directory: './contracts/build',
 	contracts_directory: './contracts/src/contracts',
 	networks: {
 		development: {
