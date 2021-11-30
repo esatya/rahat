@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const ethers = require('ethers');
 
-const buildPath = path.join(__dirname, '../../contracts/build/');
+const buildPath = path.join(__dirname, '../../contracts/');
 
 const getAbiCollection = () => {
   const data = fs.readdirSync(buildPath);
