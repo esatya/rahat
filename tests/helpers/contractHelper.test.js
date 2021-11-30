@@ -18,16 +18,17 @@ describe('Contract Helpers', () => {
 
   it('should return abi of given contract name', () => {
     const contractName = randomProperty(Contract);
+    console.log({contractName})
     const contractArtifact = require(`../../contracts/${contractName}.json`);
     const abi = getAbi(contractName);
-
+    console.log(abi);
     expect(typeof abi).toBe('object');
     expect(abi).toMatchObject({ contractName, abi: contractArtifact.abi });
   });
 
   it('should return bytecode of given contract name', () => {
     const contractName = randomProperty(Contract);
-    const contractArtifact = require(`../../contracts/build/${contractName}.json`);
+    const contractArtifact = require(`../../contracts/${contractName}.json`);
     const bytecode = getBytecode(contractName);
 
     expect(typeof bytecode).toBe('object');
