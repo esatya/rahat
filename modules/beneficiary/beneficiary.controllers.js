@@ -90,6 +90,10 @@ const Beneficiary = {
 		);
 	},
 
+	addToProjectByBenfId(benfId, projectId) {
+		return BeneficiaryModel.findOneAndUpdate({ _id: benfId }, { $addToSet: { projects: projectId } }, { new: 1 });
+	},
+
 	async getbyId(id) {
 		let ben;
 		if (isObjectId.isValid(id)) {
@@ -232,5 +236,10 @@ module.exports = {
 	update: req => Beneficiary.update(req.params.id, req.payload),
 	distributeToken: req => Beneficiary.distributeToken(req.params.id, req.payload),
 	listTokenDistributions: req => Beneficiary.listTokenDistributions(req.params.id),
-	updateIssuedPackages: req => Beneficiary.updateIssuedPackages(req.params.id, req.payload)
+	updateIssuedPackages: req => Beneficiary.updateIssuedPackages(req.params.id, req.payload),
+	addToProjectByBenfId: req => {
+		const benfId = req.params.id;
+		const { projectId } = req.payload;
+		return Beneficiary.addToProjectByBenfId(benfId, projectId);
+	}
 };

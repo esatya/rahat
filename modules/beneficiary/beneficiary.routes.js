@@ -21,6 +21,12 @@ const routes = {
 	],
 	remove: ['DELETE', '/{id}', 'Remove and archive a beneficiary,', [BENEFICIARY.REMOVE, BENEFICIARY.ADMIN]],
 	distributeToken: ['POST', '/{id}/token', 'Distribute token to beneficiary', [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]],
+	addToProjectByBenfId: [
+		'POST',
+		'/{id}/add-to-project',
+		'Add beneficiary to project',
+		[BENEFICIARY.WRITE, BENEFICIARY.ADMIN]
+	],
 	listTokenDistributions: [
 		'GET',
 		'/{id}/token',
