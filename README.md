@@ -12,7 +12,7 @@
 
 # Rahat - Blockchain-based Aid Distribution
 
-Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahatapp.com.
+Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahat.io . 
 
 Rahat’s main features are:
 - Dashboard for aid agencies to issue relief tokens to recipients & to onboard local community vendors. Agencies can audit all transactional information real-time. 
@@ -37,13 +37,34 @@ To run Rahat in your system please make user you have following app and librarie
 ## Complete Rahat Package
 Currently, Rahat consists four applications. For complete aid distribution process all four applications have to be installed and setup.
 
-1. **Rahat Server**: This is the main server (this project) which provides API services for other applications. It also contains source code for solidity smart contracts that needs to be compliled and deployed to Ethereum network of your choice. Please deploy this application before deploying other projects.
+1. **Rahat Server**: 
 
-2. **Agency Dashboard** (https://github.com/esatya/rahat-agency): This project is react-based dashboard for managing Rahat for agencies. It utilizes API to connect to the server and can directly communicate with Ethereum network using Metamask. After installing the server, you can use this app to setup Rahat in user-friendly way.
+This is the main server (this project) which provides API services for other applications. It also contains source code for solidity smart contracts that needs to be compliled and deployed to Ethereum network of your choice. Please deploy this application before deploying other projects.
 
-3. **OTP Server** (https://github.com/esatya/rahat-otp). It is a stand alone server to manage OTP that it sent to beneficiary phone during a transaction. This service adds hash of OTP to the smart-contract that should match with the OTP sent by the vendor to complete the transaction. Use your favorite SMS service like Twilio, GOIP as plugins to send SMS.
+2. **Agency Dashboard** (https://github.com/esatya/rahat-agency): 
 
-4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
+This project is react-based dashboard for managing Rahat for agencies. It utilizes API to connect to the server and can directly communicate with Ethereum network using Metamask. After installing the server, you can use this app to setup Rahat in user-friendly way.
+
+3. **OTP Server** (https://github.com/esatya/rahat-otp): 
+
+It is a stand alone server to manage OTP that it sent to beneficiary phone during a transaction. This service adds hash of OTP to the smart-contract that should match with the OTP sent by the vendor to complete the transaction. Use your favorite SMS service like Twilio, GOIP as plugins to send SMS.
+
+4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) 
+
+This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
+
+5. **Mobilizer Web-based App** (https://github.com/esatya/rahat-mobilizer) 
+
+This is a mobile friendly mobilizer user interface that can onboard beneficiries to the agency. It is a fully functioning mobile wallet that mobilizer can use to register beneficiaries and issue token to them.
+
+6. **Rahat Documentation** (https://github.com/esatya/rahat-documentation) 
+
+This is a documentation website of Rahat built using [Docusaurus 2](https://docusaurus.io/). It is mainly focused on the technical documents of Rahat. 
+
+7. **Rahat UAT** (https://github.com/esatya/rahat-uat) 
+
+This includes the UI/UX User Acceptance Testing of Rahat Applications. 
+
 
 ![Rahat - System Workflow](https://pbs.twimg.com/media/Erl_kZdUUAActLM?format=jpg&name=medium)
 
