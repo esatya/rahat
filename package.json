@@ -10,12 +10,11 @@
 		"coverage": "jest --coverage",
 		"send-coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
 		"test:controllers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/controllers --coverage",
-		"test:contracts": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/contracts --coverage",
 		"test:helpers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/helpers --coverage",
 		"test:watch": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles --watch ./tests",
 		"start": "cross-env ENV_TYPE=development nodemon .",
 		"production": "ENV_TYPE=production node .",
-		"setup": "yarn install && truffle compile"
+		"setup": "yarn install"
 	},
 	"author": {
 		"email": "team@esatya.io",

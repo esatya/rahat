@@ -54,6 +54,12 @@ module.exports = {
 			issued_packages: Joi.array()
 		})
 	},
+	addToProjectByBenfId: {
+		params: GooseJoi.id(),
+		payload: Joi.object({
+			projectId: Joi.string()
+		})
+	},
 	update: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
