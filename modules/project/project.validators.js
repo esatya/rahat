@@ -35,6 +35,12 @@ module.exports = {
 	getById: {
 		params: GooseJoi.id()
 	},
+	uploadAndAddBenfToProject: {
+		params: GooseJoi.id(),
+		payload: Joi.object({
+			file: Joi.any()
+		})
+	},
 	addTokenAllocation: {
 		params: GooseJoi.id(),
 		payload: Joi.object({
