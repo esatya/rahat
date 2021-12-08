@@ -23,6 +23,19 @@ const routes = {
 	getById: ['GET', '/{id}', 'Get a project by Id', [PROJECT.READ, PROJECT.ADMIN]],
 	remove: ['DELETE', '/{id}', 'Remove and archive a project', [PROJECT.REMOVE, PROJECT.ADMIN]],
 	update: ['PUT', '/{id}', 'Update project details', [PROJECT.WRITE, PROJECT.ADMIN]],
+	uploadAndAddBenfToProject: {
+		method: 'POST',
+		path: '/{id}/upload-beneficiaries',
+		description: 'Upload beneficiaris to the project',
+		uploadPayload: {
+			output: 'stream',
+			parse: true,
+			multipart: true,
+			allow: 'multipart/form-data',
+			maxBytes: 1024 * 1024 * UPLOAD_SIZE_MB
+		},
+		permissions: [PROJECT.WRITE, PROJECT.ADMIN]
+	},
 	changeStatus: ['PATCH', '/{id}/status', 'Update project status', [PROJECT.WRITE, PROJECT.ADMIN]],
 	addTokenAllocation: ['PATCH', '/{id}/token', 'Add token allocation to the project', [PROJECT.WRITE, PROJECT.ADMIN]],
 	addBeneficiary: [
