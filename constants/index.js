@@ -4,6 +4,7 @@ module.exports = {
 		DEVELOPMENT: 'development',
 		TEST: 'test'
 	},
+	ROLES: { ADMIN: 'Admin', MANAGER: 'Manager', MOBILIZER: 'Mobilizer' },
 	Model: {
 		Test: 'test',
 		Agent: 'agent',
