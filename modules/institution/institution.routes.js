@@ -1,38 +1,34 @@
 const validators = require('./institution.validators');
 const controllers = require('./institution.controllers');
-const { INSTITUTION } = require('../../constants/permissions');
+const {INSTITUTION} = require('../../constants/permissions');
 
 const routes = {
-  list: [
-    'GET', '',
-    'List all the financial institutions',
-    [INSTITUTION.READ, INSTITUTION.ADMIN],
-  ],
-  add: [
-    'POST', '',
-    'Add a financial institutions',
-    [INSTITUTION.WRITE, INSTITUTION.ADMIN],
-  ],
+  list: ['GET', '', 'List all the financial institutions', [INSTITUTION.READ, INSTITUTION.ADMIN]],
+  add: ['POST', '', 'Add a financial institutions', [INSTITUTION.WRITE, INSTITUTION.ADMIN]],
   getById: [
-    'GET', '/{id}',
+    'GET',
+    '/{id}',
     'Get a financial institutions by Id',
-    [INSTITUTION.READ, INSTITUTION.ADMIN],
+    [INSTITUTION.READ, INSTITUTION.ADMIN]
   ],
   remove: [
-    'DELETE', '/{id}',
+    'DELETE',
+    '/{id}',
     'Remove and archive a financial institutions',
-    [INSTITUTION.REMOVE, INSTITUTION.ADMIN],
+    [INSTITUTION.REMOVE, INSTITUTION.ADMIN]
   ],
   update: [
-    'PUT', '/{id}',
+    'PUT',
+    '/{id}',
     'Update financial institutions details',
-    [INSTITUTION.WRITE, INSTITUTION.ADMIN],
+    [INSTITUTION.WRITE, INSTITUTION.ADMIN]
   ],
   changeStatus: [
-    'PATCH', '/{id}/status',
+    'PATCH',
+    '/{id}/status',
     'Update financial institutions status',
-    [INSTITUTION.WRITE, INSTITUTION.ADMIN],
-  ],
+    [INSTITUTION.WRITE, INSTITUTION.ADMIN]
+  ]
 };
 
 /**
@@ -41,7 +37,10 @@ const routes = {
  */
 function register(app) {
   app.register({
-    name: 'institutions', routes, validators, controllers,
+    name: 'institutions',
+    routes,
+    validators,
+    controllers
   });
 }
 
