@@ -12,6 +12,7 @@ module.exports = {
   rules: {
     'class-methods-use-this': 0,
     'no-console': 0,
+    'no-param-reassign': 0,
     quotes: [2, 'single', {avoidEscape: true, allowTemplateLiterals: true}],
     'prettier/prettier': [
       'error',
@@ -20,5 +21,6 @@ module.exports = {
     camelcase: 'off',
     'arrow-body-style': 'off',
     'prefer-arrow-callback': 'off'
-  }
+  },
+  ignorePatterns: ['tests/*']
 };
