@@ -1,8 +1,8 @@
 const ethers = require('ethers');
 const config = require('config');
-const { ethersContract } = require('./contract');
-const { getAbi } = require('./abi');
-const { token } = require('../../config/settings.json');
+const {ethersContract} = require('./contract');
+const {getAbi} = require('./abi');
+const {token} = require('../../config/settings.json');
 
 const network = config.get('blockchain.httpProvider');
 const provider = new ethers.providers.JsonRpcProvider(network);
@@ -16,12 +16,19 @@ async function tokenTransaction(tokenAddress, account) {
     filterTokenSent.toBlock = 'latest';
     filterTokenSent.topic = [];
     const tokenSentTx = await provider.getLogs(filterTokenSent);
-    const tokenSentLogs = tokenSentTx.map((el) => {
-      let { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+    const tokenSentLogs = tokenSentTx.map(el => {
+      let {
+        args: {from, to, value}
+      } = tokenContract.interface.parseLog(el);
       value = value.toNumber();
-      const { blockNumber, transactionHash } = el;
+      const {blockNumber, transactionHash} = el;
       return {
-        from, to, value, blockNumber, transactionHash, tag: 'sent',
+        from,
+        to,
+        value,
+        blockNumber,
+        transactionHash,
+        tag: 'sent'
       };
     });
 
@@ -30,12 +37,19 @@ async function tokenTransaction(tokenAddress, account) {
     filterTokenReceived.toBlock = 'latest';
     filterTokenReceived.topic = [];
     const tokenReceivedTx = await provider.getLogs(filterTokenReceived);
-    const tokenReceivedLogs = tokenReceivedTx.map((el) => {
-      let { args: { from, to, value } } = tokenContract.interface.parseLog(el);
+    const tokenReceivedLogs = tokenReceivedTx.map(el => {
+      let {
+        args: {from, to, value}
+      } = tokenContract.interface.parseLog(el);
       value = value.toNumber();
-      const { blockNumber, transactionHash } = el;
+      const {blockNumber, transactionHash} = el;
       return {
-        from, to, value, blockNumber, transactionHash, tag: 'received',
+        from,
+        to,
+        value,
+        blockNumber,
+        transactionHash,
+        tag: 'received'
       };
     });
 
@@ -47,4 +61,4 @@ async function tokenTransaction(tokenAddress, account) {
   }
 }
 
-module.exports = { tokenTransaction };
+module.exports = {tokenTransaction};

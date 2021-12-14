@@ -1,10 +1,9 @@
 const Joi = require('joi');
 
 const GooseJoi = {
-
   payload(joiSchema, options = {}) {
     return {
-      payload: Joi.object(joiSchema).options(options),
+      payload: Joi.object(joiSchema).options(options)
     };
   },
 
@@ -12,25 +11,25 @@ const GooseJoi = {
     let id = Joi.string().required();
     id = description ? id.description(description) : id.description('Resource identifier');
     id = example ? id.example(example) : id;
-    return Joi.object({ id });
+    return Joi.object({id});
   },
 
   params(joiSchema, options = {}) {
     return {
-      params: Joi.object(joiSchema).options(options),
+      params: Joi.object(joiSchema).options(options)
     };
   },
 
   query(joiSchema, options = {}) {
     return {
-      query: Joi.object(joiSchema).options(options),
+      query: Joi.object(joiSchema).options(options)
     };
   },
 
   convert(model) {
-    const { paths } = model.schema;
+    const {paths} = model.schema;
     const jModel = {};
-    Object.keys(paths).forEach((k) => {
+    Object.keys(paths).forEach(k => {
       const el = paths[k];
       let jel = GooseJoi.mapTypes(el.instance);
 
@@ -49,9 +48,15 @@ const GooseJoi = {
 
   getPathArray(paths) {
     const retPaths = [];
-    Object.keys(paths).forEach((d) => {
+    Object.keys(paths).forEach(d => {
       const obj = paths[d];
-      if (obj.path !== '_id' && obj.path !== 'created_at' && obj.path !== 'updated_at' && obj.path !== '__v') retPaths.push(obj);
+      if (
+        obj.path !== '_id' &&
+        obj.path !== 'created_at' &&
+        obj.path !== 'updated_at' &&
+        obj.path !== '__v'
+      )
+        retPaths.push(obj);
     });
     return retPaths;
   },
@@ -64,7 +69,7 @@ const GooseJoi = {
     if (elInstance === 'Array') return Joi.array();
     if (elInstance === 'Mixed') return Joi.object();
     return null;
-  },
+  }
 };
 
 module.exports = GooseJoi;
