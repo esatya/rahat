@@ -14,7 +14,7 @@ const ws = require('./helpers/utils/socket');
 
 const logger = Logger.getInstance();
 const port = config.get('app.port');
-const { listenTokenTx, stopListener } = require('./helpers/blockchain/tokenTxListener');
+const {listenTokenTx, stopListener} = require('./helpers/blockchain/tokenTxListener');
 
 const network = config.get('blockchain.httpProvider');
 const provider = new ethers.providers.JsonRpcProvider(network);
@@ -23,21 +23,27 @@ mongoose.connect(config.get('app.db'), {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
-  useCreateIndex: true,
+  useCreateIndex: true
 });
 
 const server = new Hapi.Server({
   port,
   router: {
-    stripTrailingSlash: true,
+    stripTrailingSlash: true
   },
   routes: {
     cors: {
       origin: config.has('app.cors') ? config.get('app.cors') : ['*'],
-      additionalHeaders: ['cache-control', 'x-requested-with', 'access_token', 'auth_signature', 'data_signature'],
+      additionalHeaders: [
+        'cache-control',
+        'x-requested-with',
+        'access_token',
+        'auth_signature',
+        'data_signature'
+      ]
     },
     files: {
-      relativeTo: path.join(__dirname, 'public/build'),
+      relativeTo: path.join(__dirname, 'public/build')
     },
     validate: {
       failAction: async (request, h, err) => {
@@ -47,16 +53,16 @@ const server = new Hapi.Server({
             .response({
               statusCode: 400,
               error: 'Bad Request',
-              message: err.message,
+              message: err.message
             })
             .code(400)
             .takeover();
         }
         // During development, log and respond with the full error.
         return err;
-      },
-    },
-  },
+      }
+    }
+  }
 });
 // connect websocket
 ws.create(server.listener);
@@ -66,17 +72,17 @@ const swaggerOptions = {
   info: {
     title: 'Rahat Server',
     version: process.env.npm_package_version,
-    description: process.env.npm_package_description,
+    description: process.env.npm_package_description
   },
   securityDefinitions: {
     jwt: {
       type: 'apiKey',
       name: 'access_token',
-      in: 'header',
-    },
+      in: 'header'
+    }
   },
-  security: [{ jwt: [] }],
-  grouping: 'tags',
+  security: [{jwt: []}],
+  grouping: 'tags'
 };
 
 // if (process.env.HEROKU_APP_NAME) {
@@ -98,8 +104,8 @@ async function startServer() {
     Vision,
     {
       plugin: HapiSwagger,
-      options: swaggerOptions,
-    },
+      options: swaggerOptions
+    }
   ]);
   server.ext('onPreHandler', (request, h) => {
     const host = request.info.hostname;
@@ -113,12 +119,12 @@ async function startServer() {
     method: 'GET',
     path: '/{param*}',
     handler: (request, h) => {
-      const { param } = request.params;
+      const {param} = request.params;
       if (param.includes('.')) {
         return h.file(param);
       }
       return h.file('index.html');
-    },
+    }
   });
   await server.start();
   logger.info(`Server running at: ${server.info.uri}`);
@@ -127,7 +133,7 @@ async function startServer() {
 }
 
 // eslint-disable-next-line no-shadow, no-unused-vars
-server.ext('onPostStop', (server) => {
+server.ext('onPostStop', server => {
   // onPostStop: called after the connection listeners are stopped
   // see: https://github.com/hapijs/hapi/blob/master/API.md#-serverextevents
   // app.database
@@ -148,7 +154,7 @@ async function shutDown() {
     isStopping = true;
     const lapse = process.env.STOP_SERVER_WAIT_SECONDS ? process.env.STOP_SERVER_WAIT_SECONDS : 5;
     await server.stop({
-      timeout: lapse * 1000,
+      timeout: lapse * 1000
     });
   }
 }
