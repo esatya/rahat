@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { InstitutionModel } = require('../models');
+const {InstitutionModel} = require('../models');
 
 const GooseJoi = require('../../helpers/utils/goosejoi');
 
@@ -10,27 +10,27 @@ module.exports = {
     payload: Joi.object({
       name: Institution.name.example('Himalayan Bank'),
       address: Institution.address.example('Kamaladi, Kathmandu'),
-      phone: Institution.phone.example('01-4245980'),
-    }).label('Institution'),
+      phone: Institution.phone.example('01-4245980')
+    }).label('Institution')
   },
   changeStatus: {
     params: GooseJoi.id(),
     payload: Joi.object({
-      status: Institution.status,
-    }),
+      status: Institution.status
+    })
   },
   getById: {
-    params: GooseJoi.id(),
+    params: GooseJoi.id()
   },
   remove: {
-    params: GooseJoi.id(),
+    params: GooseJoi.id()
   },
   update: {
     params: GooseJoi.id(),
     payload: Joi.object({
       name: Institution.name.optional(),
       address: Institution.address.optional(),
-      phone: Institution.phone.optional(),
-    }).label('Institution'),
-  },
+      phone: Institution.phone.optional()
+    }).label('Institution')
+  }
 };

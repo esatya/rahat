@@ -18,11 +18,11 @@ class TxController {
   }
 
   hasPendingTransactions(signedAccount) {
-    return TxModel.exists({ status: 'pending', signedAccount });
+    return TxModel.exists({status: 'pending', signedAccount});
   }
 
   async list(toAddress) {
-    const tx = await TxModel.find({ to: toAddress });
+    const tx = await TxModel.find({to: toAddress});
     console.log('TX', tx);
     return tx;
   }
@@ -34,10 +34,13 @@ class TxController {
   async listNew(address, id) {
     if (!address) throw Error('You must send your signing account address');
     const hasPendingTransactions = await this.hasPendingTransactions(address);
-    if (hasPendingTransactions) throw Error('Some of the transactions you have signed earlier are still processing. Please try again after some time.');
+    if (hasPendingTransactions)
+      throw Error(
+        'Some of the transactions you have signed earlier are still processing. Please try again after some time.'
+      );
 
-    if (id) return TxModel.find({ _id: id, status: 'new' }).lean();
-    return TxModel.find({ status: 'new' });
+    if (id) return TxModel.find({_id: id, status: 'new'}).lean();
+    return TxModel.find({status: 'new'});
   }
 
   async getNewOne(address) {
@@ -47,7 +50,10 @@ class TxController {
     const totalTransactions = newTxs.length;
     if (!newTxs.length) {
       return {
-        callback, nonce, totalTransactions, transaction: null,
+        callback,
+        nonce,
+        totalTransactions,
+        transaction: null
       };
     }
 
@@ -57,17 +63,17 @@ class TxController {
     return {
       callback,
       totalTransactions,
-      transaction,
+      transaction
     };
   }
 
   listSigned() {
-    return TxModel.find({ status: 'signed' });
+    return TxModel.find({status: 'signed'});
   }
 
   async sendTransaction(transaction) {
     try {
-      await TxModel.findByIdAndUpdate(transaction.id, { status: 'pending' });
+      await TxModel.findByIdAndUpdate(transaction.id, {status: 'pending'});
       await BC.sendTransaction(transaction.signedTx);
       return this.setReceipt(transaction.id);
     } catch (e) {
@@ -76,30 +82,32 @@ class TxController {
   }
 
   setRejected(id) {
-    return TxModel.findByIdAndUpdate(id, { status: 'rejected' });
+    return TxModel.findByIdAndUpdate(id, {status: 'rejected'});
   }
 
   setError(id, error) {
-    return TxModel.findByIdAndUpdate(id, { error, status: 'error' });
+    return TxModel.findByIdAndUpdate(id, {error, status: 'error'});
   }
 
   setSignedTx(id, signedTx) {
     const tx = ethers.utils.parseTransaction(signedTx);
     return TxModel.findByIdAndUpdate(id, {
-      transactionHash: tx.hash, signedTx, signedBy: tx.from, status: 'signed',
+      transactionHash: tx.hash,
+      signedTx,
+      signedBy: tx.from,
+      status: 'signed'
     });
   }
 
   setReceipt(id) {
-    return TxModel.findByIdAndUpdate(id, { status: 'complete' });
+    return TxModel.findByIdAndUpdate(id, {status: 'complete'});
   }
 }
 
 const txController = new TxController();
-const opts = (req, h) => ({ req, res: h.response, currentUser: req.CurrentUser });
+const opts = (req, h) => ({req, res: h.response, currentUser: req.CurrentUser});
 module.exports = {
   txController,
-  list: (req) => txController.list(req.params.to),
-  add: (req, h) => txController.add(req.payload),
-
+  list: req => txController.list(req.params.to),
+  add: (req, h) => txController.add(req.payload)
 };
