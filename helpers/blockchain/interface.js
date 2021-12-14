@@ -1,9 +1,9 @@
 const ethers = require('ethers');
-const { getAbi, getInterface } = require('./abi');
+const {getAbi, getInterface} = require('./abi');
 
 function checkParams(funcSig, ...params) {
-  const paramTypes = params.map((el) => typeof el);
-  const inputTypes = funcSig.inputs.map((el) => {
+  const paramTypes = params.map(el => typeof el);
+  const inputTypes = funcSig.inputs.map(el => {
     if (el.type === 'bool') {
       return 'boolean';
     }
@@ -25,7 +25,7 @@ async function getEncodedData(contractName, functionName, ...params) {
     const ABI = await getAbi();
     const contractABI = ABI[contractName].abi;
     // chek the inputs type
-    const funcSig = contractABI.find((el) => el.name === functionName);
+    const funcSig = contractABI.find(el => el.name === functionName);
     checkParams(funcSig, ...params);
 
     const iface = new ethers.utils.Interface(contractABI);
@@ -69,5 +69,5 @@ module.exports = {
   getEncodedData,
   getDecodedData,
   parseTransaction,
-  parseLog,
+  parseLog
 };

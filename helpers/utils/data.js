@@ -12,19 +12,17 @@ const DataUtils = {
     return payload;
   },
 
-  paging: async ({
-    start = 0, limit = 20, sort, model, query, facet_data,
-  }) => {
+  paging: async ({start = 0, limit = 20, sort, model, query, facet_data}) => {
     query.push({
-      $sort: sort,
+      $sort: sort
     });
     let _facet_data = [
       {
-        $skip: parseInt(start),
+        $skip: parseInt(start)
       },
       {
-        $limit: parseInt(limit),
-      },
+        $limit: parseInt(limit)
+      }
     ];
     if (facet_data) _facet_data = _facet_data.concat(facet_data);
     query.push({
@@ -35,12 +33,12 @@ const DataUtils = {
             $group: {
               _id: null,
               count: {
-                $sum: 1,
-              },
-            },
-          },
-        ],
-      },
+                $sum: 1
+              }
+            }
+          }
+        ]
+      }
     });
     const matchedData = await model.aggregate(query);
 
@@ -56,11 +54,11 @@ const DataUtils = {
       total,
       limit,
       start,
-      page: Math.round(start / limit) + 1,
+      page: Math.round(start / limit) + 1
     };
-  },
+  }
 };
 
 module.exports = {
-  DataUtils,
+  DataUtils
 };
