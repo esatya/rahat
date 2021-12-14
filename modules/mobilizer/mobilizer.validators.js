@@ -10,15 +10,15 @@ const Mobilizer = GooseJoi.convert(MobilizerModel);
 module.exports = {
   add: {
     payload: Joi.object({
-      name: Mobilizer.name.optional().example('Rastra'),
-      phone: Mobilizer.phone.optional().example('12121212'),
-      wallet_address: Mobilizer.wallet_address.optional().example('0x00000'),
-      email: Mobilizer.email.example('rastra@gmail.com'),
-      address: Mobilizer.address.example('nepal'),
+      name: Mobilizer.name.example('Rastra'),
+      phone: Mobilizer.phone.example('12121212'),
+      wallet_address: Mobilizer.wallet_address.example('0x00000'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
+      email: Mobilizer.email.optional().example('rastra@gmail.com'),
+      address: Mobilizer.address.optional().example('nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
       photo: Joi.string().description('Photo').optional(),
-      organization: Mobilizer.organization.example('rumsan')
+      organization: Mobilizer.organization.optional().example('rumsan')
     }).label('Mobilizer')
   },
   getbyId: {

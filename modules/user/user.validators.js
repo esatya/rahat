@@ -6,7 +6,8 @@ module.exports = {
     query: Joi.object({
       name: Joi.string(),
       start: Joi.number(),
-      limit: Joi.number()
+      limit: Joi.number(),
+      hideMobilizers: Joi.bool()
     })
   },
   add: {
