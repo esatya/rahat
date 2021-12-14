@@ -8,8 +8,8 @@ const logger = Logger.getInstance();
  */
 class App {
   /**
- * Constructor of the class
- */
+   * Constructor of the class
+   */
   constructor() {
     this.feats = {};
     this.apiPath = '/api/v1';
@@ -22,9 +22,9 @@ class App {
   }
 
   /**
- * Gets a feat given the feat name.
- * @param {string} featName Name of the feat.
- */
+   * Gets a feat given the feat name.
+   * @param {string} featName Name of the feat.
+   */
   getFeat(featName) {
     if (!this.feats[featName]) {
       this.feats[featName] = {};
@@ -33,76 +33,104 @@ class App {
   }
 
   /**
- * Gets an operation given the feat and operation name.
- * @param {string} featName Name of the feat.
- * @param {string} operationName Name of the operation
- */
+   * Gets an operation given the feat and operation name.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation
+   */
   getOperation(featName, operationName) {
     const feat = this.getFeat(featName);
     if (!feat[operationName]) {
       feat[operationName] = {
         controller: undefined,
         validator: undefined,
-        route: undefined,
+        route: undefined
       };
     }
     return feat[operationName];
   }
 
   /**
- * Default hapi handler.
- * @param {object} request Request instance
- * @param {object} h Response instance
- */
+   * Default hapi handler.
+   * @param {object} request Request instance
+   * @param {object} h Response instance
+   */
   defaultHandle(request, h) {
-    return h.response({ statusCode: 401, error: 'Not Implemented', message: 'This feature has not been implemented.' }).code(501);
+    return h
+      .response({
+        statusCode: 401,
+        error: 'Not Implemented',
+        message: 'This feature has not been implemented.'
+      })
+      .code(501);
   }
 
   /**
- * Gets the operation validator or default.
- * @param {object} operation Operation instance.
- */
+   * Gets the operation validator or default.
+   * @param {object} operation Operation instance.
+   */
   validate(operation) {
     return operation.validator || {};
   }
 
   /**
- * Handlers for an operation.
- * @param {object} operation Operation instance.
- * @param {object} request Request instance.
- * @param {object} h Response instance.
- */
+   * Handlers for an operation.
+   * @param {object} operation Operation instance.
+   * @param {object} request Request instance.
+   * @param {object} h Response instance.
+   */
   async handle(operation, request, h) {
     const fn = operation.controller || this.defaultHandle;
     try {
       if (operation.permissions) {
         const isAllowed = await Secure(operation.permissions, request);
-        if (!isAllowed) return h.response({ statusCode: 401, error: 'Unauthorized', message: 'You are not authorized to do this operation.' }).code(401);
+        if (!isAllowed)
+          return h
+            .response({
+              statusCode: 401,
+              error: 'Unauthorized',
+              message: 'You are not authorized to do this operation.'
+            })
+            .code(401);
       }
 
       const result = await fn(request, h);
 
       if (result instanceof Error) {
-        return h.response({ statusCode: result.code || 500, error: 'Server Error', message: result.message }).code(result.code || 500);
+        return h
+          .response({
+            statusCode: result.code || 500,
+            error: 'Server Error',
+            message: result.message
+          })
+          .code(result.code || 500);
       }
 
       return result;
       // return this.database.processResponse(result);
     } catch (error) {
       logger.error(`main error captured: ${error}`);
-      if (process.env.ENV_TYPE === 'development') return h.response({ statusCode: 500, error: 'Server Error', message: error.message }).code(500);
-      return h.response({ statusCode: 500, error: 'Server Error', message: 'Some error occured. Please try again.' }).code(500);
+      if (process.env.ENV_TYPE === 'development')
+        return h
+          .response({statusCode: 500, error: 'Server Error', message: error.message})
+          .code(500);
+      return h
+        .response({
+          statusCode: 500,
+          error: 'Server Error',
+          message: 'Some error occured. Please try again.'
+        })
+        .code(500);
     }
   }
 
   /**
- * Register a route in hapi.
- * @param {string} featName Name of the feat.
- * @param {string} operationName Name of the operation.
- * @param {string} method Operation method.
- * @param {string} path Operation path.
- * @param {string} description Operation description.
- */
+   * Register a route in hapi.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {string} method Operation method.
+   * @param {string} path Operation path.
+   * @param {string} description Operation description.
+   */
   registerRoute(featName, operationName, route) {
     const operation = this.getOperation(featName, operationName);
 
@@ -117,19 +145,17 @@ class App {
     if (route.tags) tags = [...new Set([...tags, ...route.tags])];
     // else
 
-    const {
-      method, path, description, notes, uploadPayload,
-    } = route;
+    const {method, path, description, notes, uploadPayload} = route;
     const config = {
       description,
       notes,
       tags,
       validate: this.validate(operation),
-      handler: route.handler ? route.handler : this.handle.bind(this, operation),
+      handler: route.handler ? route.handler : this.handle.bind(this, operation)
     };
 
     if (method === 'POST' || method === 'PUT') {
-      config.payload = { maxBytes: 10000000 };
+      config.payload = {maxBytes: 10000000};
     }
 
     if (uploadPayload) {
@@ -138,61 +164,62 @@ class App {
       config.plugins = {
         'hapi-swagger': {
           payloadType: 'form',
-          consumes: ['multipart/form-data'],
-        },
+          consumes: ['multipart/form-data']
+        }
       };
     }
 
     operation.route = {
       method,
       path: `${this.apiPath}/${featName}${path}`,
-      config,
+      config
     };
 
     return operation.route;
   }
 
   /**
- * Register a controller for an operation.
- * @param {string} featName Name of the feat.
- * @param {string} operationName Name of the operation.
- * @param {object} controller Controller of the operation.
- */
+   * Register a controller for an operation.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {object} controller Controller of the operation.
+   */
   registerController(featName, operationName, controller) {
     const operation = this.getOperation(featName, operationName);
     operation.controller = controller;
   }
 
   /**
- * Register the validator for an operation.
- * @param {string} featName Name of the feat.
- * @param {string} operationName Name of the operation.
- * @param {object} validator Validator of the operation.
- */
+   * Register the validator for an operation.
+   * @param {string} featName Name of the feat.
+   * @param {string} operationName Name of the operation.
+   * @param {object} validator Validator of the operation.
+   */
   registerValidator(featName, operationName, validator) {
     const operation = this.getOperation(featName, operationName);
     operation.validator = validator;
   }
 
   /**
- * Register all feat operations.
- * @param {string} featName Name of the feat.
- * @param {object} routes Routes of the feat.
- * @param {object} validators Validators of the feat.
- * @param {object} controllers Controllers of the feat.
- */
-  register({
-    name, routes, tags, validators, controllers,
-  }) {
+   * Register all feat operations.
+   * @param {string} featName Name of the feat.
+   * @param {object} routes Routes of the feat.
+   * @param {object} validators Validators of the feat.
+   * @param {object} controllers Controllers of the feat.
+   */
+  register({name, routes, tags, validators, controllers}) {
     const approutes = [];
     const operationNames = Object.keys(routes);
-    operationNames.forEach((operationName) => {
+    operationNames.forEach(operationName => {
       let route = routes[operationName];
       if (validators) this.registerValidator(name, operationName, validators[operationName]);
       this.registerController(name, operationName, controllers[operationName]);
       if (Array.isArray(route)) {
         route = {
-          method: route[0], path: route[1], description: route[2], permissions: route[3],
+          method: route[0],
+          path: route[1],
+          description: route[2],
+          permissions: route[3]
         };
       }
       approutes.push(this.registerRoute(name, operationName, route, tags));
@@ -206,15 +233,19 @@ class App {
     const request = req;
     const response = res;
     return {
-      req, res, request, response, currentUser: req.CurrentUser,
+      req,
+      res,
+      request,
+      response,
+      currentUser: req.CurrentUser
     };
   }
 
   /**
- * Creates an error instance.
- * @param {string} code Error code
- * @param {string} message Error message
- */
+   * Creates an error instance.
+   * @param {string} code Error code
+   * @param {string} message Error message
+   */
   error(message, code) {
     const result = new Error(message);
     result.code = code || 500;
