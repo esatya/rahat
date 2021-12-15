@@ -12,7 +12,8 @@ const DEF_PACKAGE_ISSUE_QTY = 1;
 
 const Beneficiary = {
   async add(payload) {
-    payload.agency = payload.currentUser.agency;
+    const {currentUser} = payload;
+    payload.agency = currentUser.agency;
     payload.projects = payload.projects ? payload.projects.split(',') : [];
     if (payload.govt_id_image) {
       const decoded = await this.decodeBase64Image(payload.govt_id_image);
@@ -29,6 +30,7 @@ const Beneficiary = {
       }
     }
 
+    payload.created_by = currentUser._id;
     return BeneficiaryModel.create(payload);
   },
 
@@ -138,7 +140,25 @@ const Beneficiary = {
       limit,
       sort,
       model: BeneficiaryModel,
-      query: [{$match}]
+      query: [
+        {$match},
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'created_by',
+            foreignField: '_id',
+            as: 'created_by'
+          }
+        },
+        {
+          $unwind: {path: '$created_by', preserveNullAndEmptyArrays: true}
+        },
+        {
+          $addFields: {
+            creator_name: {$concat: ['$created_by.name.first', ' ', '$created_by.name.last']}
+          }
+        }
+      ]
     });
   },
 
