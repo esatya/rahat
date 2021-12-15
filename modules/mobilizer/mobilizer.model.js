@@ -24,8 +24,13 @@ const schema = {
     lowercase: true,
     description: 'Mobilizer wallet address'
   },
-  phone: {type: String, required: true, description: 'Mobilizer phone'},
-  email: {type: String, joi: Joi.string().email().optional().description('Mobilizer email')},
+  phone: {
+    type: String,
+    unique: true,
+    required: true,
+    description: 'Mobilizer phone'
+  },
+  email: {type: String, unique: true},
   address: {type: String, description: 'Mobilizer permanent address'},
   govt_id: {type: String, description: 'Mobilizer government issued ID'},
   govt_id_image: {

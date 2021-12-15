@@ -7,6 +7,7 @@ const {ObjectId} = mongoose.Schema;
 const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
 const {Role} = require('./role.controllers');
+const {ROLES} = require('../../constants');
 
 const User = new RSUser.User({
   mongoose,
@@ -114,9 +115,8 @@ const controllers = {
   },
 
   list(request) {
-    let {start, limit, sort, filter, name, paging = true} = request.query;
+    let {start, limit, sort, filter, name, paging = true, hideMobilizers} = request.query;
     const query = [];
-    const $match = {};
     if (filter) query.push({$match: filter});
     if (name) {
       query.push({
@@ -135,6 +135,14 @@ const controllers = {
       }
     );
     sort = sort || {'name.first': 1};
+
+    if (hideMobilizers) {
+      query.push({
+        $match: {
+          roles: {$nin: [ROLES.MOBILIZER]}
+        }
+      });
+    }
 
     if (paging) {
       return DataUtils.paging({
