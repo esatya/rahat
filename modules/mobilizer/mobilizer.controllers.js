@@ -10,10 +10,9 @@ const UserController = require('../user/user.controllers');
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
-const logger = Logger.getInstance();
-
 const Mobilizer = {
   async add(payload) {
+    if (!payload.email) payload.email = `mail-${payload.phone}@rahat.com`;
     payload.agencies = [{agency: payload.currentUser.agency}];
     const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
