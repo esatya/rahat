@@ -10,6 +10,7 @@ module.exports = {
   },
   plugins: ['prettier'],
   rules: {
+    'no-underscore-dangle': ['error', {allow: ['_id']}],
     'class-methods-use-this': 0,
     'no-console': 0,
     'no-param-reassign': 0,
