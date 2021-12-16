@@ -66,6 +66,18 @@ const Mobilizer = {
       {new: true}
     );
   },
+
+  async updateStatusInProject(req) {
+    const {params, payload} = req;
+    const {status, projectId} = payload;
+    const res = await MobilizerModel.findOneAndUpdate(
+      {_id: params.id, projects: {$elemMatch: {project: Types.ObjectId(projectId)}}},
+      {$set: {'projects.$.status': status}},
+      {new: true}
+    );
+    return res;
+  },
+
   async changeStatus(id, payload, currentUser) {
     const {status} = payload;
     return MobilizerModel.findOneAndUpdate(
@@ -182,6 +194,7 @@ module.exports = {
   approve: req =>
     Mobilizer.approve(req.payload.wallet_address, req.payload.projectId, req.currentUser),
   changeStatus: req => Mobilizer.changeStatus(req.params.id, req.payload, req.currentUser),
+  updateStatusInProject: req => Mobilizer.updateStatusInProject(req),
   register: async req => {
     const {_id: agencyId} = await Agency.getFirst();
     return Mobilizer.register(agencyId, req.payload);
