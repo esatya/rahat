@@ -15,6 +15,12 @@ const routes = {
     [VENDOR.WRITE, VENDOR.ADMIN]
   ],
   changeStatus: ['PATCH', '/{id}/status', 'Change Vendors Status', [VENDOR.WRITE, VENDOR.ADMIN]],
+  updateStatusInProject: [
+    'PATCH',
+    '/{id}/project-status',
+    'Change status in project',
+    [VENDOR.WRITE]
+  ],
   register: ['POST', '/register', 'register a MOBILIZER.'],
   getTransactions: ['GET', '/{id}/transactions', 'Get the token transactions by current MOBILIZER']
 };
