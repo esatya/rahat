@@ -68,6 +68,16 @@ module.exports = {
     })
   },
 
+  updateStatusInProject: {
+    params: Joi.object({
+      id: Joi.string()
+    }),
+    payload: Joi.object({
+      status: Joi.string(),
+      projectId: Joi.string()
+    })
+  },
+
   register: {
     payload: Joi.object({
       name: Mobilizer.name.optional().example('Rastra'),
