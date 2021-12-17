@@ -65,6 +65,13 @@ const Mobilizer = {
       {$set: {'agencies.$.status': MobilizerConstants.status.Active}, $addToSet: {projects}},
       {new: true}
     );
+
+    // return MobilizerModel.findOneAndUpdate(
+    //   // {wallet_address, agencies: {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}}},
+    //   {wallet_address, 'projects.project': {$ne: projectId}},
+    //   {$addToSet: {projects: [projectInstance]}},
+    //   {new: true}
+    // );
   },
 
   async updateStatusInProject(req) {
