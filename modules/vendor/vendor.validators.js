@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const VendorModel = require('./vendor.model');
-const { VendorConstants } = require('../../constants');
+const {VendorConstants} = require('../../constants');
 
 const GooseJoi = require('../../helpers/utils/goosejoi');
 
@@ -22,20 +22,29 @@ module.exports = {
       bank_name: Vendor.bank_name,
       bank_branch: Vendor.bank_branch,
       bank_account: Vendor.bank_account.example('2354394935034395'),
-      projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
+      projects: Joi.string()
+        .allow('')
+        .optional()
+        .example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
       govt_id_image: Vendor.govt_id_image,
       education: Vendor.education,
       extra_files: Joi.object().keys({
         identity_photo: Joi.string().allow('').allow(null).optional(),
         signature_photo: Joi.string().allow('').allow(null).optional(),
-        mou_file: Joi.string().allow('').allow(null).optional(),
-      }),
-    }).label('Vendor'),
+        mou_file: Joi.string().allow('').allow(null).optional()
+      })
+    }).label('Vendor')
   },
   getbyId: {
     params: Joi.object({
-      id: Joi.string(),
-    }),
+      id: Joi.string()
+    })
+  },
+  addToProjectByvendorId: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      projectId: Joi.string()
+    })
   },
   list: {
     query: Joi.object({
@@ -45,12 +54,12 @@ module.exports = {
       phone: Joi.string(),
       projectId: Joi.string(),
       status: Joi.string(),
-      show_archive: Joi.bool(),
-    }),
+      show_archive: Joi.bool()
+    })
   },
 
   remove: {
-    params: GooseJoi.id(),
+    params: GooseJoi.id()
   },
   update: {
     params: GooseJoi.id(),
@@ -68,29 +77,32 @@ module.exports = {
       bank_name: Vendor.bank_name,
       bank_branch: Vendor.bank_branch,
       bank_account: Vendor.bank_account.example('2354394935034395'),
-      projects: Joi.string().allow('').optional().example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
+      projects: Joi.string()
+        .allow('')
+        .optional()
+        .example('6108e3a19a8e17b54e464dd1,6208e3a19a8e17b54e464dd2'),
       govt_id_image: Vendor.govt_id_image,
       education: Vendor.education,
       extra_files: Joi.object().keys({
         identity_photo: Joi.string().allow('').allow(null).optional(),
         signature_photo: Joi.string().allow('').allow(null).optional(),
-        mou_file: Joi.string().allow('').allow(null).optional(),
-      }),
-    }).label('Vendor'),
+        mou_file: Joi.string().allow('').allow(null).optional()
+      })
+    }).label('Vendor')
   },
 
   approve: {
     payload: Joi.object({
-      wallet_address: Joi.string().required().example('0x00'),
-    }),
+      wallet_address: Joi.string().required().example('0x00')
+    })
   },
   changeStatus: {
     params: Joi.object({
-      id: Joi.string(),
+      id: Joi.string()
     }),
     payload: Joi.object({
-      status: Joi.string().valid(...Object.values(VendorConstants.status)),
-    }),
+      status: Joi.string().valid(...Object.values(VendorConstants.status))
+    })
   },
 
   register: {
@@ -102,12 +114,12 @@ module.exports = {
       address: Vendor.address.example('nepal'),
       govt_id: Vendor.govt_id.example('99988777nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
-      photo: Joi.string().description('Photo').optional(),
-    }),
+      photo: Joi.string().description('Photo').optional()
+    })
   },
   getTransactions: {
     params: Joi.object({
-      id: Joi.string(),
-    }),
-  },
+      id: Joi.string()
+    })
+  }
 };

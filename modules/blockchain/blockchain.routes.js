@@ -2,33 +2,15 @@ const validators = require('./transaction.validators');
 const controllers = require('./blockchain.controllers');
 
 const routes = {
-  list: [
-    'GET',
-    '/{to}',
-    'List all transactions.',
-  ],
-  add: [
-    'POST',
-    '',
-    'Add a new transaction.',
-  ],
-  getNewTransaction: [
-    'GET',
-    '/tosign',
-    'Get a new transaction to sign',
-  ],
+  list: ['GET', '/{to}', 'List all transactions.'],
+  add: ['POST', '', 'Add a new transaction.'],
+  getNewTransaction: ['GET', '/tosign', 'Get a new transaction to sign'],
   // updateNonce: [
   //   'GET',
   //   '/tosign/{id}',
   //   'update Nonce of new transaction',
   // ],
-  sendSignedTransaction: [
-    'POST',
-    '/signed',
-    'sends signed Transaction',
-
-  ],
-
+  sendSignedTransaction: ['POST', '/signed', 'sends signed Transaction']
 };
 
 /**
@@ -37,7 +19,10 @@ const routes = {
  */
 function register(app) {
   app.register({
-    name: 'transactions', routes, validators, controllers,
+    name: 'transactions',
+    routes,
+    validators,
+    controllers
   });
 }
 
