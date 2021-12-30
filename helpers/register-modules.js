@@ -5,7 +5,7 @@ const modules = require('../modules/routes');
  * Register all the feats.
  */
 function registerModules() {
-  Object.keys(modules).forEach((mdl) => {
+  Object.keys(modules).forEach(mdl => {
     modules[mdl](app);
   });
 }
