@@ -1,13 +1,11 @@
-const config = require('config');
 const mongoose = require('mongoose');
 
 module.exports = {
   async connectDatabase() {
-    await mongoose.connect(config.get('test.db'), {
+    await mongoose.connect(global.__MONGO_URI__, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
+      useFindAndModify: false
     });
     await mongoose.connection.db.dropDatabase();
   },
@@ -23,5 +21,5 @@ module.exports = {
     for (const collection of collections) {
       await collection.deleteMany();
     }
-  },
+  }
 };

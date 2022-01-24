@@ -13,16 +13,16 @@ const NftModel = require('./nft/nft.model');
 function registerModels(database) {}
 
 module.exports = {
-	registerModels,
-	AgencyModel,
-	AidConnectModel,
-	BeneficiaryModel,
-	InstitutionModel,
-	ProjectModel,
-	VendorModel,
-	TokenDistributionModel,
-	TokenRedemptionModel,
-	TxModel,
-	MobilizerModel,
-	NftModel
+  registerModels,
+  AgencyModel,
+  AidConnectModel,
+  BeneficiaryModel,
+  InstitutionModel,
+  ProjectModel,
+  VendorModel,
+  TokenDistributionModel,
+  TokenRedemptionModel,
+  TxModel,
+  MobilizerModel,
+  NftModel
 };

@@ -16,15 +16,12 @@ module.exports = {
       details: tx.details,
       to: tx.to,
       gas: tx.gas,
-      data: tx.data,
-
-    }),
+      data: tx.data
+    })
   },
   list: {
-    params:
-  Joi.object({
-    to: Joi.string(),
-  }),
-
-  },
+    params: Joi.object({
+      to: Joi.string()
+    })
+  }
 };

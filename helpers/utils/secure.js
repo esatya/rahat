@@ -1,11 +1,12 @@
 const config = require('config');
 const ethers = require('ethers');
-const { User, getByWalletAddress } = require('../../modules/user/user.controllers');
-const { Role } = require('../../modules/user/role.controllers');
+const {User, getByWalletAddress} = require('../../modules/user/user.controllers');
+const {Role} = require('../../modules/user/role.controllers');
 
-const checkPermissions = (user_perm, access_perm) => user_perm.some((v) => access_perm.indexOf(v) !== -1);
+const checkPermissions = (user_perm, access_perm) =>
+  user_perm.some(v => access_perm.indexOf(v) !== -1);
 
-const GetAddressFromSignature = (signatureWithData) => {
+const GetAddressFromSignature = signatureWithData => {
   if (!signatureWithData) throw Error("Must send 'auth-signature'");
 
   const [data, signature] = signatureWithData.split('.');

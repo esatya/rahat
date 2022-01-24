@@ -13,17 +13,17 @@ const Mobilizer = require('./mobilizer/mobilizer.routes');
 const Nft = require('./nft/nft.routes');
 
 module.exports = {
-	setting,
-	project,
-	institution,
-	vendor,
-	aidConnect,
-	beneficiary,
-	agency,
-	auth,
-	role,
-	user,
-	transactions,
-	Mobilizer,
-	Nft
+  setting,
+  project,
+  institution,
+  vendor,
+  aidConnect,
+  beneficiary,
+  agency,
+  auth,
+  role,
+  user,
+  transactions,
+  Mobilizer,
+  Nft
 };
