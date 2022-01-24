@@ -1,4 +1,5 @@
 const agency = require('./agency/agency.routes');
+const aidConnect = require('./aidConnect/aidConnect.routes');
 const beneficiary = require('./beneficiary/beneficiary.routes');
 const vendor = require('./vendor/vendor.routes');
 const project = require('./project/project.routes');
@@ -16,6 +17,7 @@ module.exports = {
 	project,
 	institution,
 	vendor,
+	aidConnect,
 	beneficiary,
 	agency,
 	auth,
