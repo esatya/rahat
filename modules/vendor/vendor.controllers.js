@@ -1,24 +1,24 @@
 const ethers = require('ethers');
-const { Types } = require('mongoose');
-const { addFileToIpfs } = require('../../helpers/utils/ipfs');
+const {Types} = require('mongoose');
+const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
-const { DataUtils } = require('../../helpers/utils');
-const { VendorModel } = require('../models');
-const { TokenRedemption } = require('./vendorTokenRedemption.model');
-const { VendorConstants } = require('../../constants');
-const { Agency } = require('../agency/agency.controllers');
-const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
+const {DataUtils} = require('../../helpers/utils');
+const {VendorModel} = require('../models');
+const {TokenRedemption} = require('./vendorTokenRedemption.model');
+const {VendorConstants} = require('../../constants');
+const {Agency} = require('../agency/agency.controllers');
+const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
-const { ObjectId } = Types;
+const {ObjectId} = Types;
 
 const logger = Logger.getInstance();
 
 const Vendor = {
   async add(payload) {
     try {
-      payload.agencies = [{ agency: payload.currentUser.agency }];
-      const { govt_id_image, photo } = payload;
+      payload.agencies = [{agency: payload.currentUser.agency}];
+      const {govt_id_image, photo} = payload;
       if (govt_id_image) {
         const govt_img_hash = await this.uploadToIpfs(this.decodeBase64Image(govt_id_image).data);
         payload.govt_id_image = govt_img_hash;
@@ -27,7 +27,8 @@ const Vendor = {
         const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(photo).data);
         payload.photo = ipfsPhotoHash;
       }
-      if (payload.extra_files) payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
+      if (payload.extra_files)
+        payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
       payload.projects = payload.projects ? payload.projects.split(',') : [];
       return VendorModel.create(payload);
     } catch (err) {
@@ -37,7 +38,7 @@ const Vendor = {
 
   async uploadExtraFiles(extra_files) {
     const result = {};
-    const { identity_photo, signature_photo, mou_file } = extra_files;
+    const {identity_photo, signature_photo, mou_file} = extra_files;
     if (identity_photo) {
       const decoded = this.decodeBase64Image(identity_photo);
       result.identity_photo = await this.uploadToIpfs(decoded.data);
@@ -54,7 +55,7 @@ const Vendor = {
   },
 
   async register(agencyId, payload) {
-    payload.agencies = [{ agency: agencyId }];
+    payload.agencies = [{agency: agencyId}];
     const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
@@ -63,7 +64,7 @@ const Vendor = {
   },
 
   decodeBase64Image(dataString) {
-    if (!dataString) return { type: null, data: null };
+    if (!dataString) return {type: null, data: null};
     const matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     const response = {};
     if (matches.length !== 3) {
@@ -82,26 +83,34 @@ const Vendor = {
   // Approve after event from Blockchain
   async approve(wallet_address, currentUser) {
     return VendorModel.findOneAndUpdate(
-      { wallet_address, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
-      { $set: { 'agencies.$.status': VendorConstants.status.Active } },
-      { new: true },
+      {wallet_address, agencies: {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}}},
+      {$set: {'agencies.$.status': VendorConstants.status.Active}},
+      {new: true}
     );
   },
   async changeStatus(id, payload, currentUser) {
-    const { status } = payload;
+    const {status} = payload;
     return VendorModel.findOneAndUpdate(
-      { _id: id, agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } } },
-      { $set: { 'agencies.$.status': status } },
-      { new: true },
+      {_id: id, agencies: {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}}},
+      {$set: {'agencies.$.status': status}},
+      {new: true}
     );
   },
 
   getbyId(id, currentUser) {
-    return VendorModel.findOne({ _id: id }).populate('projects');
+    return VendorModel.findOne({_id: id}).populate('projects');
+  },
+
+  addToProjectByvendorId(vendorId, projectId) {
+    return VendorModel.findOneAndUpdate(
+      {_id: vendorId},
+      {$addToSet: {projects: projectId}},
+      {new: 1}
+    );
   },
 
   getbyWallet(wallet_address, currentUser) {
-    return VendorModel.findOne({ wallet_address });
+    return VendorModel.findOne({wallet_address});
   },
 
   list(query, currentUser) {
@@ -109,18 +118,17 @@ const Vendor = {
     const limit = query.limit || 10;
     let $match = {
       is_archived: false,
-      agencies: { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } },
+      agencies: {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}}
     };
     if (query.show_archive) $match.is_archived = true;
-    if (query.phone) $match.phone = { $regex: new RegExp(`${query.phone}`), $options: 'i' };
-    if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
-    if (query.projectId) $match.projects = { $in: [ObjectId(query.projectId)] };
+    if (query.phone) $match.phone = {$regex: new RegExp(`${query.phone}`), $options: 'i'};
+    if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
+    if (query.projectId) $match.projects = {$in: [ObjectId(query.projectId)]};
     if (query.status) {
-		 $match = {
+      $match = {
         agencies: {
-          $elemMatch:
-					{ agency: Types.ObjectId(currentUser.agency), status: query.status },
-        },
+          $elemMatch: {agency: Types.ObjectId(currentUser.agency), status: query.status}
+        }
       };
     }
 
@@ -133,15 +141,15 @@ const Vendor = {
       limit,
       sort,
       model: VendorModel,
-      query: [{ $match }],
+      query: [{$match}]
     });
   },
 
   async remove(id, curUserId) {
     const ben = await VendorModel.findOneAndUpdate(
-      { _id: id },
-      { is_archived: true, updated_by: curUserId },
-      { new: true },
+      {_id: id},
+      {is_archived: true, updated_by: curUserId},
+      {new: true}
     );
     // TODO blockchain call
     return ben;
@@ -152,14 +160,14 @@ const Vendor = {
     delete payload.balance;
     delete payload.agency;
 
-    return VendorModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
+    return VendorModel.findOneAndUpdate({_id: id, is_archived: false}, payload, {
       new: true,
-      runValidators: true,
+      runValidators: true
     });
   },
   countVendor(currentUser) {
-    const query = { is_archived: false };
-    query.agencies = { $elemMatch: { agency: Types.ObjectId(currentUser.agency) } };
+    const query = {is_archived: false};
+    query.agencies = {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}};
 
     return VendorModel.find(query).countDocuments();
   },
@@ -177,34 +185,39 @@ const Vendor = {
   async countVendorTokenRedemption() {
     // const query = { vendor_wallet: vendorWallet };
     const total = await tokenRedemptionModel.aggregate([
-      { $group: { _id: '$vendor_wallet', totalSum: { $sum: '$amount' } } },
+      {$group: {_id: '$vendor_wallet', totalSum: {$sum: '$amount'}}}
     ]);
     const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
-    return { totalTokenRedemption: totalToken, tokenRedemption: total };
-  },
+    return {totalTokenRedemption: totalToken, tokenRedemption: total};
+  }
 };
 
 module.exports = {
   Vendor,
-  add: (req) => Vendor.add(req.payload),
-  getbyId: (req) => {
-    const { id } = req.params;
+  add: req => Vendor.add(req.payload),
+  getbyId: req => {
+    const {id} = req.params;
     if (ethers.utils.isAddress(id)) return Vendor.getbyWallet(id, req.currentUser);
     return Vendor.getbyId(req.params.id, req.currentUser);
   },
-  list: (req) => Vendor.list(req.query, req.currentUser),
-  remove: (req) => Vendor.remove(req.params.id, req.currentUserId),
-  update: (req) => Vendor.update(req.params.id, req.payload),
-  approve: (req) => Vendor.approve(req.payload.wallet_address, req.currentUser),
-  changeStatus: (req) => Vendor.changeStatus(req.params.id, req.payload, req.currentUser),
-  register: async (req) => {
-    const { _id: agencyId } = await Agency.getFirst();
+  list: req => Vendor.list(req.query, req.currentUser),
+  remove: req => Vendor.remove(req.params.id, req.currentUserId),
+  update: req => Vendor.update(req.params.id, req.payload),
+  approve: req => Vendor.approve(req.payload.wallet_address, req.currentUser),
+  changeStatus: req => Vendor.changeStatus(req.params.id, req.payload, req.currentUser),
+  register: async req => {
+    const {_id: agencyId} = await Agency.getFirst();
     return Vendor.register(agencyId, req.payload);
   },
-  getTransactions: async (req) => {
+  getTransactions: async req => {
     const {
-      contracts: { token: tokenAddress },
+      contracts: {token: tokenAddress}
     } = await Agency.getFirst();
     return Vendor.getTransactions(req.params.id, tokenAddress);
   },
+  addToProjectByvendorId: req => {
+    const vendorId = req.params.id;
+    const {projectId} = req.payload;
+    return Vendor.addToProjectByvendorId(vendorId, projectId);
+  }
 };

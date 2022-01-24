@@ -7,7 +7,8 @@ module.exports = {
       name: Joi.string(),
       start: Joi.number(),
       limit: Joi.number(),
-    }),
+      hideMobilizers: Joi.bool()
+    })
   },
   add: {
     payload: Joi.object({
@@ -16,8 +17,8 @@ module.exports = {
       phone: Joi.string(),
       wallet_address: Joi.string(),
       agency: Joi.string(),
-      roles: Joi.array().items(Joi.string()),
-    }),
+      roles: Joi.array().items(Joi.string())
+    })
   },
 
   register: {
@@ -26,22 +27,22 @@ module.exports = {
       email: Joi.string().optional(),
       phone: Joi.string(),
       wallet_address: Joi.string(),
-      agency: Joi.string(),
-    }),
+      agency: Joi.string()
+    })
   },
   findById: {
-    params: GooseJoi.id(),
+    params: GooseJoi.id()
   },
 
   listByRole: {
-    params: Joi.any(),
+    params: Joi.any()
   },
 
   addRoles: {
     params: GooseJoi.id(),
     payload: Joi.object({
-      roles: Joi.array(),
-    }),
+      roles: Joi.array()
+    })
   },
 
   update: {
@@ -49,15 +50,15 @@ module.exports = {
     payload: Joi.object({
       name: Joi.string().optional(),
       email: Joi.string().optional(),
-      phone: Joi.string().optional(),
-    }),
+      phone: Joi.string().optional()
+    })
   },
 
   checkUser: {
     payload: Joi.object({
       email: Joi.string().optional(),
       phone: Joi.string(),
-      wallet_address: Joi.string(),
-    }),
-  },
+      wallet_address: Joi.string()
+    })
+  }
 };

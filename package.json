@@ -1,82 +1,88 @@
 {
-	"name": "rahat-server",
-	"version": "2.1.0",
-	"description": "Server application for Rahat Systems",
-	"main": "./index.js",
-	"scripts": {
-		"lint": "eslint .",
-		"lintfix": "eslint --fix .",
-		"pretty": "prettier --write **/*.js **/*.sol",
-		"test:controllers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/controllers --coverage",
-		"test:contracts": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/contracts --coverage",
-		"test:helpers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/helpers --coverage",
-		"test:watch": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles --watch ./tests",
-		"start": "cross-env ENV_TYPE=development nodemon .",
-		"production": "ENV_TYPE=production node .",
-		"setup": "yarn install && truffle compile"
-	},
-	"author": {
-		"email": "team@esatya.io",
-		"name": "eSatya Team"
-	},
-	"maintainers": [
-		{
-			"email": "team@esatya.io",
-			"name": "eSatya Team"
-		}
-	],
-	"license": "TBD",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/esatya/rahat.git"
-	},
-	"nodemonConfig": {
-		"ignore": [
-			"public/*",
-			"play/*",
-			"test1/*"
-		]
-	},
-	"jest": {
-		"testEnvironment": "node"
-	},
-	"dependencies": {
-		"@hapi/hapi": "^20.0.0",
-		"@hapi/inert": "^6.0.2",
-		"@hapi/vision": "^6.0.1",
-		"@openzeppelin/contracts": "^3.1.0",
-		"axios": "^0.21.1",
-		"config": "^3.3.1",
-		"cross-env": "^7.0.2",
-		"ethers": "^5.0.9",
-		"hapi-swagger": "^14.0.0",
-		"hapi-swagger-static": "^2.0.13",
-		"ipfs-http-client": "^50.1.2",
-		"joi": "^17.2.1",
-		"joigoose": "^8.0.0",
-		"mongoose": "^5.10.2",
-		"pino": "^6.5.1",
-		"pino-pretty": "^4.2.0",
-		"read-excel-file": "^5.2.8",
-		"rs-user": "^2.0.1",
-		"rumsan-core": "^1.0.1",
-		"twilio": "^3.49.3",
-		"web3": "^1.3.0",
-		"ws": "^7.3.1"
-	},
-	"devDependencies": {
-		"@truffle/hdwallet-provider": "^1.0.43",
-		"eslint": "^7.7.0",
-		"eslint-config-airbnb-base": "^14.2.0",
-		"eslint-config-prettier": "^6.11.0",
-		"eslint-plugin-import": "^2.22.0",
-		"eslint-plugin-jest": "^24.0.0",
-		"eslint-plugin-prettier": "^3.1.4",
-		"ganache-core": "^2.13.2",
-		"jest": "^26.4.2",
-		"merge": "^1.2.1",
-		"prettier": "^2.1.1",
-		"prettier-plugin-solidity": "^1.0.0-alpha.57",
-		"truffle": "^5.1.42"
-	}
+  "name": "rahat-server",
+  "version": "2.5.0",
+  "description": "Server application for Rahat Systems",
+  "main": "./index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lintfix": "eslint --fix .",
+    "pretty": "prettier --write **/*.js",
+    "coverage": "jest --coverage",
+    "test:controllers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/controllers --coverage",
+    "test:helpers": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles ./tests/helpers --coverage",
+    "test:watch": "cross-env NODE_ENV=development jest --runInBand --detectOpenHandles --watch ./tests",
+    "start": "cross-env ENV_TYPE=development nodemon .",
+    "production": "ENV_TYPE=production node .",
+    "setup": "yarn install"
+  },
+  "author": {
+    "email": "team@esatya.io",
+    "name": "eSatya Team"
+  },
+  "maintainers": [
+    {
+      "email": "team@esatya.io",
+      "name": "eSatya Team"
+    }
+  ],
+  "license": "TBD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/esatya/rahat.git"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "public/*",
+      "play/*",
+      "test1/*"
+    ]
+  },
+  "dependencies": {
+    "@hapi/hapi": "^20.0.0",
+    "@hapi/inert": "^6.0.2",
+    "@hapi/vision": "^6.0.1",
+    "@openzeppelin/contracts": "^3.1.0",
+    "axios": "^0.21.1",
+    "config": "^3.3.1",
+    "cross-env": "^7.0.2",
+    "ethers": "^5.0.9",
+    "hapi-swagger": "^14.0.0",
+    "hapi-swagger-static": "^2.0.13",
+    "ipfs-http-client": "^50.1.2",
+    "joi": "^17.2.1",
+    "joigoose": "^8.0.0",
+    "mongoose": "^5.10.2",
+    "pino": "^6.5.1",
+    "pino-pretty": "^4.2.0",
+    "read-excel-file": "^5.2.8",
+    "rs-user": "^2.0.1",
+    "rumsan-core": "^1.0.1",
+    "twilio": "^3.49.3",
+    "web3": "^1.3.0",
+    "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^2.1.0",
+    "@truffle/hdwallet-provider": "^1.0.43",
+    "coveralls": "^3.1.1",
+    "eslint": "^7.7.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^24.0.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "ganache-core": "^2.13.2",
+    "husky": "^7.0.4",
+    "jest": "^26.4.2",
+    "merge": "^1.2.1",
+    "mongodb": "^4.2.0",
+    "prettier": "^2.1.1",
+    "prettier-plugin-solidity": "^1.0.0-alpha.57",
+    "truffle": "^5.1.42"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run pretty && git add ."
+    }
+  }
 }
