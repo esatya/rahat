@@ -1,4 +1,5 @@
 const {Types} = require('mongoose');
+const {nanoid} = require('nanoid');
 const {DataUtils} = require('../../helpers/utils');
 
 const {ProjectModel} = require('../models');
@@ -228,7 +229,27 @@ const Project = {
     const totalAllocation = projectAllocation.reduce((acc, {token}) => acc + token, 0);
 
     return {totalAllocation, projectAllocation};
+  },
+
+  async generateAidConnectId(projectId) {
+    const project = await this.getById(projectId);
+    if (project.aid_connect && project.aid_connect.id) return {data: project};
+    const aid_connect_id = nanoid(12);
+    const newProject = await ProjectModel.findOneAndUpdate(
+      {_id: projectId},
+      {aid_connect: {id: aid_connect_id, isActive: true}},
+      {new: true}
+    );
+    return {data: newProject};
+  },
+
+  async getByAidConnectId(aidConnectId) {
+    return ProjectModel.findOne({'aid_connect.id': aidConnectId});
   }
+
+  // async importFromAidConnect() {
+
+  // }
 };
 
 module.exports = {
@@ -252,5 +273,6 @@ module.exports = {
   },
   remove: req => Project.remove(req.params.id, req.currentUser),
   update: req => Project.update(req.params.id, req.payload, req.currentUser),
-  uploadAndAddBenfToProject: req => Project.uploadAndAddBenfToProject(req.params.id, req.payload)
+  uploadAndAddBenfToProject: req => Project.uploadAndAddBenfToProject(req.params.id, req.payload),
+  generateAidConnectId: req => Project.generateAidConnectId(req.params.id)
 };
