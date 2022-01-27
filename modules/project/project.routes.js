@@ -60,7 +60,8 @@ const routes = {
     '/{id}/vendors',
     'List vendors registered to the project',
     [VENDOR.READ, VENDOR.ADMIN]
-  ]
+  ],
+  generateAidConnectId: ['GET', '/{id}/aid-connect', 'generate the aid-connect id']
 };
 
 /**
