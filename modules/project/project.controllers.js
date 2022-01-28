@@ -1,13 +1,15 @@
 const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
+const config = require('config');
 const {DataUtils} = require('../../helpers/utils');
-
 const {ProjectModel} = require('../models');
 const {Beneficiary} = require('../beneficiary/beneficiary.controllers');
 const {Vendor} = require('../vendor/vendor.controllers');
 const {readExcelFile, removeFile, uploadFile} = require('../../helpers/utils/fileManager');
 const {getByWalletAddress} = require('../user/user.controllers');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
+
+const aidConnectBaseURL = config.get('app.aid-connect-url');
 
 const Project = {
   // TODO: implement blockchain function using project._id
@@ -233,23 +235,40 @@ const Project = {
 
   async generateAidConnectId(projectId) {
     const project = await this.getById(projectId);
-    if (project.aid_connect && project.aid_connect.id) return {data: project};
+    if (project.aid_connect && project.aid_connect.id)
+      return {
+        data: {...project.aid_connect, link: `${aidConnectBaseURL}/${project.aid_connect.id}`}
+      };
     const aid_connect_id = nanoid(12);
     const newProject = await ProjectModel.findOneAndUpdate(
       {_id: projectId},
       {aid_connect: {id: aid_connect_id, isActive: true}},
       {new: true}
     );
-    return {data: newProject};
+
+    return {
+      data: {...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}`}
+    };
   },
 
-  async getByAidConnectId(aidConnectId) {
+  async changeAidConnectStatus(projectId, payload) {
+    const {isActive} = payload;
+    const {aid_connect} = await this.getById(projectId);
+    if (!aid_connect.id)
+      return {data: null, message: 'Aid-Connect Link Not Found for this project'};
+    const newProject = await ProjectModel.findOneAndUpdate(
+      {_id: projectId},
+      {aid_connect: {id: aid_connect.id, isActive}},
+      {new: true}
+    );
+    return {
+      data: {...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}`}
+    };
+  },
+
+  getByAidConnectId(aidConnectId) {
     return ProjectModel.findOne({'aid_connect.id': aidConnectId});
   }
-
-  // async importFromAidConnect() {
-
-  // }
 };
 
 module.exports = {
@@ -274,5 +293,6 @@ module.exports = {
   remove: req => Project.remove(req.params.id, req.currentUser),
   update: req => Project.update(req.params.id, req.payload, req.currentUser),
   uploadAndAddBenfToProject: req => Project.uploadAndAddBenfToProject(req.params.id, req.payload),
-  generateAidConnectId: req => Project.generateAidConnectId(req.params.id)
+  generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
+  changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload)
 };
