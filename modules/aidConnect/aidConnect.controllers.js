@@ -11,7 +11,8 @@ const AidConnect = {
   async checkId(aidConnectId) {
     const project = await Project.getByAidConnectId(aidConnectId);
     if (!project) return {data: false, message: 'Invalid aid-connect Link'};
-    return {data: project.aid_connect};
+    const data = {...project.aid_connect, projectName: project.name, projectId: project._id};
+    return {data};
   },
 
   async add(payload) {
