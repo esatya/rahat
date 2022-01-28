@@ -81,5 +81,12 @@ module.exports = {
   },
   generateAidConnectId: {
     params: GooseJoi.id()
+  },
+
+  changeAidConnectStatus: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      isActive: Joi.bool()
+    })
   }
 };
