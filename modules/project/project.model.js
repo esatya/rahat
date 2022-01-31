@@ -40,6 +40,10 @@ const schema = {
     description: 'ID of agency that the project belongs to'
   },
   serial_index: {type: Number, required: true},
+  aid_connect: {
+    id: {type: String, unique: true},
+    isActive: {type: Boolean, default: false}
+  },
   ...commonSchema
 };
 
