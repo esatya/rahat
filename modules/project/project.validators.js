@@ -78,5 +78,15 @@ module.exports = {
       photo: Beneficiary.photo,
       govt_id_image: Beneficiary.govt_id_image
     }).label('Beneficiary')
+  },
+  generateAidConnectId: {
+    params: GooseJoi.id()
+  },
+
+  changeAidConnectStatus: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      isActive: Joi.bool()
+    })
   }
 };
