@@ -2,9 +2,9 @@ const WebSocket = require('ws');
 const crypto = require('crypto');
 
 let clients = [];
-let wss = {};
+let wss = null;
 
-wss.create = server => {
+const create = server => {
   wss = new WebSocket.Server({server, clientTracking: true});
 
   wss.on('connection', ws => {
@@ -43,17 +43,17 @@ wss.create = server => {
   });
 };
 
-wss.getCliet = clientId => {
+const getClient = clientId => {
   if (!clientId) return 'Please send client id';
   let client = clients.find(d => d.id === parseInt(clientId, 10));
   if (!client) client = clients.find(d => d.name === clientId);
   return client;
 };
 
-wss.sendToClient = (clientId, data) => {
+const sendToClient = (clientId, data) => {
   try {
     if (typeof data === 'string') data = {message: data};
-    const client = wss.getClient(clientId);
+    const client = getClient(clientId);
     if (!client) return 'Invalid Client ID.';
     return client.ws.sendJson(data);
   } catch (e) {
@@ -62,13 +62,12 @@ wss.sendToClient = (clientId, data) => {
   }
 };
 
-wss.getClientsList = () => clients.map(d => d.id);
+const getClientsList = () => clients.map(d => d.id);
 
-wss.broadcast = msg => {
-  console.log(msg);
-  clients.forEach(function each(client) {
-    client.ws.sendJson(msg);
-  });
+module.exports = {
+  create,
+  wss,
+  getClient,
+  getClientsList,
+  sendToClient
 };
-
-module.exports = wss;
