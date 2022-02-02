@@ -1,6 +1,6 @@
 const pino = require('pino');
 
-const { ENV } = require('../../constants');
+const {ENV} = require('../../constants');
 
 let defaultLogger = null;
 
@@ -11,11 +11,11 @@ class Logger {
       const currentEnv = process.env.NODE_ENV;
       const prettySettings = {
         colorize: true,
-        translateTime: true,
+        translateTime: true
       };
       const settings = {
         prettyPrint: currentEnv !== ENV.PRODUCTION ? prettySettings : false,
-        level: logLevel,
+        level: logLevel
       };
       defaultLogger = pino(settings);
       defaultLogger.info(`log level: ${logLevel}`);

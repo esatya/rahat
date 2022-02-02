@@ -1,7 +1,7 @@
 const Joi = require('joi');
-const { example } = require('joi');
+const {example} = require('joi');
 const MobilizerModel = require('./mobilizer.model');
-const { VendorConstants } = require('../../constants');
+const {VendorConstants} = require('../../constants');
 
 const GooseJoi = require('../../helpers/utils/goosejoi');
 
@@ -10,21 +10,21 @@ const Mobilizer = GooseJoi.convert(MobilizerModel);
 module.exports = {
   add: {
     payload: Joi.object({
-      name: Mobilizer.name.optional().example('Rastra'),
-      phone: Mobilizer.phone.optional().example('12121212'),
-      wallet_address: Mobilizer.wallet_address.optional().example('0x00000'),
-      email: Mobilizer.email.example('rastra@gmail.com'),
-      address: Mobilizer.address.example('nepal'),
+      name: Mobilizer.name.example('Rastra'),
+      phone: Mobilizer.phone.example('12121212'),
+      wallet_address: Mobilizer.wallet_address.example('0x00000'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
+      email: Mobilizer.email.optional().example('rastra@gmail.com'),
+      address: Mobilizer.address.optional().example('nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
       photo: Joi.string().description('Photo').optional(),
-      organization: Mobilizer.organization.example('rumsan'),
-    }).label('Mobilizer'),
+      organization: Mobilizer.organization.optional().example('rumsan')
+    }).label('Mobilizer')
   },
   getbyId: {
     params: Joi.object({
-      id: Joi.string(),
-    }),
+      id: Joi.string()
+    })
   },
   list: {
     query: Joi.object({
@@ -33,11 +33,11 @@ module.exports = {
       name: Joi.string(),
       projectId: Joi.string(),
       status: Joi.string(),
-      show_archive: Joi.bool(),
-    }),
+      show_archive: Joi.bool()
+    })
   },
   remove: {
-    params: GooseJoi.id(),
+    params: GooseJoi.id()
   },
   update: {
     params: GooseJoi.id(),
@@ -49,41 +49,53 @@ module.exports = {
       address: Mobilizer.address.example('nepal'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
       govt_id_image: Mobilizer.govt_id_image.example('http://source'),
-      organization: Mobilizer.organization.example('rumsan'),
-    }).label('Mobilizer'),
+      organization: Mobilizer.organization.example('rumsan')
+    }).label('Mobilizer')
   },
 
   approve: {
     payload: Joi.object({
       wallet_address: Joi.string().required().example('0x00'),
-      projectId: Joi.string(),
-    }),
+      projectId: Joi.string()
+    })
   },
   changeStatus: {
     params: Joi.object({
-      id: Joi.string(),
+      id: Joi.string()
     }),
     payload: Joi.object({
-      status: Joi.string().valid(...Object.values(VendorConstants.status)),
+      status: Joi.string().valid(...Object.values(VendorConstants.status))
+    })
+  },
+
+  updateStatusInProject: {
+    params: Joi.object({
+      id: Joi.string()
     }),
+    payload: Joi.object({
+      status: Joi.string(),
+      projectId: Joi.string()
+    })
   },
 
   register: {
     payload: Joi.object({
       name: Mobilizer.name.optional().example('Rastra'),
       phone: Mobilizer.phone.optional().example('12121212'),
-      wallet_address: Mobilizer.wallet_address.example('0x172d77Ff5cB061FE2dc77C149f5608789152d642'),
+      wallet_address: Mobilizer.wallet_address.example(
+        '0x172d77Ff5cB061FE2dc77C149f5608789152d642'
+      ),
       email: Mobilizer.email.example('rastra@gmail.com'),
       address: Mobilizer.address.example('nepal'),
       organization: Mobilizer.organization.example('rumsan'),
       govt_id: Mobilizer.govt_id.example('99988777nepal'),
       govt_id_image: Joi.string().description('ID Image').optional(),
-      photo: Joi.string().description('Photo').optional(),
-    }),
+      photo: Joi.string().description('Photo').optional()
+    })
   },
   getTransactions: {
     params: Joi.object({
-      id: Joi.string(),
-    }),
-  },
+      id: Joi.string()
+    })
+  }
 };

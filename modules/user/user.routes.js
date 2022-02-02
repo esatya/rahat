@@ -1,6 +1,6 @@
 const validators = require('./user.validators');
 const controllers = require('./user.controllers');
-const { USER } = require('../../constants/permissions');
+const {USER} = require('../../constants/permissions');
 
 const routes = {
   add: ['POST', '', 'Add a new user', [USER.WRITE, USER.ADMIN]],
@@ -14,7 +14,7 @@ const routes = {
   updateStatus: ['PATCH', '/{id}/status', 'Make user active or inactive', [USER.WRITE, USER.ADMIN]],
   addRoles: ['PATCH', '/{id}/roles', 'Add roles to a user', [USER.WRITE, USER.ADMIN]],
   removeRoles: ['DELETE', '/{id}/roles', 'Remove roles from user', [USER.WRITE, USER.ADMIN]],
-  register: ['POST', '/register', 'Register a new user'],
+  register: ['POST', '/register', 'Register a new user']
 };
 
 /**
@@ -26,7 +26,7 @@ function register(app) {
     name: 'users',
     routes,
     validators,
-    controllers,
+    controllers
   });
 }
 
