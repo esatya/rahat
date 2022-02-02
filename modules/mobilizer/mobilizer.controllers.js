@@ -7,6 +7,9 @@ const {MobilizerModel} = require('../models');
 const {MobilizerConstants} = require('../../constants');
 const {Agency} = require('../agency/agency.controllers');
 const UserController = require('../user/user.controllers');
+const {Notification} = require('../notification/notification.controller');
+const CONSTANT = require('../../constants');
+
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 
@@ -18,7 +21,11 @@ const Mobilizer = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return MobilizerModel.create(payload);
+    const mobilizer = await MobilizerModel.create(payload);
+    await Notification.create(
+      CONSTANT.BROADCAST_TYPE.vendor_registered(mobilizer.name, mobilizer.created_at)
+    );
+    return mobilizer;
   },
 
   async register(agencyId, payload) {
