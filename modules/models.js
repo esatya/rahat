@@ -9,6 +9,7 @@ const TokenDistributionModel = require('./beneficiary/tokenDistribution.model');
 const TokenRedemptionModel = require('./beneficiary/tokenRedemption.model');
 const MobilizerModel = require('./mobilizer/mobilizer.model');
 const NftModel = require('./nft/nft.model');
+const NotificationModel = require('./notification/notification.model');
 
 function registerModels(database) {}
 
@@ -24,5 +25,6 @@ module.exports = {
   TokenRedemptionModel,
   TxModel,
   MobilizerModel,
-  NftModel
+  NftModel,
+  NotificationModel
 };

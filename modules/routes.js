@@ -11,6 +11,7 @@ const setting = require('./app/app.routes');
 const transactions = require('./blockchain/blockchain.routes');
 const Mobilizer = require('./mobilizer/mobilizer.routes');
 const Nft = require('./nft/nft.routes');
+const Notification = require('./notification/notification.routes');
 
 module.exports = {
   setting,
@@ -25,5 +26,6 @@ module.exports = {
   user,
   transactions,
   Mobilizer,
-  Nft
+  Nft,
+  Notification
 };

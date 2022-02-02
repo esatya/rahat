@@ -35,6 +35,7 @@ module.exports = {
       })
     }).label('Vendor')
   },
+
   getbyId: {
     params: Joi.object({
       id: Joi.string()
