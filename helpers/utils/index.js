@@ -1,4 +1,4 @@
-const { DataUtils } = require('./data');
+const {DataUtils} = require('./data');
 const ObjectUtils = require('./object');
 
 class Utils {
@@ -9,4 +9,4 @@ class Utils {
   }
 }
 
-module.exports = { Utils, DataUtils, ObjectUtils };
+module.exports = {Utils, DataUtils, ObjectUtils};
