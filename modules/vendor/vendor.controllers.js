@@ -4,11 +4,13 @@ const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const {DataUtils} = require('../../helpers/utils');
 const {VendorModel} = require('../models');
+const {Notification} = require('../notification/notification.controller');
 const {TokenRedemption} = require('./vendorTokenRedemption.model');
 const {VendorConstants} = require('../../constants');
 const {Agency} = require('../agency/agency.controllers');
 const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
+const CONSTANT = require('../../constants');
 
 const {ObjectId} = Types;
 
@@ -30,6 +32,7 @@ const Vendor = {
       if (payload.extra_files)
         payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
       payload.projects = payload.projects ? payload.projects.split(',') : [];
+
       return VendorModel.create(payload);
     } catch (err) {
       throw Error(err);
@@ -60,7 +63,13 @@ const Vendor = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return VendorModel.create(payload);
+    const vendor = await VendorModel.create(payload);
+    const notifiactionMessage = CONSTANT.BROADCAST_TYPE.vendor_registered(
+      vendor.name,
+      vendor.created_at
+    );
+    await Notification.create(notifiactionMessage);
+    return vendor;
   },
 
   decodeBase64Image(dataString) {
