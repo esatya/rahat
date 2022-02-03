@@ -12,5 +12,12 @@ module.exports = {
       message: Notification.message.example('Notification message'),
       notificationType: Notification.notificationType.example('Notification Type')
     }).label('notification')
+  },
+  list: {
+    query: Joi.object({
+      start: Joi.number(),
+      limit: Joi.number(),
+      show_archive: Joi.bool()
+    })
   }
 };

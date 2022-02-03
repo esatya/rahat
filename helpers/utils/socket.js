@@ -65,10 +65,8 @@ wss.sendToClient = (clientId, data) => {
 wss.getClientsList = () => clients.map(d => d.id);
 
 wss.broadcast = msg => {
-  console.log(msg);
-  console.log({clients});
   clients.forEach(function each(client) {
-    client.ws.sendJson(msg);
+    client.ws.sendJson({...msg, action: 'notification'});
   });
 };
 

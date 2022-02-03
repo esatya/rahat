@@ -21,11 +21,7 @@ const Mobilizer = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    const mobilizer = await MobilizerModel.create(payload);
-    await Notification.create(
-      CONSTANT.BROADCAST_TYPE.vendor_registered(mobilizer.name, mobilizer.created_at)
-    );
-    return mobilizer;
+    return MobilizerModel.create(payload);
   },
 
   async register(agencyId, payload) {
@@ -34,7 +30,11 @@ const Mobilizer = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return MobilizerModel.create(payload);
+    const mobilizer = await MobilizerModel.create(payload);
+    await Notification.create(
+      CONSTANT.BROADCAST_TYPE.vendor_registered(mobilizer.name, mobilizer.created_at)
+    );
+    return mobilizer;
   },
 
   decodeBase64Image(dataString) {

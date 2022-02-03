@@ -2,7 +2,8 @@ const validators = require('./notification.validator');
 const controllers = require('./notification.controller');
 
 const routes = {
-  create: ['POST', '', 'Add new notification', []]
+  create: ['POST', '', 'Add new notification', []],
+  list: ['GET', '', 'List all vendors.', []]
 };
 
 /**

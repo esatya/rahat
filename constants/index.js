@@ -65,23 +65,24 @@ const CONSTANTS = {
     Response: 'RESPONSE'
   },
   BROADCAST_TYPE: {
-    vendor_registered: ({name = '', date = ''}) => ({
+    vendor_registered: (name = '', date = '') => ({
       title: 'New Vendor Registered',
-      type: 'Vendor',
+      notificationType: 'Vendor Registered',
       message: `${name} registered as a Vendor at ${date}`
     }),
 
-    mobilizer_registered: ({name = '', date = ''}) => ({
+    mobilizer_registered: (name = '', date = '') => ({
       title: 'New Mobilizer Registered',
-      type: 'Mobilizer',
+      notificationType: 'Mobilizer Registered',
       message: `${name} registered as a Mobilizer at ${date}`
     })
   },
   NOTIFICATION_ENUMS: () => {
     const enums = [
-      ...Object.keys(CONSTANTS.BROADCAST_TYPE).map(item => CONSTANTS.BROADCAST_TYPE[item]({}).type)
+      ...Object.keys(CONSTANTS.BROADCAST_TYPE).map(
+        item => CONSTANTS.BROADCAST_TYPE[item]().notificationType
+      )
     ];
-    console.log({enums});
     return enums;
   }
 };
