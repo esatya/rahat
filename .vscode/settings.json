@@ -24,5 +24,6 @@
     "html",
     "vue",
     "markdown"
-  ]
+  ],
+  "window.zoomLevel": -1
 }
