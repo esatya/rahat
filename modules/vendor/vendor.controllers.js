@@ -33,14 +33,7 @@ const Vendor = {
         payload.extra_files = await this.uploadExtraFiles(payload.extra_files);
       payload.projects = payload.projects ? payload.projects.split(',') : [];
 
-      const vendor = await VendorModel.create(payload);
-      console.log({vendor});
-
-      await Notification.create(
-        CONSTANT.BROADCAST_TYPE.vendor_registered(vendor.name, vendor.created_at)
-      );
-
-      return vendor;
+      return VendorModel.create(payload);
     } catch (err) {
       throw Error(err);
     }
@@ -70,7 +63,13 @@ const Vendor = {
     const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
-    return VendorModel.create(payload);
+    const vendor = await VendorModel.create(payload);
+    const notifiactionMessage = CONSTANT.BROADCAST_TYPE.vendor_registered(
+      vendor.name,
+      vendor.created_at
+    );
+    await Notification.create(notifiactionMessage);
+    return vendor;
   },
 
   decodeBase64Image(dataString) {
