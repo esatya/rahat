@@ -26,6 +26,15 @@ const schema = {
     enum: CONSTANTS.NOTIFICATION_ENUMS(),
     joi: Joi.string()
   },
+  status: {
+    type: Boolean,
+    default: false,
+    joi: Joi.bool()
+  },
+  redirectUrl: {
+    type: String,
+    joi: Joi.string()
+  },
   ...commonSchema
 };
 
