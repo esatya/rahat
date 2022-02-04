@@ -1,13 +1,15 @@
 const {NotificationModel} = require('../models');
 const wss = require('../../helpers/utils/socket');
-const {DataUtils} = require('../../helpers/utils');
+const {DataUtils, NOTIFICATION_HELPER} = require('../../helpers/utils');
 
 const Notification = {
   async create(payload) {
+    const {type, ...newlyRegistered} = payload;
     try {
-      const notification = await NotificationModel.create(payload);
-      const {title, message, date, notificationType} = notification;
-      wss.broadcast({title, message, date, notificationType});
+      const generatedNotification = NOTIFICATION_HELPER(type, newlyRegistered);
+      const notification = await NotificationModel.create(generatedNotification);
+      const {title, message, date, notificationType, status, redirectUrl} = notification;
+      wss.broadcast({title, message, date, notificationType, status, redirectUrl});
       return notification;
     } catch (err) {
       throw Error(err);
