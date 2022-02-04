@@ -3,7 +3,8 @@ const controllers = require('./notification.controller');
 
 const routes = {
   create: ['POST', '', 'Add new notification', []],
-  list: ['GET', '', 'List all vendors.', []]
+  list: ['GET', '', 'List all notifications.', []],
+  update: ['PATCH', '/update/{id}', 'Update notifications.', []]
 };
 
 /**

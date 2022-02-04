@@ -16,7 +16,7 @@ const Notification = {
     }
   },
 
-  list(query) {
+  async list(query) {
     const start = query.start || 0;
     const limit = query.limit || 5;
     const $match = {
@@ -33,11 +33,17 @@ const Notification = {
       model: NotificationModel,
       query: [{$match}]
     });
+  },
+  async update(params, payload) {
+    console.log({params});
+    const {id} = params;
+    return NotificationModel.findByIdAndUpdate(id, payload, {returnOriginal: false});
   }
 };
 
 module.exports = {
   Notification,
   create: req => Notification.create(req.payload),
-  list: req => Notification.list(req.query)
+  list: req => Notification.list(req.query),
+  update: req => Notification.update(req.params, req.payload)
 };
