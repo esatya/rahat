@@ -64,11 +64,10 @@ const Vendor = {
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
     const vendor = await VendorModel.create(payload);
-    const notifiactionMessage = CONSTANT.BROADCAST_TYPE.vendor_registered(
-      vendor.name,
-      vendor.created_at
-    );
-    await Notification.create(notifiactionMessage);
+    await Notification.create({
+      type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+      ...vendor._doc
+    });
     return vendor;
   },
 
