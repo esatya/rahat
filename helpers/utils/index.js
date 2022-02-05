@@ -1,5 +1,6 @@
 const {DataUtils} = require('./data');
 const ObjectUtils = require('./object');
+const NOTIFICATION_HELPER = require('./notification');
 
 class Utils {
   static getRandomInt(min, max) {
@@ -9,4 +10,4 @@ class Utils {
   }
 }
 
-module.exports = {Utils, DataUtils, ObjectUtils};
+module.exports = {Utils, DataUtils, ObjectUtils, NOTIFICATION_HELPER};

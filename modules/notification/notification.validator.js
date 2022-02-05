@@ -19,5 +19,11 @@ module.exports = {
       limit: Joi.number(),
       show_archive: Joi.bool()
     })
+  },
+  update: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      status: Notification.status.example('True or false')
+    })
   }
 };

@@ -31,9 +31,10 @@ const Mobilizer = {
     payload.govt_id_image = ipfsIdHash;
     payload.photo = ipfsPhotoHash;
     const mobilizer = await MobilizerModel.create(payload);
-    await Notification.create(
-      CONSTANT.BROADCAST_TYPE.vendor_registered(mobilizer.name, mobilizer.created_at)
-    );
+    await Notification.create({
+      type: CONSTANT.NOTIFICATION_TYPES.mobilizer_registered,
+      ...mobilizer._doc
+    });
     return mobilizer;
   },
 
