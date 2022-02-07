@@ -4,7 +4,6 @@ const SMS_SERVICE = require('../../helpers/utils/sms');
 
 const Sms = {
   async sendSmsOnPackageIssue(payload) {
-    console.log('send sms package', payload);
     const {packageName, phone} = payload;
     const agency = await Agency.getFirst();
     const sms_payload = {
@@ -18,8 +17,6 @@ const Sms = {
     return SMS_SERVICE.send_sms(sms_payload);
   },
   async sendSmsOnTokenIssue(payload) {
-    console.log('send sms token', payload);
-
     const {token, phone} = payload;
 
     const agency = await Agency.getFirst();
