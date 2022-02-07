@@ -40,6 +40,8 @@ class Messenger {
   }
 
   async send(payload) {
+    const isEmailService = config.get('app.email_on');
+    if (!isEmailService) return null;
     const me = this;
     const sender = 'rahat@rumsan.com';
 
@@ -52,12 +54,15 @@ class Messenger {
       template.subject = payload.subject;
     }
 
-    return transporter.sendMail({
-      from: template.from,
-      subject: template.subject,
-      to: payload.to,
-      html: me.getHtmlBody(template.from, payload.template, payload.data)
-    });
+    return transporter
+      .sendMail({
+        from: template.from,
+        subject: template.subject,
+        to: payload.to,
+        html: me.getHtmlBody(template.from, payload.template, payload.data)
+      })
+      .then(() => transporter.close())
+      .catch(err => console.log({err}));
   }
 
   checkNotifyMethod(data) {

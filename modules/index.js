@@ -9,6 +9,7 @@ const {App} = require('./app/app.controllers');
 const {Mobilizer} = require('./mobilizer/mobilizer.controllers');
 const {Nft} = require('./nft/nft.controller');
 const {Notification} = require('./notification/notification.controller');
+const {Sms} = require('./sms/sms.controller');
 
 module.exports = {
   Agency,
@@ -21,5 +22,6 @@ module.exports = {
   App,
   Mobilizer,
   Nft,
-  Notification
+  Notification,
+  Sms
 };
