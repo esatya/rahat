@@ -9,6 +9,7 @@ const {Agency} = require('../agency/agency.controllers');
 const UserController = require('../user/user.controllers');
 const {Notification} = require('../notification/notification.controller');
 const CONSTANT = require('../../constants');
+const User = require('../user/user.controllers');
 
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
@@ -35,6 +36,11 @@ const Mobilizer = {
       type: CONSTANT.NOTIFICATION_TYPES.mobilizer_registered,
       ...mobilizer._doc
     });
+    await User.sendMailToAdmin({
+      template: CONSTANT.NOTIFICATION_TYPES.mobilizer_registered,
+      data: {user_id: mobilizer._id, user_name: mobilizer?.name}
+    });
+
     return mobilizer;
   },
 
