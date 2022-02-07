@@ -48,6 +48,11 @@ module.exports = {
   getbyId: {
     params: GooseJoi.id()
   },
+  checkBeneficiary: {
+    params: Joi.object({
+      phone: Joi.string()
+    })
+  },
   remove: {
     params: GooseJoi.id()
   },
