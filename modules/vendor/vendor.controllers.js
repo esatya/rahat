@@ -8,6 +8,8 @@ const {Notification} = require('../notification/notification.controller');
 const {TokenRedemption} = require('./vendorTokenRedemption.model');
 const {VendorConstants} = require('../../constants');
 const {Agency} = require('../agency/agency.controllers');
+const User = require('../user/user.controllers');
+
 const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 const CONSTANT = require('../../constants');
@@ -68,6 +70,12 @@ const Vendor = {
       type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
       ...vendor._doc
     });
+
+    await User.sendMailToAdmin({
+      template: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+      data: {user_id: vendor._id, user_name: vendor?.name}
+    });
+
     return vendor;
   },
 
