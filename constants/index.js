@@ -73,6 +73,10 @@ const CONSTANTS = {
       ...Object.keys(CONSTANTS.NOTIFICATION_TYPES).map(item => CONSTANTS.NOTIFICATION_TYPES[item])
     ];
     return enums;
+  },
+  SMS_TRIGGER_TYPE: {
+    tokenIssued: 'token_issued',
+    packageIssued: 'package_issued'
   }
 };
 
