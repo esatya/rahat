@@ -8,6 +8,7 @@ const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
+const Mailer = require('../../helpers/utils/mailer');
 
 const User = new RSUser.User({
   mongoose,
@@ -156,6 +157,31 @@ const controllers = {
 
     query.push({$sort: sort});
     return User.model.aggregate(query);
+  },
+
+  async listAdmins() {
+    const query = [
+      {
+        $match: {roles: ROLES.ADMIN}
+      }
+    ];
+    return User.model.aggregate(query);
+  },
+  async sendMailToAdmin(mailPayload = {}) {
+    try {
+      const admins = await this.listAdmins();
+      if (!admins.length) return null;
+      return Promise.all(
+        admins.map(admin =>
+          Mailer.send({
+            ...mailPayload,
+            to: admin.email
+          })
+        )
+      );
+    } catch (err) {
+      console.error('Error while sending mail to admins ===>', err);
+    }
   },
 
   async checkUser(request) {

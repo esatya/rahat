@@ -30,7 +30,7 @@ const schema = {
     required: true,
     description: 'Mobilizer phone'
   },
-  email: {type: String, unique: true},
+  email: {type: String, unique: true, sparse: true},
   address: {type: String, description: 'Mobilizer permanent address'},
   govt_id: {type: String, description: 'Mobilizer government issued ID'},
   govt_id_image: {
