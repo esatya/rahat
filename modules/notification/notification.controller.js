@@ -35,7 +35,6 @@ const Notification = {
     });
   },
   async update(params, payload) {
-    console.log({params});
     const {id} = params;
     return NotificationModel.findByIdAndUpdate(id, payload, {returnOriginal: false});
   }

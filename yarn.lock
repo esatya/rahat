@@ -5692,6 +5692,18 @@ handlebars@^4.5.3:
   optionalDependencies:
     uglify-js "^3.1.4"
 
+handlebars@^4.7.7:
+  version "4.7.7"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.7.tgz#9ce33416aad02dbd6c8fafa8240d5d98004945a1"
+  integrity sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA==
+  dependencies:
+    minimist "^1.2.5"
+    neo-async "^2.6.0"
+    source-map "^0.6.1"
+    wordwrap "^1.0.0"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
 hapi-swagger-static@^2.0.13:
   version "2.0.13"
   resolved "https://registry.yarnpkg.com/hapi-swagger-static/-/hapi-swagger-static-2.0.13.tgz#eadf7ac1fe6eb411db2b6cac9b7cec53973f1401"
@@ -8560,6 +8572,11 @@ node-notifier@^8.0.0:
     shellwords "^0.1.1"
     uuid "^8.3.0"
     which "^2.0.2"
+
+nodemailer@^6.7.2:
+  version "6.7.2"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.7.2.tgz#44b2ad5f7ed71b7067f7a21c4fedabaec62b85e0"
+  integrity sha512-Dz7zVwlef4k5R71fdmxwR8Q39fiboGbu3xgswkzGwczUfjp873rVxt1O46+Fh0j1ORnAC6L9+heI8uUpO6DT7Q==
 
 normalize-package-data@^2.3.2, normalize-package-data@^2.5.0:
   version "2.5.0"
