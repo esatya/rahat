@@ -4,13 +4,13 @@ const {BENEFICIARY} = require('../../constants/permissions');
 const routes = {
   sendSmsOnTokenIssue: [
     'POST',
-    '/sms_token',
+    '/token',
     'Send SMS when token issued',
     [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]
   ],
   sendSmsOnPackageIssue: [
     'POST',
-    '/sms_package',
+    '/package',
     'Send SMS when package issued',
     [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]
   ]
