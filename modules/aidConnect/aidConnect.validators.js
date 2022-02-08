@@ -25,8 +25,8 @@ module.exports = {
     query: Joi.object({
       start: Joi.number(),
       limit: Joi.number(),
-      name: Joi.string(),
-      phone: Joi.string()
+      name: Joi.string().allow(''),
+      phone: Joi.string().allow('')
     })
   },
   addMany: {
@@ -54,7 +54,10 @@ module.exports = {
     })
   },
   remove: {
-    params: GooseJoi.id()
+    params: Joi.object({
+      aidConnectId: Joi.string(),
+      id: Joi.string()
+    })
   },
   update: {
     params: GooseJoi.id(),
