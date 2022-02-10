@@ -13,7 +13,7 @@ const routes = {
   update: ['POST', '/{id}', 'Update user data', [USER.WRITE, USER.ADMIN]],
   updateStatus: ['PATCH', '/{id}/status', 'Make user active or inactive', [USER.WRITE, USER.ADMIN]],
   addRoles: ['PATCH', '/{id}/roles', 'Add roles to a user', [USER.WRITE, USER.ADMIN]],
-  removeRoles: ['DELETE', '/{id}/roles', 'Remove roles from user', [USER.WRITE, USER.ADMIN]],
+  removeRole: ['DELETE', '/{id}/roles', 'Remove roles from user', [USER.WRITE, USER.ADMIN]],
   register: ['POST', '/register', 'Register a new user']
 };
 
