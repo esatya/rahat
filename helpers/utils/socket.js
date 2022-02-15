@@ -43,7 +43,7 @@ wss.create = server => {
   });
 };
 
-wss.getCliet = clientId => {
+wss.getClient = clientId => {
   if (!clientId) return 'Please send client id';
   let client = clients.find(d => d.id === parseInt(clientId, 10));
   if (!client) client = clients.find(d => d.name === clientId);
