@@ -41,7 +41,7 @@ const schema = {
   },
   serial_index: {type: Number, required: true},
   aid_connect: {
-    id: {type: String, unique: true},
+    id: {type: String, unique: true, sparse: true},
     isActive: {type: Boolean, default: false}
   },
   ...commonSchema
