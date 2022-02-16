@@ -85,6 +85,14 @@ const controllers = {
     return User.update(userId, data);
   },
 
+  async removeRole(request) {
+    const userId = request.params.id;
+    const {role} = request.payload;
+    const isValid = await Role.isValidRole(role);
+    if (!isValid) throw Error('role does not exist');
+    return User.removeRole({user_id: userId, role});
+  },
+
   async listByRole(req) {
     const {limit = 500, start = 0} = req.query;
     const {role} = req.params;

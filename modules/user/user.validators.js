@@ -54,6 +54,13 @@ module.exports = {
     })
   },
 
+  removeRole: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      role: Joi.string()
+    })
+  },
+
   checkUser: {
     payload: Joi.object({
       email: Joi.string().optional(),

@@ -7,7 +7,7 @@ const routes = {
   addMany: ['POST', '/{aidConnectId}/beneficiaries', 'Add a beneficiary in bulk'],
   getbyId: ['GET', '/{aidConnectId}/beneficiaries/{id}', 'Get an beneficiary by Phone , id.'],
   // update: ['PUT', '/{id}', 'Update beneficiary details.'],
-  // remove: ['DELETE', '/{id}', 'Remove and archive a beneficiary,'],
+  remove: ['DELETE', '/{aidConnectId}/{id}', 'Remove and archive a beneficiary,'],
   checkId: ['GET', '/{aidConnectId}', 'check aidconnectId']
 };
 
