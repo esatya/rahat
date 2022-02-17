@@ -66,6 +66,7 @@ const server = new Hapi.Server({
 });
 // connect websocket
 ws.create(server.listener);
+ws.getClient(1, 'hello');
 app.connectServer(server);
 
 const swaggerOptions = {
