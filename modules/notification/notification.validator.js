@@ -17,6 +17,7 @@ module.exports = {
     query: Joi.object({
       start: Joi.number(),
       limit: Joi.number(),
+      status: Joi.bool(),
       show_archive: Joi.bool()
     })
   },

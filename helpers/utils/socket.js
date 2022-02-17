@@ -43,7 +43,7 @@ wss.create = server => {
   });
 };
 
-wss.getClient = clientId => {
+const getClient = clientId => {
   if (!clientId) return 'Please send client id';
   let client = clients.find(d => d.id === parseInt(clientId, 10));
   if (!client) client = clients.find(d => d.name === clientId);
@@ -53,7 +53,7 @@ wss.getClient = clientId => {
 wss.sendToClient = (clientId, data) => {
   try {
     if (typeof data === 'string') data = {message: data};
-    const client = wss.getClient(clientId);
+    const client = getClient(clientId);
     if (!client) return 'Invalid Client ID.';
     return client.ws.sendJson(data);
   } catch (e) {
@@ -69,5 +69,8 @@ wss.broadcast = msg => {
     client.ws.sendJson({...msg, action: 'notification'});
   });
 };
-
-module.exports = wss;
+const SocketMethods = {
+  ...wss,
+  getClient
+};
+module.exports = SocketMethods;

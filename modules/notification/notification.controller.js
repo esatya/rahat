@@ -23,9 +23,8 @@ const Notification = {
       is_archived: false
     };
     if (query.show_archive) $match.is_archived = true;
-
+    if (typeof query.status === 'boolean') $match.status = query.status;
     const sort = {created_at: -1};
-
     return DataUtils.paging({
       start,
       limit,
