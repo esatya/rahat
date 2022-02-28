@@ -57,13 +57,21 @@ This is a mobile friendly vendor user interface that can request fund from benef
 
 This is a mobile friendly mobilizer user interface that can onboard beneficiries to the agency. It is a fully functioning mobile wallet that mobilizer can use to register beneficiaries and issue token to them.
 
-6. **Rahat Documentation** (https://github.com/esatya/rahat-documentation) 
+6. **Mobile-based vendor app** (https://github.com/esatya/rahat-vendor-app) 
+
+Rahat Vendor app is a wallet-based mobile app for the vendors of Rahat. It is used by the vendors, who provides aid material to beneficiaries in exchange of token, to receive and redeem token.
+
+7. **Rahat Documentation** (https://github.com/esatya/rahat-documentation) 
 
 This is a documentation website of Rahat built using [Docusaurus 2](https://docusaurus.io/). It is mainly focused on the technical documents of Rahat. 
 
-7. **Rahat UAT** (https://github.com/esatya/rahat-uat) 
+8. **Rahat UAT** (https://github.com/esatya/rahat-uat) 
 
 This includes the UI/UX User Acceptance Testing of Rahat Applications. 
+
+9. **Rumsan wallet**
+
+This is the wallet used by agencies to login and sign transactions in agency app.
 
 
 ![Rahat - System Workflow](https://pbs.twimg.com/media/Erl_kZdUUAActLM?format=jpg&name=medium)
@@ -92,6 +100,6 @@ This repository uses eslint to enforce air-bnb coding styles.
 When you deploy Rahat for production. Please make sure you backup the server's private key securely in an offline wallet, as it will contain some Ethers to perform various server tasks tasks.
 
 # Contributing
-Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in Gitter in case of any query/feedback/suggestion.
+Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in [Discord](https://discord.gg/AV5j2T94VR) in case of any query/feedback/suggestion.
 
-For more information on the contributing procedure, see [Contribution](https://github.com/esatya/rahat-agency/blob/master/CONTRIBUTING.md)
+For more information on the contributing procedure, see [Contribution](https://docs.rahat.io/docs/next/Contribution-Guidelines).

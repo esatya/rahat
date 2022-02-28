@@ -1,4 +1,4 @@
-module.exports = {
+const CONSTANTS = {
   ENV: {
     PRODUCTION: 'production',
     DEVELOPMENT: 'development',
@@ -63,5 +63,21 @@ module.exports = {
   RowType: {
     Example: 'EXAMPLE',
     Response: 'RESPONSE'
+  },
+  NOTIFICATION_TYPES: {
+    vendor_registered: 'Vendor Registered',
+    mobilizer_registered: 'Mobilizer Registered'
+  },
+  NOTIFICATION_ENUMS: () => {
+    const enums = [
+      ...Object.keys(CONSTANTS.NOTIFICATION_TYPES).map(item => CONSTANTS.NOTIFICATION_TYPES[item])
+    ];
+    return enums;
+  },
+  SMS_TRIGGER_TYPE: {
+    tokenIssued: 'token_issued',
+    packageIssued: 'package_issued'
   }
 };
+
+module.exports = CONSTANTS;
