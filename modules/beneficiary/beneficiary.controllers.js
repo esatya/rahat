@@ -247,6 +247,12 @@ const Beneficiary = {
     const project = await BeneficiaryModel.aggregate(query);
 
     return {totalCount, project};
+  },
+
+  async checkBeneficiary(phone) {
+    const ben = await BeneficiaryModel.findOne({phone});
+    if (ben) return {data: true, message: 'Beneficiary Exists'};
+    return {data: false, message: 'Invalid Beneficiary Phone/Id'};
   }
 };
 
@@ -265,5 +271,6 @@ module.exports = {
     const benfId = req.params.id;
     const {projectId} = req.payload;
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
-  }
+  },
+  checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone)
 };

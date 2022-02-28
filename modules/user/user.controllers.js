@@ -8,6 +8,7 @@ const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
+const Mailer = require('../../helpers/utils/mailer');
 
 const User = new RSUser.User({
   mongoose,
@@ -84,6 +85,14 @@ const controllers = {
     return User.update(userId, data);
   },
 
+  async removeRole(request) {
+    const userId = request.params.id;
+    const {role} = request.payload;
+    const isValid = await Role.isValidRole(role);
+    if (!isValid) throw Error('role does not exist');
+    return User.removeRole({user_id: userId, role});
+  },
+
   async listByRole(req) {
     const {limit = 500, start = 0} = req.query;
     const {role} = req.params;
@@ -156,6 +165,31 @@ const controllers = {
 
     query.push({$sort: sort});
     return User.model.aggregate(query);
+  },
+
+  async listAdmins() {
+    const query = [
+      {
+        $match: {roles: ROLES.ADMIN}
+      }
+    ];
+    return User.model.aggregate(query);
+  },
+  async sendMailToAdmin(mailPayload = {}) {
+    try {
+      const admins = await this.listAdmins();
+      if (!admins.length) return null;
+      return Promise.all(
+        admins.map(admin =>
+          Mailer.send({
+            ...mailPayload,
+            to: admin.email
+          })
+        )
+      );
+    } catch (err) {
+      console.error('Error while sending mail to admins ===>', err);
+    }
   },
 
   async checkUser(request) {

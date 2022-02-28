@@ -2,9 +2,9 @@ const WebSocket = require('ws');
 const crypto = require('crypto');
 
 let clients = [];
-let wss = null;
+let wss = {};
 
-const create = server => {
+wss.create = server => {
   wss = new WebSocket.Server({server, clientTracking: true});
 
   wss.on('connection', ws => {
@@ -50,7 +50,7 @@ const getClient = clientId => {
   return client;
 };
 
-const sendToClient = (clientId, data) => {
+wss.sendToClient = (clientId, data) => {
   try {
     if (typeof data === 'string') data = {message: data};
     const client = getClient(clientId);
@@ -62,12 +62,15 @@ const sendToClient = (clientId, data) => {
   }
 };
 
-const getClientsList = () => clients.map(d => d.id);
+wss.getClientsList = () => clients.map(d => d.id);
 
-module.exports = {
-  create,
-  wss,
-  getClient,
-  getClientsList,
-  sendToClient
+wss.broadcast = msg => {
+  clients.forEach(function each(client) {
+    client.ws.sendJson({...msg, action: 'notification'});
+  });
 };
+const SocketMethods = {
+  ...wss,
+  getClient
+};
+module.exports = SocketMethods;
