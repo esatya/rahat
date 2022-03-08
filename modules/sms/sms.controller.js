@@ -14,7 +14,8 @@ const Sms = {
       },
       smsType: SMS_TRIGGER_TYPE.packageIssued
     };
-    return SMS_SERVICE.send_sms(sms_payload);
+    const {data} = await SMS_SERVICE.send_sms(sms_payload);
+    return data;
   },
   async sendSmsOnTokenIssue(payload) {
     const {token, phone} = payload;
@@ -28,7 +29,8 @@ const Sms = {
       },
       smsType: SMS_TRIGGER_TYPE.tokenIssued
     };
-    return SMS_SERVICE.send_sms(sms_payload);
+    const {data} = await SMS_SERVICE.send_sms(sms_payload);
+    return data;
   }
 };
 module.exports = {
