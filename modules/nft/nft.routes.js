@@ -8,12 +8,7 @@ const routes = {
   getById: ['GET', '/{id}', 'Get nft by Id', [PROJECT.READ]],
   getByTokenId: ['GET', '/token/{id}', 'Get nft by tokenId'],
   mintTokens: ['PATCH', '/{id}/mint', 'Mint nft', [PROJECT.WRITE]],
-  getTotalPackageBalance: [
-    'POST',
-    '/total-package-balance',
-    'Get total package balance in fiat',
-    [PROJECT.READ]
-  ],
+  getTotalPackageBalance: ['POST', '/total-package-balance', 'Get total package balance in fiat'],
   getTokenIdsByProjects: [
     'POST',
     '/fetch-project-tokens',

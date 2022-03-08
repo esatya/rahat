@@ -53,7 +53,7 @@ const getClient = clientId => {
 wss.sendToClient = (clientId, data) => {
   try {
     if (typeof data === 'string') data = {message: data};
-    const client = getClient(clientId);
+    const client = clients.find(d => d.id === parseInt(clientId, 10));
     if (!client) return 'Invalid Client ID.';
     return client.ws.sendJson(data);
   } catch (e) {
