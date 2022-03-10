@@ -3,6 +3,7 @@ const VendorModel = require('./vendor.model');
 const {VendorConstants} = require('../../constants');
 
 const GooseJoi = require('../../helpers/utils/goosejoi');
+const {addTokenRedeemTx} = require('./vendor.controllers');
 
 const Vendor = GooseJoi.convert(VendorModel);
 
@@ -119,6 +120,37 @@ module.exports = {
     })
   },
   getTransactions: {
+    params: Joi.object({
+      id: Joi.string()
+    })
+  },
+
+  addChargeTokenTx: {
+    payload: Joi.object({
+      beneficiary_id: Joi.string().required(),
+      vendor_id: Joi.string(),
+      amount: Joi.number(),
+      txhash: Joi.string(),
+      success: Joi.bool()
+    })
+  },
+
+  listChargeTx: {
+    params: Joi.object({
+      id: Joi.string()
+    })
+  },
+
+  addTokenRedeemTx: {
+    payload: Joi.object({
+      vendor_wallet: Joi.string().required(),
+      amount: Joi.number(),
+      tx_hash: Joi.string(),
+      success: Joi.bool()
+    })
+  },
+
+  listTokenRedeemTx: {
     params: Joi.object({
       id: Joi.string()
     })

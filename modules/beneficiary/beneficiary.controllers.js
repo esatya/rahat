@@ -207,8 +207,8 @@ const Beneficiary = {
   },
 
   async distributeToken(id, payload) {
-    const beneficiary = await this.getbyId(id);
-    if (!beneficiary) app.error('Invalid beneficiary ID.', 401);
+    // const beneficiary = await this.getbyId(id);
+    // if (!beneficiary) app.error('Invalid beneficiary ID.', 401);
     return TokenDistributionModel.create(payload);
   },
 

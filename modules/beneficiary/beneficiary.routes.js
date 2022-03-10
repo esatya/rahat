@@ -32,8 +32,8 @@ const routes = {
   ],
   distributeToken: [
     'POST',
-    '/{id}/token',
-    'Distribute token to beneficiary',
+    '/tx/beneficiary-token',
+    'add tx for Distribute token to beneficiary',
     [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]
   ],
   addToProjectByBenfId: [
