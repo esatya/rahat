@@ -12,6 +12,8 @@ const User = require('../user/user.controllers');
 
 const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
+const vendorTokenChargeModel = require('./vendorTokenCharge.model');
+const vendorTokenRedeemModel = require('./vendorTokenRedemption.model');
 const CONSTANT = require('../../constants');
 
 const {ObjectId} = Types;
@@ -205,6 +207,22 @@ const Vendor = {
     ]);
     const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
     return {totalTokenRedemption: totalToken, tokenRedemption: total};
+  },
+
+  async addChargeTokenTx(payload) {
+    return vendorTokenChargeModel.create(payload);
+  },
+
+  async listChargeTx(id) {
+    return vendorTokenChargeModel.find({vendor_id: id});
+  },
+
+  async addTokenRedeemTx(payload) {
+    return vendorTokenRedeemModel.create(payload);
+  },
+
+  async listTokenRedeemTx(id) {
+    return vendorTokenRedeemModel.find({vendor_wallet: id});
   }
 };
 
@@ -235,5 +253,9 @@ module.exports = {
     const vendorId = req.params.id;
     const {projectId} = req.payload;
     return Vendor.addToProjectByvendorId(vendorId, projectId);
-  }
+  },
+  addChargeTokenTx: req => Vendor.addChargeTokenTx(req.payload),
+  listChargeTx: req => Vendor.listChargeTx(req.params.id),
+  addTokenRedeemTx: req => Vendor.addTokenRedeemTx(req.payload),
+  listTokenRedeemTx: req => Vendor.listTokenRedeemTx(req.params.id)
 };

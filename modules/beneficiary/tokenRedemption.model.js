@@ -6,15 +6,13 @@ const {ObjectId} = mongoose.Schema;
 
 const schema = {
   beneficiary_id: {
-    type: ObjectId,
+    type: String,
     required: true,
-    ref: 'Beneficiary',
     description: 'Beneficiary ID'
   },
   vendor_id: {
-    type: ObjectId,
+    type: String,
     required: true,
-    ref: 'Vendor',
     description: 'Vendor ID'
   },
   amount: {

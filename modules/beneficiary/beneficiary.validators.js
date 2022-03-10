@@ -92,12 +92,12 @@ module.exports = {
     params: GooseJoi.id()
   },
   distributeToken: {
-    params: GooseJoi.id(),
     payload: Joi.object({
       beneficiary_id: Joi.string().required().description('Beneficiary ID'),
       project_id: Joi.string().required().description('Project ID'),
       amount: TokenDistribution.amount,
-      txhash: TokenDistribution.txhash
+      txhash: TokenDistribution.txhash,
+      success: Joi.boolean()
     }).label('TokenDistribution')
   }
 };

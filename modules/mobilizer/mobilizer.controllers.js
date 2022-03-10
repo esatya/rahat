@@ -10,6 +10,7 @@ const UserController = require('../user/user.controllers');
 const {Notification} = require('../notification/notification.controller');
 const CONSTANT = require('../../constants');
 const User = require('../user/user.controllers');
+const TokenMobilizationModel = require('./tokenMobilization.model');
 
 // const { tokenTransaction } = require('../../helpers/blockchain/tokenTransaction');
 // const tokenRedemptionModel = require('./vendorTokenRedemption.model');
@@ -179,6 +180,15 @@ const Mobilizer = {
     query.agencies = {$elemMatch: {agency: Types.ObjectId(currentUser.agency)}};
 
     return MobilizerModel.find(query).countDocuments();
+  },
+
+  addTokenIssueTx(payload) {
+    console.log({payload});
+    return TokenMobilizationModel.create(payload);
+  },
+
+  listTokenIssueTx(mobilizerId) {
+    return TokenMobilizationModel.find({mobilizer_wallet: mobilizerId});
   }
 
   // async getTransactions(id, tokenAddress) {
@@ -219,7 +229,9 @@ module.exports = {
   register: async req => {
     const {_id: agencyId} = await Agency.getFirst();
     return Mobilizer.register(agencyId, req.payload);
-  }
+  },
+  addTokenIssueTx: req => Mobilizer.addTokenIssueTx(req.payload),
+  listTokenIssueTx: req => Mobilizer.listTokenIssueTx(req.params.mobilizerId)
   // getTransactions: async (req) => {
   //   const {
   //     contracts: { token: tokenAddress },
