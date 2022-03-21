@@ -10,6 +10,7 @@ const abi = getAbi('RahatERC20');
 const {Vendor, Agency} = require('../../modules');
 
 const listenTokenTx = async () => {
+  console.log('listenin');
   try {
     const {
       contracts: {rahat_erc20: tokenAddress, rahat_admin: rahatAdmin}
@@ -37,6 +38,7 @@ const listenTokenTx = async () => {
       }
     });
   } catch (e) {
+    console.log({e});
     throw Error(e);
   }
 };

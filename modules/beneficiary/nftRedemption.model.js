@@ -20,6 +20,11 @@ const schema = {
     required: true,
     description: 'Amount spent by the beneficiary and transfered to vendor'
   },
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
+  },
   txhash: {
     type: String,
     required: true,
@@ -35,10 +40,10 @@ const schema = {
 };
 
 const monSchema = mongoose.Schema(schema, {
-  collection: 'beneficiary_token_redemption',
+  collection: 'beneficiary_nft_redemption',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-module.exports = mongoose.model('BeneficiaryTokenRedemption', monSchema);
+module.exports = mongoose.model('beneficiaryNftRedemption', monSchema);

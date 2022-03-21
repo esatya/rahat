@@ -10,15 +10,13 @@ const {VendorConstants} = require('../../constants');
 const {Agency} = require('../agency/agency.controllers');
 const User = require('../user/user.controllers');
 
-const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
+const {tokenTransaction, nftTransaction} = require('../../helpers/blockchain/transactionLogs');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
 const vendorTokenChargeModel = require('./vendorTokenCharge.model');
 const vendorTokenRedeemModel = require('./vendorTokenRedemption.model');
 const CONSTANT = require('../../constants');
 
 const {ObjectId} = Types;
-
-const logger = Logger.getInstance();
 
 const Vendor = {
   async add(payload) {
@@ -190,9 +188,15 @@ const Vendor = {
     return VendorModel.find(query).countDocuments();
   },
 
-  async getTransactions(id, tokenAddress) {
+  async getTransactions(id, tokenAddress, rahatAddress) {
     const vendor = await this.getbyId(id);
-    const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
+    const transactions = await tokenTransaction(tokenAddress, rahatAddress, vendor.wallet_address);
+    return transactions;
+  },
+
+  async getNftTransactions(id, nftAddress, rahatAddress) {
+    const vendor = await this.getbyId(id);
+    const transactions = await nftTransaction(nftAddress, rahatAddress, vendor.wallet_address);
     return transactions;
   },
 
@@ -245,9 +249,15 @@ module.exports = {
   },
   getTransactions: async req => {
     const {
-      contracts: {token: tokenAddress}
+      contracts: {rahat_erc20, rahat}
     } = await Agency.getFirst();
-    return Vendor.getTransactions(req.params.id, tokenAddress);
+    return Vendor.getTransactions(req.params.id, rahat_erc20, rahat);
+  },
+  getNftTransactions: async req => {
+    const {
+      contracts: {rahat_erc1155, rahat}
+    } = await Agency.getFirst();
+    return Vendor.getNftTransactions(req.params.id, rahat_erc1155, rahat);
   },
   addToProjectByvendorId: req => {
     const vendorId = req.params.id;
