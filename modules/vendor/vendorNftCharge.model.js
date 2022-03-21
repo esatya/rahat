@@ -15,6 +15,11 @@ const schema = {
     required: true,
     description: 'Vendor ID'
   },
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
+  },
   amount: {
     type: Number,
     required: true,
@@ -35,10 +40,10 @@ const schema = {
 };
 
 const monSchema = mongoose.Schema(schema, {
-  collection: 'beneficiary_token_redemption',
+  collection: 'vendor_nft_charge',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-module.exports = mongoose.model('BeneficiaryTokenRedemption', monSchema);
+module.exports = mongoose.model('nftCharge', monSchema);

@@ -125,6 +125,12 @@ module.exports = {
     })
   },
 
+  getNftTransactions: {
+    params: Joi.object({
+      id: Joi.string()
+    })
+  },
+
   addChargeTokenTx: {
     payload: Joi.object({
       beneficiary_id: Joi.string().required(),
