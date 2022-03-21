@@ -17,6 +17,11 @@ module.exports = {
       project: Nft.project.example('5ff99cebc00c1432b1ecd904')
     }).label('nft')
   },
+  upload: {
+    payload: Joi.object({
+      file: Joi.string().required()
+    })
+  },
   listByProject: {
     params: GooseJoi.id(),
     query: Joi.object({
