@@ -129,8 +129,8 @@ async function startServer() {
   });
   await server.start();
   logger.info(`Server running at: ${server.info.uri}`);
-  logger.info('Listening to Token Transfer events...');
-  listenTokenTx();
+  // logger.info('Listening to Token Transfer events...');
+  // listenTokenTx();
 }
 
 // eslint-disable-next-line no-shadow, no-unused-vars

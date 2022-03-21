@@ -17,6 +17,11 @@ const routes = {
   changeStatus: ['PATCH', '/{id}/status', 'Change Vendors Status', [VENDOR.WRITE, VENDOR.ADMIN]],
   register: ['POST', '/register', 'register a vendor.'],
   getTransactions: ['GET', '/{id}/transactions', 'Get the token transactions by current vendor'],
+  getNftTransactions: [
+    'GET',
+    '/{id}/tx/packages',
+    'Get the package transactions by current vendor'
+  ],
   addToProjectByvendorId: [
     'POST',
     '/{id}/add-to-project',

@@ -10,15 +10,21 @@ const schema = {
     required: true,
     description: 'Beneficiary ID'
   },
-  vendor_id: {
-    type: String,
+  project_id: {
+    type: ObjectId,
     required: true,
-    description: 'Vendor ID'
+    ref: 'Project',
+    description: 'Project ID'
+  },
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
   },
   amount: {
     type: Number,
     required: true,
-    description: 'Amount spent by the beneficiary and transfered to vendor'
+    description: 'Amount of token to be distributed'
   },
   txhash: {
     type: String,
@@ -31,14 +37,15 @@ const schema = {
     default: false,
     description: 'Flag, if it has been successfully processed in blockchain'
   },
+  extra: {type: Object},
   ...commonSchema
 };
 
-const monSchema = mongoose.Schema(schema, {
-  collection: 'beneficiary_token_redemption',
+const nftDistributionSchema = mongoose.Schema(schema, {
+  collection: 'nft_distributions',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-module.exports = mongoose.model('BeneficiaryTokenRedemption', monSchema);
+module.exports = mongoose.model('nftDistribution', nftDistributionSchema);
