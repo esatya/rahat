@@ -35,7 +35,7 @@ async function tokenTransaction(tokenAddress, rahatAddress, account) {
     });
 
     const filterTokenSent = tokenContract.filters.Transfer(account);
-    filterTokenSent.fromBlock = 12480952;
+    filterTokenSent.fromBlock = 10480952;
     filterTokenSent.toBlock = 'latest';
     filterTokenSent.topic = [];
     const tokenSentTx = await provider.getLogs(filterTokenSent);
@@ -68,7 +68,7 @@ async function nftTransaction(erc1155Address, rahatAddress, account) {
   // const nftContract = ethersContract(erc20Abi, erc1155Address);
   try {
     const filterPackagesReceived = rahatContract.filters.ClaimAcquiredERC1155(account);
-    filterPackagesReceived.fromBlock = 12480952;
+    filterPackagesReceived.fromBlock = 10480952;
     filterPackagesReceived.toBlock = 'latest';
     const packageReceivedTx = await provider.getLogs(filterPackagesReceived);
     const packageReceivedLogs = packageReceivedTx.map(el => {
