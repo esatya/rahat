@@ -19,10 +19,10 @@ async function tokenTransaction(tokenAddress, rahatAddress, account) {
     const tokenReceivedTx = await provider.getLogs(filterTokenReceived);
     const tokenReceivedLogs = tokenReceivedTx.map(el => {
       let {
-        args: {vendor: from, beneficiary: to, amount: value}
+        args: {vendor: to, beneficiary: from, amount: value}
       } = rahatContract.interface.parseLog(el);
       value = value.toNumber();
-      to = to.toNumber();
+      from = from.toNumber();
       const {blockNumber, transactionHash} = el;
       return {
         from,
@@ -73,10 +73,10 @@ async function nftTransaction(erc1155Address, rahatAddress, account) {
     const packageReceivedTx = await provider.getLogs(filterPackagesReceived);
     const packageReceivedLogs = packageReceivedTx.map(el => {
       let {
-        args: {vendor: from, beneficiary: to, amount: value, tokenId}
+        args: {vendor: to, beneficiary: from, amount: value, tokenId}
       } = rahatContract.interface.parseLog(el);
       value = value.toNumber();
-      to = to.toNumber();
+      from = from.toNumber();
       tokenId = tokenId.toNumber();
       const {blockNumber, transactionHash} = el;
       return {
