@@ -17,12 +17,25 @@ const routes = {
   changeStatus: ['PATCH', '/{id}/status', 'Change Vendors Status', [VENDOR.WRITE, VENDOR.ADMIN]],
   register: ['POST', '/register', 'register a vendor.'],
   getTransactions: ['GET', '/{id}/transactions', 'Get the token transactions by current vendor'],
+  getNftTransactions: [
+    'GET',
+    '/{id}/tx/packages',
+    'Get the package transactions by current vendor'
+  ],
   addToProjectByvendorId: [
     'POST',
     '/{id}/add-to-project',
     'Add vendor to project',
     [VENDOR.WRITE, VENDOR.ADMIN]
-  ]
+  ],
+  addChargeTokenTx: [
+    'POST',
+    '/tx/charge,',
+    'Add token charge transaction to given beneficiary from vendor'
+  ],
+  addTokenRedeemTx: ['POST', '/tx/redeem', 'Add token redemption transaction of given vendor id'],
+  listChargeTx: ['GET', '/tx/charge/{id}', 'Get charge tx done by vendor'],
+  listTokenRedeemTx: ['GET', 'tx/redeem/{id}', 'Get token redemtion tx of given vendor id']
 };
 
 function register(app) {

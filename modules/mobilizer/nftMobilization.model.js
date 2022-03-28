@@ -16,6 +16,11 @@ const schema = {
     required: true,
     description: 'Amount Moblilized by mobilizer  / token issued to beneficiary'
   },
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
+  },
   beneficiary: {type: String, required: true, description: 'Beneficiary phone'},
   tx_hash: {
     type: String,
@@ -33,7 +38,7 @@ const schema = {
 };
 
 const TokenMobilizationSchema = mongoose.Schema(schema, {
-  collection: 'token_mobilization',
+  collection: 'nft_mobilization',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
@@ -41,4 +46,4 @@ const TokenMobilizationSchema = mongoose.Schema(schema, {
 
 TokenMobilizationSchema.index({tx_hash: 1}, {unique: true});
 
-module.exports = mongoose.model('TokenMobilization', TokenMobilizationSchema);
+module.exports = mongoose.model('NftMobilization', TokenMobilizationSchema);

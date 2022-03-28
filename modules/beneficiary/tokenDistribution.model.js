@@ -6,9 +6,8 @@ const {ObjectId} = mongoose.Schema;
 
 const schema = {
   beneficiary_id: {
-    type: ObjectId,
+    type: String,
     required: true,
-    ref: 'Beneficiary',
     description: 'Beneficiary ID'
   },
   project_id: {

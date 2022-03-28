@@ -29,6 +29,17 @@ const Nft = {
     }
   },
 
+  async upload(payload) {
+    try {
+      // Upload image to IPFS and get CID
+      const decoded = await decodeBase64Url(payload.file);
+      const file = await addFileToIpfs(decoded.data);
+      return {data: {cid: file.cid.toString()}};
+    } catch (err) {
+      throw Error(err);
+    }
+  },
+
   async updateTotalSupply(tokenIds, updateQty) {
     if (tokenIds.length) {
       for (const tId of tokenIds) {
@@ -176,6 +187,7 @@ const Nft = {
 module.exports = {
   Nft,
   add: req => Nft.add(req.payload),
+  upload: req => Nft.upload(req.payload),
   getById: req => Nft.getById(req.params.id),
   getByTokenId: req => Nft.getByIdTokenId(req.params.id),
   listByProject: req => Nft.listByProject(req),

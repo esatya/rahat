@@ -67,5 +67,11 @@ module.exports = {
       phone: Joi.string(),
       wallet_address: Joi.string()
     })
+  },
+
+  checkEmail: {
+    payload: Joi.object({
+      email: Joi.string().required()
+    })
   }
 };

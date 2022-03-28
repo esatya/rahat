@@ -1,4 +1,5 @@
 const controllers = require('./sms.controller');
+const validators = require('./sms.validator');
 const {BENEFICIARY} = require('../../constants/permissions');
 
 const routes = {
@@ -24,6 +25,7 @@ function register(app) {
   app.register({
     name: 'sms',
     routes,
+    validators,
     controllers
   });
 }

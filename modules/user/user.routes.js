@@ -14,7 +14,8 @@ const routes = {
   updateStatus: ['PATCH', '/{id}/status', 'Make user active or inactive', [USER.WRITE, USER.ADMIN]],
   addRoles: ['PATCH', '/{id}/roles', 'Add roles to a user', [USER.WRITE, USER.ADMIN]],
   removeRole: ['DELETE', '/{id}/roles', 'Remove roles from user', [USER.WRITE, USER.ADMIN]],
-  register: ['POST', '/register', 'Register a new user']
+  register: ['POST', '/register', 'Register a new user'],
+  checkEmail: ['POST', '/email', 'Check user with given email']
 };
 
 /**
