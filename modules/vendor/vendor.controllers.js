@@ -10,13 +10,13 @@ const {VendorConstants} = require('../../constants');
 const {Agency} = require('../agency/agency.controllers');
 const User = require('../user/user.controllers');
 
-const {tokenTransaction} = require('../../helpers/blockchain/tokenTransaction');
+const {tokenTransaction, nftTransaction} = require('../../helpers/blockchain/transactionLogs');
 const tokenRedemptionModel = require('./vendorTokenRedemption.model');
+const vendorTokenChargeModel = require('./vendorTokenCharge.model');
+const vendorTokenRedeemModel = require('./vendorTokenRedemption.model');
 const CONSTANT = require('../../constants');
 
 const {ObjectId} = Types;
-
-const logger = Logger.getInstance();
 
 const Vendor = {
   async add(payload) {
@@ -188,9 +188,15 @@ const Vendor = {
     return VendorModel.find(query).countDocuments();
   },
 
-  async getTransactions(id, tokenAddress) {
+  async getTransactions(id, tokenAddress, rahatAddress) {
     const vendor = await this.getbyId(id);
-    const transactions = await tokenTransaction(tokenAddress, vendor.wallet_address);
+    const transactions = await tokenTransaction(tokenAddress, rahatAddress, vendor.wallet_address);
+    return transactions;
+  },
+
+  async getNftTransactions(id, nftAddress, rahatAddress) {
+    const vendor = await this.getbyId(id);
+    const transactions = await nftTransaction(nftAddress, rahatAddress, vendor.wallet_address);
     return transactions;
   },
 
@@ -205,6 +211,22 @@ const Vendor = {
     ]);
     const totalToken = total.reduce((acc, obj) => acc + obj.totalSum, 0);
     return {totalTokenRedemption: totalToken, tokenRedemption: total};
+  },
+
+  async addChargeTokenTx(payload) {
+    return vendorTokenChargeModel.create(payload);
+  },
+
+  async listChargeTx(id) {
+    return vendorTokenChargeModel.find({vendor_id: id});
+  },
+
+  async addTokenRedeemTx(payload) {
+    return vendorTokenRedeemModel.create(payload);
+  },
+
+  async listTokenRedeemTx(id) {
+    return vendorTokenRedeemModel.find({vendor_wallet: id});
   }
 };
 
@@ -227,13 +249,23 @@ module.exports = {
   },
   getTransactions: async req => {
     const {
-      contracts: {token: tokenAddress}
+      contracts: {rahat_erc20, rahat}
     } = await Agency.getFirst();
-    return Vendor.getTransactions(req.params.id, tokenAddress);
+    return Vendor.getTransactions(req.params.id, rahat_erc20, rahat);
+  },
+  getNftTransactions: async req => {
+    const {
+      contracts: {rahat_erc1155, rahat}
+    } = await Agency.getFirst();
+    return Vendor.getNftTransactions(req.params.id, rahat_erc1155, rahat);
   },
   addToProjectByvendorId: req => {
     const vendorId = req.params.id;
     const {projectId} = req.payload;
     return Vendor.addToProjectByvendorId(vendorId, projectId);
-  }
+  },
+  addChargeTokenTx: req => Vendor.addChargeTokenTx(req.payload),
+  listChargeTx: req => Vendor.listChargeTx(req.params.id),
+  addTokenRedeemTx: req => Vendor.addTokenRedeemTx(req.payload),
+  listTokenRedeemTx: req => Vendor.listTokenRedeemTx(req.params.id)
 };

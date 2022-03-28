@@ -79,6 +79,18 @@ const controllers = {
     return User.addRoles({user_id: userId, roles});
   },
 
+  async getUserByEmail(email) {
+    return User.getByEmail(email);
+  },
+
+  async checkEmail(request) {
+    const {email} = request.payload;
+    const user = await User.getByEmail(email);
+    console.log({user});
+    if (user) return {data: true, message: 'User exists with given email'};
+    return {data: false, message: 'User does not exists with given email'};
+  },
+
   async update(request) {
     const userId = request.params.id;
     const data = request.payload;

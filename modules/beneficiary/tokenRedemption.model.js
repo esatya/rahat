@@ -6,15 +6,13 @@ const {ObjectId} = mongoose.Schema;
 
 const schema = {
   beneficiary_id: {
-    type: ObjectId,
+    type: String,
     required: true,
-    ref: 'Beneficiary',
     description: 'Beneficiary ID'
   },
   vendor_id: {
-    type: ObjectId,
+    type: String,
     required: true,
-    ref: 'Vendor',
     description: 'Vendor ID'
   },
   amount: {
@@ -37,10 +35,10 @@ const schema = {
 };
 
 const monSchema = mongoose.Schema(schema, {
-  collection: 'token_redemption',
+  collection: 'beneficiary_token_redemption',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-module.exports = mongoose.model('TokenRedemption', monSchema);
+module.exports = mongoose.model('BeneficiaryTokenRedemption', monSchema);

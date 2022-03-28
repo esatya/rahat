@@ -5,22 +5,30 @@ const commonSchema = require('../../helpers/schema');
 const {ObjectId} = mongoose.Schema;
 
 const schema = {
-  mobilizer_wallet: {
+  beneficiary_id: {
     type: String,
     required: true,
-    ref: 'Mobilizer',
-    description: 'Mobilizer ID - wallet-address'
+    description: 'Beneficiary ID'
+  },
+  project_id: {
+    type: ObjectId,
+    required: true,
+    ref: 'Project',
+    description: 'Project ID'
+  },
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
   },
   amount: {
     type: Number,
     required: true,
-    description: 'Amount Moblilized by mobilizer  / token issued to beneficiary'
+    description: 'Amount of token to be distributed'
   },
-  beneficiary: {type: String, required: true, description: 'Beneficiary phone'},
-  tx_hash: {
+  txhash: {
     type: String,
     required: true,
-    unique: true,
     description: 'Blockchain transaction hash'
   },
   success: {
@@ -29,16 +37,15 @@ const schema = {
     default: false,
     description: 'Flag, if it has been successfully processed in blockchain'
   },
+  extra: {type: Object},
   ...commonSchema
 };
 
-const TokenMobilizationSchema = mongoose.Schema(schema, {
-  collection: 'token_mobilization',
+const nftDistributionSchema = mongoose.Schema(schema, {
+  collection: 'nft_distributions',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-TokenMobilizationSchema.index({tx_hash: 1}, {unique: true});
-
-module.exports = mongoose.model('TokenMobilization', TokenMobilizationSchema);
+module.exports = mongoose.model('nftDistribution', nftDistributionSchema);

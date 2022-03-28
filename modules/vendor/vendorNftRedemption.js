@@ -5,18 +5,22 @@ const commonSchema = require('../../helpers/schema');
 const {ObjectId} = mongoose.Schema;
 
 const schema = {
-  mobilizer_wallet: {
+  vendor_wallet: {
     type: String,
     required: true,
-    ref: 'Mobilizer',
-    description: 'Mobilizer ID - wallet-address'
+    ref: 'Vendor',
+    description: 'Vendor ID - wallet-address'
   },
   amount: {
     type: Number,
     required: true,
-    description: 'Amount Moblilized by mobilizer  / token issued to beneficiary'
+    description: 'Amount redeemedto cash by beneficiary from agency'
   },
-  beneficiary: {type: String, required: true, description: 'Beneficiary phone'},
+  package_name: {type: String},
+  token_id: {
+    type: Number,
+    description: 'TokenId of the package'
+  },
   tx_hash: {
     type: String,
     required: true,
@@ -32,13 +36,13 @@ const schema = {
   ...commonSchema
 };
 
-const TokenMobilizationSchema = mongoose.Schema(schema, {
-  collection: 'token_mobilization',
+const vendorRedemptionSchema = mongoose.Schema(schema, {
+  collection: 'vendor_nft_redemption',
   timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'},
   toObject: {virtuals: true},
   toJSON: {virtuals: true}
 });
 
-TokenMobilizationSchema.index({tx_hash: 1}, {unique: true});
+vendorRedemptionSchema.index({tx_hash: 1}, {unique: true});
 
-module.exports = mongoose.model('TokenMobilization', TokenMobilizationSchema);
+module.exports = mongoose.model('VendorNftRedemption', vendorRedemptionSchema);

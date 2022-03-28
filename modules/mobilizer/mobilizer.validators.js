@@ -97,5 +97,21 @@ module.exports = {
     params: Joi.object({
       id: Joi.string()
     })
+  },
+
+  addTokenIssueTx: {
+    payload: Joi.object({
+      mobilizer_wallet: Joi.string().required(),
+      amount: Joi.number(),
+      beneficiary: Joi.string(),
+      tx_hash: Joi.string(),
+      success: Joi.bool()
+    })
+  },
+
+  listTokenIssueTx: {
+    params: Joi.object({
+      mobilizerId: Joi.string()
+    })
   }
 };
