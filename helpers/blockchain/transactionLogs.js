@@ -14,7 +14,7 @@ async function tokenTransaction(tokenAddress, rahatAddress, account) {
   const tokenContract = ethersContract(erc20Abi, tokenAddress);
   try {
     const filterTokenReceived = rahatContract.filters.ClaimAcquiredERC20(account);
-    filterTokenReceived.fromBlock = 12410952;
+    filterTokenReceived.fromBlock = 10480952;
     filterTokenReceived.toBlock = 'latest';
     const tokenReceivedTx = await provider.getLogs(filterTokenReceived);
     const tokenReceivedLogs = tokenReceivedTx.map(el => {
