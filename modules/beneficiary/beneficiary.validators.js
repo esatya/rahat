@@ -99,5 +99,11 @@ module.exports = {
       txhash: TokenDistribution.txhash,
       success: Joi.boolean()
     }).label('TokenDistribution')
+  },
+  getReportingData: {
+    query: Joi.object({
+      from: Joi.date(),
+      to: Joi.date()
+    })
   }
 };

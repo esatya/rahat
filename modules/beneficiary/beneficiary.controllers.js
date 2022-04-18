@@ -253,6 +253,71 @@ const Beneficiary = {
     const ben = await BeneficiaryModel.findOne({phone});
     if (ben) return {data: true, message: 'Beneficiary Exists'};
     return {data: false, message: 'Invalid Beneficiary Phone/Id'};
+  },
+
+  async countBeneficiaryViaProject() {
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    const totalCount = await BeneficiaryModel.find($match).countDocuments();
+    const project = await BeneficiaryModel.aggregate(query);
+
+    return {totalCount, project};
+  },
+
+  async countBeneficiaryViaGender(from, to) {
+    const dateFilter =
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
+            }
+          }
+        : null;
+    const male = await BeneficiaryModel.countDocuments({
+      gender: 'M',
+      ...dateFilter
+    });
+    const female = await BeneficiaryModel.countDocuments({
+      gender: 'F',
+      ...dateFilter
+    });
+    const other = await BeneficiaryModel.countDocuments({
+      gender: 'O',
+      ...dateFilter
+    });
+    const unknown = await BeneficiaryModel.countDocuments({
+      gender: 'U',
+      ...dateFilter
+    });
+
+    console.log({male, female, other, unknown});
+    return {male, female, other, unknown};
+  },
+  async getReportingData(query) {
+    const beneficiaryByGender = await this.countBeneficiaryViaGender(query.from, query.to);
+    const beneficiaryByProject = await this.countBeneficiaryViaProject();
+    return {beneficiaryByGender, beneficiaryByProject};
   }
 };
 
@@ -272,5 +337,6 @@ module.exports = {
     const {projectId} = req.payload;
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
-  checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone)
+  checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
+  getReportingData: req => Beneficiary.getReportingData(req.query)
 };
