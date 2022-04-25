@@ -103,7 +103,8 @@ module.exports = {
   getReportingData: {
     query: Joi.object({
       from: Joi.date(),
-      to: Joi.date()
+      to: Joi.date(),
+      projectId: Joi.string().optional().description('Project ID')
     })
   }
 };
