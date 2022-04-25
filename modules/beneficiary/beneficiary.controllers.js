@@ -295,9 +295,9 @@ const Beneficiary = {
     return d++;
   },
 
-  async countBeneficiaryViaAge() {
+  async countBeneficiaryViaAge(projectId) {
     // TODO calculate beneficiary by age - currently dummy data
-    const dob = await BeneficiaryModel.find().select('dob');
+    const dob = await BeneficiaryModel.find({projects: [projectId]}).select('dob');
     let b_10;
     b_10 = 0;
     let b10_20;
@@ -327,7 +327,7 @@ const Beneficiary = {
         unknown++;
       }
     });
-    const totalCount = await BeneficiaryModel.countDocuments();
+    const totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
     const data = {
       totalCount,
       beneficiaries: [
@@ -364,7 +364,7 @@ const Beneficiary = {
     return data;
   },
 
-  async countBeneficiaryViaGender(from, to) {
+  async countBeneficiaryViaGender(from, to, projectId) {
     const dateFilter =
       from && to
         ? {
@@ -374,20 +374,27 @@ const Beneficiary = {
             }
           }
         : null;
-    const totalCount = await BeneficiaryModel.countDocuments({...dateFilter});
+    const totalCount = await BeneficiaryModel.countDocuments({
+      projects: [projectId],
+      ...dateFilter
+    });
     const male = await BeneficiaryModel.countDocuments({
+      projects: [projectId],
       gender: 'M',
       ...dateFilter
     });
     const female = await BeneficiaryModel.countDocuments({
+      projects: [projectId],
       gender: 'F',
       ...dateFilter
     });
     const other = await BeneficiaryModel.countDocuments({
+      projects: [projectId],
       gender: 'O',
       ...dateFilter
     });
     const unknown = await BeneficiaryModel.countDocuments({
+      projects: [projectId],
       gender: 'U',
       ...dateFilter
     });
@@ -417,9 +424,13 @@ const Beneficiary = {
     return data;
   },
   async getReportingData(query) {
-    const beneficiaryByGender = await this.countBeneficiaryViaGender(query.from, query.to);
+    const beneficiaryByGender = await this.countBeneficiaryViaGender(
+      query.from,
+      query.to,
+      query.projectId
+    );
     const beneficiaryByProject = await this.countBeneficiaryViaProject();
-    const beneficiaryByAge = await this.countBeneficiaryViaAge();
+    const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
     return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge};
   }
 };
