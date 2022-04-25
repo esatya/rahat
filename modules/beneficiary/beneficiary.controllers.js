@@ -297,7 +297,15 @@ const Beneficiary = {
 
   async countBeneficiaryViaAge(projectId) {
     // TODO calculate beneficiary by age - currently dummy data
-    const dob = await BeneficiaryModel.find({projects: [projectId]}).select('dob');
+    let dob;
+    let totalCount;
+    if (projectId) {
+      totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
+      dob = await BeneficiaryModel.find({projects: [projectId]}).select('dob');
+    } else {
+      dob = await BeneficiaryModel.find().select('dob');
+      totalCount = await BeneficiaryModel.countDocuments();
+    }
     let b_10;
     b_10 = 0;
     let b10_20;
@@ -327,7 +335,7 @@ const Beneficiary = {
         unknown++;
       }
     });
-    const totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
+
     const data = {
       totalCount,
       beneficiaries: [
@@ -365,6 +373,7 @@ const Beneficiary = {
   },
 
   async countBeneficiaryViaGender(from, to, projectId) {
+    console.log({projectId});
     const dateFilter =
       from && to
         ? {
@@ -374,30 +383,54 @@ const Beneficiary = {
             }
           }
         : null;
-    const totalCount = await BeneficiaryModel.countDocuments({
-      projects: [projectId],
-      ...dateFilter
-    });
-    const male = await BeneficiaryModel.countDocuments({
-      projects: [projectId],
-      gender: 'M',
-      ...dateFilter
-    });
-    const female = await BeneficiaryModel.countDocuments({
-      projects: [projectId],
-      gender: 'F',
-      ...dateFilter
-    });
-    const other = await BeneficiaryModel.countDocuments({
-      projects: [projectId],
-      gender: 'O',
-      ...dateFilter
-    });
-    const unknown = await BeneficiaryModel.countDocuments({
-      projects: [projectId],
-      gender: 'U',
-      ...dateFilter
-    });
+    const totalCount = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          ...dateFilter
+        });
+    const male = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'M',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'M',
+          ...dateFilter
+        });
+    const female = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'F',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'F',
+          ...dateFilter
+        });
+    const other = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'O',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'O',
+          ...dateFilter
+        });
+    const unknown = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'U',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'U',
+          ...dateFilter
+        });
     const data = {
       totalCount,
       beneficiaries: [
