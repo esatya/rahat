@@ -2,8 +2,13 @@ const ObjectId = require('mongodb').ObjectID;
 const mongoose = require('mongoose');
 const app = require('../../app');
 const {DataUtils} = require('../../helpers/utils');
-const {BeneficiaryModel, TokenRedemptionModel, TokenDistributionModel} = require('../models');
-
+const {
+  BeneficiaryModel,
+  TokenRedemptionModel,
+  TokenDistributionModel,
+  AidConnectModel,
+  ProjectModel
+} = require('../models');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const {updateTotalSupply} = require('../nft/nft.controller');
 
@@ -287,7 +292,6 @@ const Beneficiary = {
   calculateAge(birthday) {
     // birthday is a date
     const ageDifMs = Date.now() - birthday.getTime();
-    console.log(ageDifMs);
     const ageDate = new Date(ageDifMs); // miliseconds from epoch
     return Math.abs(ageDate.getUTCFullYear() - 1970);
   },
@@ -322,9 +326,7 @@ const Beneficiary = {
     unknown = 0;
     dob.map(el => {
       if (el.dob) {
-        console.log({el});
         const age = this.calculateAge(el.dob);
-        console.log({age});
         if (age < 10) b_10++;
         if (age > 10 && age < 20) b10_20++;
         if (age > 20 && age < 30) b20_30++;
@@ -373,7 +375,6 @@ const Beneficiary = {
   },
 
   async countBeneficiaryViaGender(from, to, projectId) {
-    console.log({projectId});
     const dateFilter =
       from && to
         ? {
@@ -453,8 +454,13 @@ const Beneficiary = {
       ]
     };
 
-    console.log(data);
     return data;
+  },
+  async countBeneficiaryViaAidConnect(projectId) {
+    if (!projectId) return 0;
+    const {aid_connect} = await ProjectModel.findOne({_id: projectId});
+    if (!aid_connect) return 0;
+    return AidConnectModel.countDocuments({aid_connect_id: aid_connect.id});
   },
   async getReportingData(query) {
     const beneficiaryByGender = await this.countBeneficiaryViaGender(
@@ -464,7 +470,8 @@ const Beneficiary = {
     );
     const beneficiaryByProject = await this.countBeneficiaryViaProject();
     const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
-    return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge};
+    const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
+    return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect};
   }
 };
 
