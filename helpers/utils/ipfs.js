@@ -20,8 +20,14 @@ const addFileToIpfs = async file =>
     }
   });
 
+const isIpfsHash = hash => {
+  if (hash.startsWith('Qm') && hash.length === 46) return true;
+  return false;
+};
+
 module.exports = {
   ipfs,
   addFileToIpfs,
-  createSignature
+  createSignature,
+  isIpfsHash
 };

@@ -47,7 +47,8 @@ const routes = {
     '/{id}/token',
     'List token distributions to beneficiary',
     [BENEFICIARY.READ, BENEFICIARY.ADMIN]
-  ]
+  ],
+  getReportingData: ['GET', '/reports', 'get reporting data of beneficiray']
 };
 
 function register(app) {

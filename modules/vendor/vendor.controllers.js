@@ -1,6 +1,6 @@
 const ethers = require('ethers');
 const {Types} = require('mongoose');
-const {addFileToIpfs} = require('../../helpers/utils/ipfs');
+const {addFileToIpfs, isIpfsHash} = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const {DataUtils} = require('../../helpers/utils');
 const {VendorModel} = require('../models');
@@ -61,10 +61,16 @@ const Vendor = {
 
   async register(agencyId, payload) {
     payload.agencies = [{agency: agencyId}];
-    const ipfsIdHash = await this.uploadToIpfs(this.decodeBase64Image(payload.govt_id_image).data);
-    const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
-    payload.govt_id_image = ipfsIdHash;
-    payload.photo = ipfsPhotoHash;
+    if (!isIpfsHash(payload.photo)) {
+      const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+      payload.photo = ipfsPhotoHash;
+    }
+    if (!isIpfsHash(payload.govt_id_image)) {
+      const ipfsIdHash = await this.uploadToIpfs(
+        this.decodeBase64Image(payload.govt_id_image).data
+      );
+      payload.govt_id_image = ipfsIdHash;
+    }
     const vendor = await VendorModel.create(payload);
     await Notification.create({
       type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,

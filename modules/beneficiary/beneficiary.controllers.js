@@ -2,8 +2,13 @@ const ObjectId = require('mongodb').ObjectID;
 const mongoose = require('mongoose');
 const app = require('../../app');
 const {DataUtils} = require('../../helpers/utils');
-const {BeneficiaryModel, TokenRedemptionModel, TokenDistributionModel} = require('../models');
-
+const {
+  BeneficiaryModel,
+  TokenRedemptionModel,
+  TokenDistributionModel,
+  AidConnectModel,
+  ProjectModel
+} = require('../models');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const {updateTotalSupply} = require('../nft/nft.controller');
 
@@ -253,6 +258,220 @@ const Beneficiary = {
     const ben = await BeneficiaryModel.findOne({phone});
     if (ben) return {data: true, message: 'Beneficiary Exists'};
     return {data: false, message: 'Invalid Beneficiary Phone/Id'};
+  },
+
+  async countBeneficiaryViaProject() {
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    const totalCount = await BeneficiaryModel.find($match).countDocuments();
+    const project = await BeneficiaryModel.aggregate(query);
+
+    return {totalCount, project};
+  },
+
+  calculateAge(birthday) {
+    // birthday is a date
+    const ageDifMs = Date.now() - birthday.getTime();
+    const ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  },
+  increment(d) {
+    return d++;
+  },
+
+  async countBeneficiaryViaAge(projectId) {
+    // TODO calculate beneficiary by age - currently dummy data
+    let dob;
+    let totalCount;
+    if (projectId) {
+      totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
+      dob = await BeneficiaryModel.find({projects: [projectId]}).select('dob');
+    } else {
+      dob = await BeneficiaryModel.find().select('dob');
+      totalCount = await BeneficiaryModel.countDocuments();
+    }
+    let b_10;
+    b_10 = 0;
+    let b10_20;
+    b10_20 = 0;
+    let b20_30;
+    b20_30 = 0;
+    let b30_40;
+    b30_40 = 0;
+    let b40_50;
+    b40_50 = 0;
+    let b50_;
+    b50_ = 0;
+    let unknown;
+    unknown = 0;
+    dob.map(el => {
+      if (el.dob) {
+        const age = this.calculateAge(el.dob);
+        if (age < 10) b_10++;
+        if (age > 10 && age < 20) b10_20++;
+        if (age > 20 && age < 30) b20_30++;
+        if (age > 30 && age < 40) b30_40++;
+        if (age > 40 && age < 50) b40_50++;
+        if (age > 50) b50_++;
+      } else {
+        unknown++;
+      }
+    });
+
+    const data = {
+      totalCount,
+      beneficiaries: [
+        {
+          range: '-10',
+          value: b_10
+        },
+        {
+          range: '10-20',
+          value: b10_20
+        },
+        {
+          range: '20-30',
+          value: b20_30
+        },
+        {
+          range: '30-40',
+          value: b30_40
+        },
+        {
+          range: '40-50',
+          value: b40_50
+        },
+        {
+          range: '50-',
+          value: b50_
+        },
+        {
+          range: 'unknown',
+          value: unknown
+        }
+      ]
+    };
+    return data;
+  },
+
+  async countBeneficiaryViaGender(from, to, projectId) {
+    const dateFilter =
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
+            }
+          }
+        : null;
+    const totalCount = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          ...dateFilter
+        });
+    const male = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'M',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'M',
+          ...dateFilter
+        });
+    const female = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'F',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'F',
+          ...dateFilter
+        });
+    const other = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'O',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'O',
+          ...dateFilter
+        });
+    const unknown = projectId
+      ? await BeneficiaryModel.countDocuments({
+          projects: [projectId],
+          gender: 'U',
+          ...dateFilter
+        })
+      : await BeneficiaryModel.countDocuments({
+          gender: 'U',
+          ...dateFilter
+        });
+    const data = {
+      totalCount,
+      beneficiaries: [
+        {
+          name: 'Male',
+          count: male
+        },
+        {
+          name: 'Female',
+          count: female
+        },
+        {
+          name: 'Other',
+          count: other
+        },
+        {
+          name: 'Unknown',
+          count: unknown
+        }
+      ]
+    };
+
+    return data;
+  },
+  async countBeneficiaryViaAidConnect(projectId) {
+    if (!projectId) return 0;
+    const {aid_connect} = await ProjectModel.findOne({_id: projectId});
+    if (!aid_connect) return 0;
+    return AidConnectModel.countDocuments({aid_connect_id: aid_connect.id});
+  },
+  async getReportingData(query) {
+    const beneficiaryByGender = await this.countBeneficiaryViaGender(
+      query.from,
+      query.to,
+      query.projectId
+    );
+    const beneficiaryByProject = await this.countBeneficiaryViaProject();
+    const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
+    const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
+    return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect};
   }
 };
 
@@ -272,5 +491,6 @@ module.exports = {
     const {projectId} = req.payload;
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
-  checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone)
+  checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
+  getReportingData: req => Beneficiary.getReportingData(req.query)
 };
