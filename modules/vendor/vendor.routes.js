@@ -35,7 +35,8 @@ const routes = {
   ],
   addTokenRedeemTx: ['POST', '/tx/redeem', 'Add token redemption transaction of given vendor id'],
   listChargeTx: ['GET', '/tx/charge/{id}', 'Get charge tx done by vendor'],
-  listTokenRedeemTx: ['GET', 'tx/redeem/{id}', 'Get token redemtion tx of given vendor id']
+  listTokenRedeemTx: ['GET', 'tx/redeem/{id}', 'Get token redemtion tx of given vendor id'],
+  getReportingData: ['GET', '/reports', 'get reporting data of vendor']
 };
 
 function register(app) {

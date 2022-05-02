@@ -24,7 +24,8 @@ const routes = {
   register: ['POST', '/register', 'register a MOBILIZER.'],
   getTransactions: ['GET', '/{id}/transactions', 'Get the token transactions by current MOBILIZER'],
   addTokenIssueTx: ['POST', '/tx/issue-token', 'Add the token issuance transaction from mobilizer'],
-  listTokenIssueTx: ['GET', '/tx/issue-token/{mobilizerId}', 'List tokens issued by mobilizer']
+  listTokenIssueTx: ['GET', '/tx/issue-token/{mobilizerId}', 'List tokens issued by mobilizer'],
+  getReportingData: ['GET', '/reports', 'get reporting data of vendor']
 };
 
 function register(app) {

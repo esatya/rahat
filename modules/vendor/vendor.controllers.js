@@ -193,6 +193,35 @@ const Vendor = {
 
     return VendorModel.find(query).countDocuments();
   },
+  async countVendorViaProject() {
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    const totalCount = await VendorModel.find($match).countDocuments();
+    const project = await VendorModel.aggregate(query);
+    const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
+    project.push({name: 'Unknown', count: unknownCount});
+    return {totalCount, project};
+  },
 
   async getTransactions(id, tokenAddress, rahatAddress) {
     const vendor = await this.getbyId(id);
@@ -233,6 +262,12 @@ const Vendor = {
 
   async listTokenRedeemTx(id) {
     return vendorTokenRedeemModel.find({vendor_wallet: id});
+  },
+
+  async getReportingData() {
+    const vendorByProject = await this.countVendorViaProject();
+
+    return {vendorByProject};
   }
 };
 
@@ -273,5 +308,6 @@ module.exports = {
   addChargeTokenTx: req => Vendor.addChargeTokenTx(req.payload),
   listChargeTx: req => Vendor.listChargeTx(req.params.id),
   addTokenRedeemTx: req => Vendor.addTokenRedeemTx(req.payload),
-  listTokenRedeemTx: req => Vendor.listTokenRedeemTx(req.params.id)
+  listTokenRedeemTx: req => Vendor.listTokenRedeemTx(req.params.id),
+  getReportingData: req => Vendor.getReportingData(req)
 };
