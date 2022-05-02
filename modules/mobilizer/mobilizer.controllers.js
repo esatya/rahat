@@ -182,6 +182,36 @@ const Mobilizer = {
     return MobilizerModel.find(query).countDocuments();
   },
 
+  async countMobilizersViaProject() {
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects.project',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    const totalCount = await MobilizerModel.find($match).countDocuments();
+    const project = await MobilizerModel.aggregate(query);
+    const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
+    project.push({name: 'Unknown', count: unknownCount});
+    return {totalCount, project};
+  },
+
   addTokenIssueTx(payload) {
     console.log({payload});
     return TokenMobilizationModel.create(payload);
@@ -189,6 +219,11 @@ const Mobilizer = {
 
   listTokenIssueTx(mobilizerId) {
     return TokenMobilizationModel.find({mobilizer_wallet: mobilizerId});
+  },
+  async getReportingData() {
+    const mobilizerByProject = await this.countMobilizersViaProject();
+
+    return {mobilizerByProject};
   }
 
   // async getTransactions(id, tokenAddress) {
@@ -231,7 +266,8 @@ module.exports = {
     return Mobilizer.register(agencyId, req.payload);
   },
   addTokenIssueTx: req => Mobilizer.addTokenIssueTx(req.payload),
-  listTokenIssueTx: req => Mobilizer.listTokenIssueTx(req.params.mobilizerId)
+  listTokenIssueTx: req => Mobilizer.listTokenIssueTx(req.params.mobilizerId),
+  getReportingData: req => Mobilizer.getReportingData(req)
   // getTransactions: async (req) => {
   //   const {
   //     contracts: { token: tokenAddress },
