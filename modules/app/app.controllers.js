@@ -55,6 +55,7 @@ const App = {
   },
 
   async setup(payload) {
+    console.log('herr');
     let isSetup = false;
     let agency = await Agency.getFirst();
     if (agency) isSetup = true;
@@ -106,28 +107,36 @@ const App = {
   },
 
   async setupContracts(adminAccount, tokenName, tokenSymbol, initialSupply) {
-    const {abi: tokenAbi} = getAbi('AidToken');
-    const {bytecode: tokenBytecode} = getBytecode('AidToken');
+    console.log(adminAccount);
+    const {abi: erc20Abi} = getAbi('RahatERC20');
+    const {bytecode: erc20Bytecode} = getBytecode('RahatERC20');
+    const {abi: erc1155Abi} = getAbi('RahatERC1155');
+    const {bytecode: erc1155Bytecode} = getBytecode('RahatERC1155');
     const {abi: rahatAbi} = getAbi('Rahat');
     const {bytecode: rahatBytecode} = getBytecode('Rahat');
     const {abi: rahatAdminAbi} = getAbi('RahatAdmin');
     const {bytecode: rahatAdminBytecode} = getBytecode('RahatAdmin');
-
     try {
-      const token = await deployContract(tokenAbi, tokenBytecode, [
+      const rahat_erc20 = await deployContract(erc20Abi, erc20Bytecode, [
         tokenName,
         tokenSymbol,
         adminAccount
       ]);
-      const rahat = await deployContract(rahatAbi, rahatBytecode, [token, adminAccount]);
+      console.log({rahat_erc20});
+      const rahat_erc1155 = await deployContract(erc1155Abi, erc1155Bytecode, [adminAccount]);
+      const rahat = await deployContract(rahatAbi, rahatBytecode, [
+        rahat_erc20,
+        rahat_erc1155,
+        adminAccount
+      ]);
       const rahat_admin = await deployContract(rahatAdminAbi, rahatAdminBytecode, [
-        token,
+        rahat_erc20,
+        rahat_erc1155,
         rahat,
         initialSupply,
         adminAccount
       ]);
-
-      return {token, rahat, rahat_admin};
+      return {rahat_erc20, rahat_erc1155, rahat, rahat_admin};
     } catch (e) {
       throw Error(`ERROR:${e}`);
     }
@@ -189,14 +198,15 @@ const App = {
     } catch (e) {
       return e;
     }
-  },
-
-  async setAssetMappings() {}
+  }
 };
 
 module.exports = {
   App,
-  setup: req => App.setup(req.payload),
+  setup: req => {
+    console.log(req.payloadx);
+    return App.setup(req.payload);
+  },
   setupWallet: req => App.setupWallet(),
   listSettings: req => App.listSettings(),
   getContractAbi: req => App.getContractAbi(req.params.contractName),
