@@ -1,3 +1,4 @@
+const  jsonwebtoken = require ('jsonwebtoken');
 const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
 const config = require('config');
@@ -154,6 +155,26 @@ const Project = {
     return appended_result;
   },
 
+  async addCampaignFundRaiser(id,currentUser, payload) {
+    const {campaignTitle, campaignId} = payload;
+    let project = await ProjectModel.findOneAndUpdate(
+        {_id: id},
+        {campaignId:campaignId, campaignTitle: campaignTitle},
+        {new: true, runValidators: true}
+    );
+    return project;
+  },
+  async token(currentUser){
+    const jwtDuration = config.get('jwt.duration');
+    const appSecret = config.get('app.secret');
+    const jwtToken = jsonwebtoken.sign(
+        {email: currentUser.email},
+        appSecret,
+        { expiresIn: jwtDuration }
+    )
+    return jwtToken;
+  },
+
   async list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 10;
@@ -277,6 +298,8 @@ module.exports = {
   changeStatus: req => Project.changeStatus(req.params.id, req.payload),
   getById: req => Project.getById(req.params.id),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
+  addCampaignFundRaiser: req => Project.addCampaignFundRaiser(req.params.id,req.currentUser, req.payload),
+  token: req=> Project.token(req.currentUser),
   list: req => Project.list(req.query, req.currentUser),
   addBeneficiary: req => {
     req.payload.project_id = req.params.id;

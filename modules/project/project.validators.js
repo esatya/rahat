@@ -88,5 +88,13 @@ module.exports = {
     payload: Joi.object({
       isActive: Joi.bool()
     })
+  },
+  addCampaignFundRaiser: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      campaignTitle: Joi.string(),
+      campaignId: Joi.string()
+
+    })
   }
 };
