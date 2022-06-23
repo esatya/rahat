@@ -1,4 +1,4 @@
-const Joi = require('joi');
+  const Joi = require('joi');
 const mongoose = require('mongoose');
 const commonSchema = require('../../helpers/schema');
 const {ProjectConstants} = require('../../constants');
@@ -6,6 +6,8 @@ const {ProjectConstants} = require('../../constants');
 const {ObjectId} = mongoose.Schema;
 
 const schema = {
+  campaignId: String,
+  campaignTitle: String,
   name: {
     type: String,
     required: true,
