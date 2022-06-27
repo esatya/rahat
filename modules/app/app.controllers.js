@@ -76,6 +76,7 @@ const App = {
       await Agency.approve(agency._id);
       payload.admin.roles = ['Admin'];
       payload.admin.agency = agency._id;
+      payload.admin.wallet_address = payload.admin.wallet_address.toLowerCase();
       await User.create(payload.admin);
       const settings = await this.listSettings();
       settings.user = await getByWalletAddress(payload.admin.wallet_address);
