@@ -62,7 +62,14 @@ const routes = {
     [VENDOR.READ, VENDOR.ADMIN]
   ],
   generateAidConnectId: ['GET', '/{id}/aid-connect', 'generate / Get the aid-connect id'],
-  changeAidConnectStatus: ['PATCH', '/{id}/aid-connect/status', 'change aid-connect status']
+  changeAidConnectStatus: ['PATCH', '/{id}/aid-connect/status', 'change aid-connect status'],
+  addCampaignFundRaiser: {
+    method: 'POST',
+    path: '/{id}/addCampaign',
+    description: 'Add Campaign Fundraiser',
+    permissions: [PROJECT.READ, PROJECT.ADMIN]
+  },
+  token: ['POST', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]]
 };
 
 /**
