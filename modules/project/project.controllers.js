@@ -164,11 +164,13 @@ const Project = {
     );
     return project;
   },
-  async token(currentUser){
+  async token(currentUser, payload){
+    const campaignUser = payload.email;
+    console.log("Email used to generate token is,  ", campaignUser);
     const jwtDuration = config.get('jwt.duration');
     const appSecret = config.get('app.secret');
     const jwtToken = jsonwebtoken.sign(
-        {email: currentUser.email},
+        {email: campaignUser},
         appSecret,
         { expiresIn: jwtDuration }
     )
@@ -299,7 +301,7 @@ module.exports = {
   getById: req => Project.getById(req.params.id),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
   addCampaignFundRaiser: req => Project.addCampaignFundRaiser(req.params.id,req.currentUser, req.payload),
-  token: req=> Project.token(req.currentUser),
+  token: req=> Project.token(req.currentUser, req.payload),
   list: req => Project.list(req.query, req.currentUser),
   addBeneficiary: req => {
     req.payload.project_id = req.params.id;

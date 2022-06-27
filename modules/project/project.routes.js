@@ -69,7 +69,7 @@ const routes = {
     description: 'Add Campaign Fundraiser',
     permissions: [PROJECT.READ, PROJECT.ADMIN]
   },
-  token: ['GET', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]]
+  token: ['POST', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]]
 };
 
 /**
