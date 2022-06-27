@@ -166,7 +166,6 @@ const Project = {
   },
   async token(currentUser, payload){
     const campaignUser = payload.email;
-    console.log("Email used to generate token is,  ", campaignUser);
     const jwtDuration = config.get('jwt.duration');
     const appSecret = config.get('app.secret');
     const jwtToken = jsonwebtoken.sign(
