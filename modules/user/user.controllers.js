@@ -9,7 +9,6 @@ const {DataUtils} = require('../../helpers/utils');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
 const Mailer = require('../../helpers/utils/mailer');
-const axios = require("axios");
 
 const User = new RSUser.User({
   mongoose,
@@ -231,20 +230,12 @@ const controllers = {
       //   await controllers.checkUser(request);
       data.wallet_address = data.wallet_address.toLowerCase();
       const user = await User.create(data);
-      const campaignUser = await this.addCampaignUser(user.email);
       return user;
     } catch (e) {
       return e;
     }
   },
-  async addCampaignUser(email){
-      try{
-          const campaignUser = await axios.post('http://localhost:3001/api/user/register', {'email': email})
-          console.log('CampaignUsers are', campaignUser);
-      }catch(e){
-        console.log('Error while addCampaignUser', e);
-      }
-},
+
   async register(request) {
     const data = request.payload;
     data.is_active = false;
@@ -252,7 +243,6 @@ const controllers = {
       //   await controllers.checkUser(request);
       data.wallet_address = data.wallet_address.toLowerCase();
       const user = await User.create(data);
-      const campaignUser = await this.addCampaignUser(user.email);
       return user;
     } catch (e) {
       return e;
