@@ -48,7 +48,8 @@ const routes = {
     'List token distributions to beneficiary',
     [BENEFICIARY.READ, BENEFICIARY.ADMIN]
   ],
-  getReportingData: ['GET', '/reports', 'get reporting data of beneficiray']
+  getReportingData: ['GET', '/reports', 'get reporting data of beneficiray'],
+  addBankAccount: ['POST', '/{id}/bank-account', 'add bank account to beneficiary']
 };
 
 function register(app) {

@@ -11,6 +11,7 @@ const {
 } = require('../models');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const {updateTotalSupply} = require('../nft/nft.controller');
+const {addBankAccount} = require('./beneficiary.validators');
 
 const isObjectId = mongoose.Types.ObjectId;
 const DEF_PACKAGE_ISSUE_QTY = 1;
@@ -472,6 +473,10 @@ const Beneficiary = {
     const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
     const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
     return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect};
+  },
+
+  addBankAccount(id, payload) {
+    return BeneficiaryModel.findOneAndUpdate({_id: id}, {bank_account: payload}, {new: true});
   }
 };
 
@@ -492,5 +497,6 @@ module.exports = {
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
   checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
-  getReportingData: req => Beneficiary.getReportingData(req.query)
+  getReportingData: req => Beneficiary.getReportingData(req.query),
+  addBankAccount: req => Beneficiary.addBankAccount(req.params.id, req.payload)
 };

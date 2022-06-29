@@ -45,7 +45,7 @@ const schema = {
     joi: Joi.string().optional().description('Beneficiary government issued ID image url')
   },
   projects: [{type: ObjectId, ref: 'Project'}],
-  bank: {
+  bank_account: {
     institution: {type: ObjectId, ref: 'Institution'},
     account_number: {
       type: String,

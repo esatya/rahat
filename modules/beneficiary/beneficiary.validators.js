@@ -21,6 +21,11 @@ module.exports = {
         .allow('')
         .optional()
         .example('5f6b2f815685931cbfe4dad8,2f6b2f815685931cbfe4dad7'),
+      bank: Joi.object({
+        institution: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8'),
+        account_number: Joi.string().allow('').optional().example('12345678'),
+        account_name: Joi.string().allow('').optional().example('nepali')
+      }).optional(),
       extras: Joi.object().optional()
     }).label('Beneficiary')
   },
@@ -106,5 +111,13 @@ module.exports = {
       to: Joi.date(),
       projectId: Joi.string().optional().description('Project ID')
     })
+  },
+  addBankAccount: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      institution: Joi.string().allow('').optional().example('5f6b2f815685931cbfe4dad8'),
+      account_number: Joi.string().allow('').optional().example('12345678'),
+      account_name: Joi.string().allow('').optional().example('nepali')
+    }).label('Beneficiary Bank Account')
   }
 };
