@@ -75,6 +75,8 @@ module.exports = {
     })
   },
   token: {
-    params: GooseJoi.id()
+    query: Joi.object({
+      email: Joi.string()
+    })
   }
 };
