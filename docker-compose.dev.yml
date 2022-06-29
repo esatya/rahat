@@ -1,0 +1,100 @@
+version: "3.8"
+services:
+  rahat_mongodb:
+    container_name: rahat_mongodb
+    image: mongo
+    restart: always
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - rahat_mongodb_dev:/data/db
+    networks:
+      - rahat_network
+
+  rahat_server:
+    depends_on:
+      - rahat_mongodb
+    container_name: rahat_server
+    build:
+      context: ./rahat
+      dockerfile: Dockerfile.dev 
+    ports:
+      - 3601:3601 
+    #for hot reload
+    volumes:
+      - ./rahat:/usr/src/app
+      - /usr/src/app/node_modules #anonymous volume for node modules
+    restart: always
+    networks:
+      - rahat_network
+
+  # rahat_otp:
+  #   depends_on:
+  #     - rahat_server
+  #   container_name: rahat_otp
+  #   build:
+  #     context: ./rahat-otp
+  #     dockerfile: Dockerfile.dev
+  #   restart: always
+  #   networks:
+  #     - rahat_network
+
+  rahat_agency:
+    depends_on:
+      - rahat_server
+    container_name: rahat_agency
+    build:
+      context: ./rahat-agency
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8000:4601
+    volumes:
+      - ./rahat-agency:/usr/src/app
+      - /usr/src/app/node_modules #anonymous volume for node modules
+    restart: always
+    networks:
+      - rahat_network
+
+  rahat_mobilizer:
+    depends_on:
+      - rahat_server
+    container_name: rahat_mobilizer
+    build: 
+      context: ./rahat-mobilizer
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8001:3307
+    volumes:
+      - ./rahat-mobilizer:/usr/src/app
+      - /usr/src/app/node_modules #anonymous volume for node modules
+    restart: always
+    networks:
+      - rahat_network
+
+  rahat_vendor:
+    depends_on:
+      - rahat_server
+    container_name: rahat_vendor
+    build:
+      context: ./rahat-vendor
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8002:3300
+    volumes:
+      - ./rahat-vendor:/usr/src/app
+      - /usr/src/app/node_modules #anonymous volume for node modules
+    restart: always
+    networks:
+      - rahat_network
+
+volumes:
+  rahat_mongodb_dev:
+
+networks:
+  rahat_network:
+    driver: bridge
+
+
+
+   
+

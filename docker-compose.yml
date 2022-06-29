@@ -1,0 +1,89 @@
+version: "3.8"
+services:
+  rahat_mongodb:
+    container_name: rahat_mongodb
+    image: mongo
+    restart: always
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - rahat_mongodb:/data/db
+    networks:
+      - rahat_network
+
+  rahat_server:
+    depends_on:
+      - rahat_mongodb
+    container_name: rahat_server
+    build:
+      context: ./rahat
+    ports:
+      - 3601:3601 
+    restart: always
+    # healthcheck:
+    #   test: ["CMD","curl","-f","http://rahat_server:3601/api/v1/app/settings"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+
+    networks:
+      - rahat_network
+
+  rahat_otp:
+    depends_on:
+      - rahat_server
+        # condition: service_healthy
+    container_name: rahat_otp
+    build:
+      context: ./rahat-otp
+    restart: always
+    networks:
+      - rahat_network
+
+  rahat_agency:
+    depends_on:
+      - rahat_server
+    container_name: rahat_agency
+    build:
+      context: ./rahat-agency
+    ports:
+      - 8000:80
+    restart: always
+    networks:
+      - rahat_network
+
+  rahat_mobilizer:
+    depends_on:
+      - rahat_server
+    container_name: rahat_mobilizer
+    build: 
+      context: ./rahat-mobilizer
+    ports:
+      - 8001:80
+    restart: always
+    networks:
+      - rahat_network
+
+  rahat_vendor:
+    depends_on:
+      - rahat_server
+    container_name: rahat_vendor
+    build:
+      context: ./rahat-vendor
+    ports:
+      - 8002:80
+    restart: always
+    networks:
+      - rahat_network
+
+volumes:
+  rahat_mongodb:
+
+networks:
+  rahat_network:
+    driver: bridge
+
+
+
+   
+
