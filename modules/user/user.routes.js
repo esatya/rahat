@@ -16,7 +16,9 @@ const routes = {
   removeRole: ['DELETE', '/{id}/roles', 'Remove roles from user', [USER.WRITE, USER.ADMIN]],
   register: ['POST', '/register', 'Register a new user'],
   checkEmail: ['POST', '/email', 'Check user with given email'],
-  token: ['GET', '/token', 'generate token']
+  token: ['GET', '/token', 'generate token'],
+  getOtpByMail: ['POST', '/otp_by_mail', 'Send OTP for Email Login', []],
+  verifyOtpFromMail: ['POST', '/otp_verification', 'Verify OTP from Email Login', []]
 };
 
 /**

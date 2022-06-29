@@ -8,6 +8,7 @@ const config = require('config');
 const jsonwebtoken = require('jsonwebtoken');
 const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
+const OTPController = require('../otp/otp.controllers');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
 const Mailer = require('../../helpers/utils/mailer');
@@ -265,24 +266,28 @@ const controllers = {
       throw Error(`ERROR: ${e}`);
     }
   },
+
   async token(request) {
     const campaignUser = request.query.email;
     const jwtDuration = config.get('jwt.duration');
     const appSecret = config.get('app.secret');
     const jwtToken = jsonwebtoken.sign({email: campaignUser}, appSecret, {expiresIn: jwtDuration});
     return jwtToken;
+  },
+  async getOtpByMail(request) {
+    const {address} = request.payload;
+    const {token} = await OTPController.generate(request);
+    const mailPayload = {
+      data: {email: address, token},
+      to: address,
+      template: 'Login OTP'
+    };
+    await Mailer.send(mailPayload);
+    return true;
+  },
+  async verifyOtpFromMail(request) {
+    return OTPController.verify(request);
   }
 };
 
 module.exports = controllers;
-
-// module.exports = {
-//   userControllers,
-//   loginWallet: (req) => userControllers.loginWallet(req.payload),
-//   findById: (req) => {
-//     const { id } = req.params;
-//     if (ethers.utils.isAddress(id)) return userControllers.getByWalletAddress(id, req.currentUser);
-//     return userControllers.findById(req.params.id, req.currentUser);
-//   },
-//   list: (req) => userControllers.list(req.query),
-// };

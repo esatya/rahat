@@ -66,7 +66,8 @@ const CONSTANTS = {
   },
   NOTIFICATION_TYPES: {
     vendor_registered: 'Vendor Registered',
-    mobilizer_registered: 'Mobilizer Registered'
+    mobilizer_registered: 'Mobilizer Registered',
+    otp_by_mail: 'Login OTP'
   },
   NOTIFICATION_ENUMS: () => {
     const enums = [

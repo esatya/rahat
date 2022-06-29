@@ -17,6 +17,10 @@ const Templates = {
   [NOTIFICATION_TYPES.vendor_registered]: {
     subject: 'New Vendor Registered',
     html: `${__dirname}/../../assets/email_templates/new_vendor_registered.html`
+  },
+  [NOTIFICATION_TYPES.otp_by_mail]: {
+    subject: 'Login OTP',
+    html: `${__dirname}/../../assets/email_templates/otp.html`
   }
 };
 
@@ -46,7 +50,6 @@ class Messenger {
     const sender = 'rahat@rumsan.com';
 
     const template = this.getTemplate(sender, payload.template);
-
     if (!template) throw new Error('No template is defined');
     if (!payload.to) return null;
 
