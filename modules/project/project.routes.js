@@ -1,6 +1,7 @@
 const validators = require('./project.validators');
 const controllers = require('./project.controllers');
 const {PROJECT, BENEFICIARY, VENDOR} = require('../../constants/permissions');
+const {addInstitution} = require('./project.controllers');
 
 const UPLOAD_SIZE_MB = 10;
 
@@ -69,7 +70,13 @@ const routes = {
     description: 'Add Campaign Fundraiser',
     permissions: [PROJECT.READ, PROJECT.ADMIN]
   },
-  token: ['POST', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]]
+  token: ['POST', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]],
+  addInstitution: [
+    'POST',
+    '/{id}/institution',
+    'Add institution to the project',
+    [PROJECT.READ, PROJECT.ADMIN]
+  ]
 };
 
 /**

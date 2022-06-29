@@ -1,4 +1,4 @@
-const  jsonwebtoken = require ('jsonwebtoken');
+const jsonwebtoken = require('jsonwebtoken');
 const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
 const config = require('config');
@@ -155,24 +155,20 @@ const Project = {
     return appended_result;
   },
 
-  async addCampaignFundRaiser(id,currentUser, payload) {
+  async addCampaignFundRaiser(id, currentUser, payload) {
     const {campaignTitle, campaignId} = payload;
-    let project = await ProjectModel.findOneAndUpdate(
-        {_id: id},
-        {campaignId:campaignId, campaignTitle: campaignTitle},
-        {new: true, runValidators: true}
+    const project = await ProjectModel.findOneAndUpdate(
+      {_id: id},
+      {campaignId, campaignTitle},
+      {new: true, runValidators: true}
     );
     return project;
   },
-  async token(currentUser, payload){
+  async token(currentUser, payload) {
     const campaignUser = payload.email;
     const jwtDuration = config.get('jwt.duration');
     const appSecret = config.get('app.secret');
-    const jwtToken = jsonwebtoken.sign(
-        {email: campaignUser},
-        appSecret,
-        { expiresIn: jwtDuration }
-    )
+    const jwtToken = jsonwebtoken.sign({email: campaignUser}, appSecret, {expiresIn: jwtDuration});
     return jwtToken;
   },
 
@@ -290,6 +286,14 @@ const Project = {
 
   getByAidConnectId(aidConnectId) {
     return ProjectModel.findOne({'aid_connect.id': aidConnectId});
+  },
+
+  addInstitution(id, institutionId) {
+    return ProjectModel.findOneAndUpdate(
+      {_id: id},
+      {$addToSet: {financial_institutions: institutionId}},
+      {new: true, runValidators: true}
+    );
   }
 };
 
@@ -299,8 +303,9 @@ module.exports = {
   changeStatus: req => Project.changeStatus(req.params.id, req.payload),
   getById: req => Project.getById(req.params.id),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
-  addCampaignFundRaiser: req => Project.addCampaignFundRaiser(req.params.id,req.currentUser, req.payload),
-  token: req=> Project.token(req.currentUser, req.payload),
+  addCampaignFundRaiser: req =>
+    Project.addCampaignFundRaiser(req.params.id, req.currentUser, req.payload),
+  token: req => Project.token(req.currentUser, req.payload),
   list: req => Project.list(req.query, req.currentUser),
   addBeneficiary: req => {
     req.payload.project_id = req.params.id;
@@ -318,5 +323,6 @@ module.exports = {
   update: req => Project.update(req.params.id, req.payload, req.currentUser),
   uploadAndAddBenfToProject: req => Project.uploadAndAddBenfToProject(req.params.id, req.payload),
   generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
-  changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload)
+  changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload),
+  addInstitution: req => Project.addInstitution(req.params.id, req.params.institutionId)
 };

@@ -15,6 +15,10 @@ const schema = {
     type: String,
     description: 'Address of institution'
   },
+  email: {
+    type: String,
+    description: 'Address of institution'
+  },
   phone: {
     type: String,
     description: 'Phone of institution'
@@ -25,6 +29,10 @@ const schema = {
     default: InstitutionConstants.status.Active,
     enum: Object.values(InstitutionConstants.status),
     description: 'Status of institution'
+  },
+  logoUrl: {
+    type: String,
+    Description: 'Logo url of institution'
   },
   agency: {
     type: ObjectId,
