@@ -11,6 +11,7 @@ const {getByWalletAddress} = require('../user/user.controllers');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 
 const aidConnectBaseURL = config.get('app.aid-connect-url');
+const {Institution} = require('../institution/institution.controllers');
 
 const Project = {
   // TODO: implement blockchain function using project._id
@@ -280,6 +281,11 @@ const Project = {
     return ProjectModel.findOne({'aid_connect.id': aidConnectId});
   },
 
+  async addNewInstitution(id, payload) {
+    const institution = await Institution.add(payload);
+    return this.addInstitution(id, institution.id);
+  },
+
   async addInstitution(id, institutionId) {
     const institution = await InstitutionModel.findOne({_id: institutionId});
     if (!institution) throw Error('Institution with given Id not found');
@@ -324,5 +330,6 @@ module.exports = {
   generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
   changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload),
   addInstitution: req => Project.addInstitution(req.params.id, req.payload.institutionId),
-  getInstitution: req => Project.getInstitution(req.params.id)
+  getInstitution: req => Project.getInstitution(req.params.id),
+  addNewInstitution: req => Project.addNewInstitution(req.params.id, req.payload)
 };
