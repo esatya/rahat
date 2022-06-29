@@ -96,11 +96,5 @@ module.exports = {
       campaignId: Joi.string()
 
     })
-  },
-  token: {
-    params: GooseJoi.id(),
-    payload: Joi.object({
-      email: Joi.string()
-    })
   }
 };

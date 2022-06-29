@@ -9,6 +9,8 @@ const {DataUtils} = require('../../helpers/utils');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
 const Mailer = require('../../helpers/utils/mailer');
+const config = require("config");
+const jsonwebtoken = require("jsonwebtoken");
 
 const User = new RSUser.User({
   mongoose,
@@ -262,7 +264,18 @@ const controllers = {
     } catch (e) {
       throw Error(`ERROR: ${e}`);
     }
-  }
+  } ,
+  async token(request){
+    const campaignUser = request.query.email;
+    const jwtDuration = config.get('jwt.duration');
+    const appSecret = config.get('app.secret');
+    const jwtToken = jsonwebtoken.sign(
+        {email: campaignUser},
+        appSecret,
+        { expiresIn: jwtDuration }
+    )
+    return jwtToken;
+  },
 };
 
 module.exports = controllers;
