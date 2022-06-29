@@ -11,7 +11,15 @@ const schema = {
     trim: true,
     description: 'Name of institution'
   },
+  bisCode: {
+    type: String,
+    description: 'BIS code of institution'
+  },
   address: {
+    type: String,
+    description: 'Address of institution'
+  },
+  email: {
     type: String,
     description: 'Address of institution'
   },
@@ -25,6 +33,10 @@ const schema = {
     default: InstitutionConstants.status.Active,
     enum: Object.values(InstitutionConstants.status),
     description: 'Status of institution'
+  },
+  logoUrl: {
+    type: String,
+    Description: 'Logo url of institution'
   },
   agency: {
     type: ObjectId,
