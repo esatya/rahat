@@ -1,4 +1,4 @@
-  const Joi = require('joi');
+const Joi = require('joi');
 const mongoose = require('mongoose');
 const commonSchema = require('../../helpers/schema');
 const {ProjectConstants} = require('../../constants');
@@ -46,6 +46,7 @@ const schema = {
     id: {type: String, unique: true, sparse: true},
     isActive: {type: Boolean, default: false}
   },
+  institutions: [{type: ObjectId, ref: 'Institution'}],
   ...commonSchema
 };
 
