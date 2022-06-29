@@ -3,7 +3,7 @@ const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
 const config = require('config');
 const {DataUtils} = require('../../helpers/utils');
-const {ProjectModel} = require('../models');
+const {ProjectModel, InstitutionModel} = require('../models');
 const {Beneficiary} = require('../beneficiary/beneficiary.controllers');
 const {Vendor} = require('../vendor/vendor.controllers');
 const {readExcelFile, removeFile, uploadFile} = require('../../helpers/utils/fileManager');
@@ -288,12 +288,20 @@ const Project = {
     return ProjectModel.findOne({'aid_connect.id': aidConnectId});
   },
 
-  addInstitution(id, institutionId) {
+  async addInstitution(id, institutionId) {
+    const institution = await InstitutionModel.findOne({_id: institutionId});
+    if (!institution) throw Error('Institution with given Id not found');
     return ProjectModel.findOneAndUpdate(
       {_id: id},
       {$addToSet: {financial_institutions: institutionId}},
       {new: true, runValidators: true}
     );
+  },
+
+  async getInstitution(id) {
+    const project = await ProjectModel.findOne({_id: id}).populate('financial_institutions');
+    if (!project) throw Error('Project with given Id not found');
+    return project.financial_institutions;
   }
 };
 
@@ -324,5 +332,6 @@ module.exports = {
   uploadAndAddBenfToProject: req => Project.uploadAndAddBenfToProject(req.params.id, req.payload),
   generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
   changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload),
-  addInstitution: req => Project.addInstitution(req.params.id, req.params.institutionId)
+  addInstitution: req => Project.addInstitution(req.params.id, req.payload.institutionId),
+  getInstitution: req => Project.getInstitution(req.params.id)
 };

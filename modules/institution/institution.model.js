@@ -11,6 +11,10 @@ const schema = {
     trim: true,
     description: 'Name of institution'
   },
+  bisCode: {
+    type: String,
+    description: 'BIS code of institution'
+  },
   address: {
     type: String,
     description: 'Address of institution'

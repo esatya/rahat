@@ -73,10 +73,11 @@ const routes = {
   token: ['POST', '/{id}/token', 'generate token', [PROJECT.READ, PROJECT.ADMIN]],
   addInstitution: [
     'POST',
-    '/{id}/institution',
+    '/{id}/institutions',
     'Add institution to the project',
     [PROJECT.READ, PROJECT.ADMIN]
-  ]
+  ],
+  getInstitution: ['GET', '/{id}/institutions', 'Get institution', [PROJECT.READ, PROJECT.ADMIN]]
 };
 
 /**

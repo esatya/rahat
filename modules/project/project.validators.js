@@ -108,5 +108,8 @@ module.exports = {
     payload: Joi.object({
       institutionId: Joi.string()
     })
+  },
+  getInstitution: {
+    params: GooseJoi.id()
   }
 };
