@@ -61,6 +61,7 @@
     "pino": "^6.5.1",
     "pino-pretty": "^4.2.0",
     "read-excel-file": "^5.2.8",
+    "rs-otp": "git+https://github.com/rumsan/rs-otp.git",
     "rs-user": "^2.0.1",
     "rumsan-core": "^1.0.1",
     "twilio": "^3.49.3",
