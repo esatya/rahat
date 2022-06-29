@@ -12,6 +12,7 @@ const transactions = require('./blockchain/blockchain.routes');
 const Mobilizer = require('./mobilizer/mobilizer.routes');
 const Nft = require('./nft/nft.routes');
 const Notification = require('./notification/notification.routes');
+const OTP = require('./otp/otp.routes');
 const Sms = require('./sms/sms.routes');
 
 module.exports = {
@@ -29,5 +30,6 @@ module.exports = {
   Mobilizer,
   Nft,
   Notification,
+  OTP,
   Sms
 };
