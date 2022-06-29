@@ -164,18 +164,6 @@ const Project = {
     );
     return project;
   },
-  async token(currentUser, payload){
-    const campaignUser = payload.email;
-    const jwtDuration = config.get('jwt.duration');
-    const appSecret = config.get('app.secret');
-    const jwtToken = jsonwebtoken.sign(
-        {email: campaignUser},
-        appSecret,
-        { expiresIn: jwtDuration }
-    )
-    return jwtToken;
-  },
-
   async list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 10;
@@ -300,7 +288,6 @@ module.exports = {
   getById: req => Project.getById(req.params.id),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
   addCampaignFundRaiser: req => Project.addCampaignFundRaiser(req.params.id,req.currentUser, req.payload),
-  token: req=> Project.token(req.currentUser, req.payload),
   list: req => Project.list(req.query, req.currentUser),
   addBeneficiary: req => {
     req.payload.project_id = req.params.id;
