@@ -109,17 +109,20 @@ const Beneficiary = {
   async getbyId(id) {
     let ben;
     if (isObjectId.isValid(id)) {
-      ben = await BeneficiaryModel.findOne({_id: id, is_archived: false}).populate('projects');
+      ben = await BeneficiaryModel.findOne({_id: id, is_archived: false})
+        .populate('projects')
+        .populate('bank_account.institution');
       if (!ben) {
         return false;
       }
       return ben;
     }
-    ben = await BeneficiaryModel.findOne({phone: id, is_archived: false});
+    ben = await BeneficiaryModel.findOne({phone: id, is_archived: false})
+      .populate('projects')
+      .populate('bank_account.institution');
     if (!ben) {
       return false;
     }
-
     return ben;
   },
 
@@ -475,7 +478,7 @@ const Beneficiary = {
     return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect};
   },
 
-  addBankAccount(id, payload) {
+  async addBankAccount(id, payload) {
     return BeneficiaryModel.findOneAndUpdate({_id: id}, {bank_account: payload}, {new: true});
   }
 };
