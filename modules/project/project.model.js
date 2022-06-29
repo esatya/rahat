@@ -46,7 +46,6 @@ const schema = {
     id: {type: String, unique: true, sparse: true},
     isActive: {type: Boolean, default: false}
   },
-  institutions: [{type: ObjectId, ref: 'Institution'}],
   ...commonSchema
 };
 
