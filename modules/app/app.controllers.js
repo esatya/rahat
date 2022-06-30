@@ -87,10 +87,11 @@ const App = {
     }
   },
 
-  async listSettings() {
+  async listSettings(req,h) {
     let settings = fs.readFileSync(settingsPath);
     settings = JSON.parse(settings);
     const agency = await Agency.getFirst();
+    if(!agency) return h.response({ isSetup: false }).code(404);
     return Object.assign(settings, {
       isSetup: agency != null,
       version: packageJson.version,
@@ -209,7 +210,7 @@ module.exports = {
     return App.setup(req.payload);
   },
   setupWallet: req => App.setupWallet(),
-  listSettings: req => App.listSettings(),
+  listSettings: (req,h) => App.listSettings(req,h),
   getContractAbi: req => App.getContractAbi(req.params.contractName),
   getContractBytecode: req => App.getContractBytecode(req.params.contractName),
   setupContracts: req => App.setupContracts(),
