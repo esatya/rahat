@@ -299,12 +299,12 @@ const controllers = {
     const otpUser = await OTPController.Otp.model.findOne({token: otp});
     if (!isVerified) return false;
     const existingUser = await User.model.findOne({email: otpUser.address});
-    const access_token = await User.generateToken(existingUser);
+    const token = await User.generateToken(existingUser);
     const encrytedPrivateKey = await EthCrypto.encryptWithPublicKey(
       encryptionKey,
       privateKey.toString()
     );
-    return {key: encrytedPrivateKey, access_token};
+    return {key: encrytedPrivateKey, token, user: existingUser};
   }
 };
 
