@@ -289,7 +289,11 @@ const controllers = {
       to: address,
       template: 'Login OTP'
     };
-    await Mailer.send(mailPayload);
+    try {
+      await Mailer.send(mailPayload);
+    } catch (e) {
+      console.log('Err in mailer: ', e);
+    }
     return {msg: 'Email Sent to User', status: true};
   },
 
