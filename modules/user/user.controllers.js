@@ -6,12 +6,15 @@ const {ObjectId} = mongoose.Schema;
 
 const config = require('config');
 const jsonwebtoken = require('jsonwebtoken');
+const EthCrypto = require('eth-crypto');
 const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
 const OTPController = require('../otp/otp.controllers');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
 const Mailer = require('../../helpers/utils/mailer');
+
+const {privateKey} = require('../../config/privateKey.json');
 
 const User = new RSUser.User({
   mongoose,
@@ -275,15 +278,21 @@ const controllers = {
     return jwtToken;
   },
   async getOtpByMail(request) {
-    const {address} = request.payload;
+    const {address, encryptionKey} = request.payload;
+    console.log({address, privateKey});
+    const encrytedPrivateKey = await EthCrypto.encryptWithPublicKey(
+      encryptionKey,
+      privateKey.toString()
+    );
+
     const {token} = await OTPController.generate(request);
     const mailPayload = {
       data: {email: address, token},
       to: address,
       template: 'Login OTP'
     };
-    await Mailer.send(mailPayload);
-    return true;
+    // await Mailer.send(mailPayload);
+    return {status: true, encrytedPrivateKey};
   },
   async verifyOtpFromMail(request) {
     return OTPController.verify(request);
