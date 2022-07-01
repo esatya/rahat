@@ -1,20 +1,20 @@
+const config = require('config');
+const ethers = require('ethers');
+const EthCrypto = require('eth-crypto');
+const jsonwebtoken = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const RSUser = require('rs-user');
-const ethers = require('ethers');
 
 const {ObjectId} = mongoose.Schema;
 
-const config = require('config');
-const jsonwebtoken = require('jsonwebtoken');
-const EthCrypto = require('eth-crypto');
+const {privateKey} = require('../../config/privateKey.json');
+
 const ws = require('../../helpers/utils/socket');
 const {DataUtils} = require('../../helpers/utils');
 const OTPController = require('../otp/otp.controllers');
 const {Role} = require('./role.controllers');
 const {ROLES} = require('../../constants');
 const Mailer = require('../../helpers/utils/mailer');
-
-const {privateKey} = require('../../config/privateKey.json');
 
 const User = new RSUser.User({
   mongoose,
@@ -193,6 +193,7 @@ const controllers = {
     ];
     return User.model.aggregate(query);
   },
+
   async sendMailToAdmin(mailPayload = {}) {
     try {
       const admins = await this.listAdmins();
@@ -277,25 +278,33 @@ const controllers = {
     const jwtToken = jsonwebtoken.sign({email: campaignUser}, appSecret, {expiresIn: jwtDuration});
     return jwtToken;
   },
-  async getOtpByMail(request) {
-    const {address, encryptionKey} = request.payload;
-    console.log({address, privateKey});
-    const encrytedPrivateKey = await EthCrypto.encryptWithPublicKey(
-      encryptionKey,
-      privateKey.toString()
-    );
 
+  async getOtpByMail(request) {
+    const {address} = request.payload;
+    const existingUser = await controllers.getUserByEmail(address);
+    if (!existingUser) return {msg: "User doesn't exists.", status: false};
     const {token} = await OTPController.generate(request);
     const mailPayload = {
       data: {email: address, token},
       to: address,
       template: 'Login OTP'
     };
-    // await Mailer.send(mailPayload);
-    return {status: true, encrytedPrivateKey};
+    await Mailer.send(mailPayload);
+    return {msg: 'Email Sent to User', status: true};
   },
+
   async verifyOtpFromMail(request) {
-    return OTPController.verify(request);
+    const {encryptionKey, otp} = request.payload;
+    const isVerified = await OTPController.verify(request);
+    const otpUser = await OTPController.Otp.model.findOne({token: otp});
+    if (!isVerified) return false;
+    const existingUser = await User.model.findOne({email: otpUser.address});
+    const access_token = await User.generateToken(existingUser);
+    const encrytedPrivateKey = await EthCrypto.encryptWithPublicKey(
+      encryptionKey,
+      privateKey.toString()
+    );
+    return {key: encrytedPrivateKey, access_token};
   }
 };
 

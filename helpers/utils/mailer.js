@@ -1,12 +1,18 @@
-const nodemailer = require('nodemailer');
 const config = require('config');
+const fs = require('fs');
 const handlebars = require('handlebars');
+const nodemailer = require('nodemailer');
+const ses = require('nodemailer-ses-transport');
 
 const host_url = config.get('app.frontEndUrl');
-const fs = require('fs');
 const {NOTIFICATION_TYPES} = require('../../constants');
 
-const transporter = nodemailer.createTransport(config.get('services.nodemailer'));
+const transporter = nodemailer.createTransport(
+  ses({
+    accessKeyId: config.get('services.aws.access_key_id'),
+    secretAccessKey: config.get('services.aws.secret_access_key')
+  })
+);
 handlebars.registerHelper('host_url', () => host_url);
 
 const Templates = {
@@ -47,7 +53,7 @@ class Messenger {
     const isEmailService = config.get('app.email_on');
     if (!isEmailService) return null;
     const me = this;
-    const sender = 'rahat@rumsan.com';
+    const sender = config.get('services.otp.address');
 
     const template = this.getTemplate(sender, payload.template);
     if (!template) throw new Error('No template is defined');
