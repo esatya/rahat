@@ -11,6 +11,11 @@ const schema = {
     trim: true,
     description: 'Name of institution'
   },
+  account_number: {
+    type: String,
+    required: true,
+    description: 'Account Number of institution'
+  },
   bisCode: {
     type: String,
     description: 'BIS code of institution'

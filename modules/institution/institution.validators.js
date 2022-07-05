@@ -9,6 +9,7 @@ module.exports = {
   add: {
     payload: Joi.object({
       name: Institution.name.example('Himalayan Bank'),
+      account_number: Institution.account_number.example('021000021'),
       bisCode: Institution.bisCode.example('HMB'),
       address: Institution.address.example('Kamaladi, Kathmandu'),
       phone: Institution.phone.example('01-4245980'),
