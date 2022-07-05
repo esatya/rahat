@@ -9,6 +9,8 @@ if [ ${#project_branch} -lt 2 ]; then
   project_branch="master"
 fi
 
+echo $project_branch
+
 set current working directory
 current_dir=$(pwd)
 # set working project root folder
