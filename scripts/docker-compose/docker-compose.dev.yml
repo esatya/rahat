@@ -89,6 +89,7 @@ services:
 
 volumes:
   rahat_mongodb_dev:
+  rahat_mongodb_test:
 
 networks:
   rahat_network:
