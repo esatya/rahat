@@ -1,0 +1,58 @@
+{
+  "app": {
+    "name": "rahat-server",
+    "port": 3601,
+    "secret": "6E4(WdnI5ukyHDaqy-AKEZvT$7JDnrUG",
+    "url": "http://localhost:3601",
+    "aid-connect-url": "https://rahat-aid-connect.pages.dev",
+    "db": "mongodb://rahat_mongodb:27017/rahat_db",
+    "frontEndUrl": "http://localhost:8000",
+    "email_on": true,
+    "smsService": "prabhu_sms",
+    "sms_service": "rumsan",
+    "privateKey": "0x7f8a444fa77c85b4d56dcfac11eb9c71b6660d77329cdc84a24e249ee8b1f4bb",
+    "signatureValidity": 86400
+  },
+  "cors": [],
+  "jwt": {
+    "duration": 3600000,
+    "duration_long": 604800000
+  },
+  "services": {
+    "rumsan_sms": {
+      "url": "https://office.rumsan.net/api/v1/misc/sms"
+    },
+    "nodemailer": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "pool": true,
+      "auth": {
+        "user": "<insert your email>",
+        "pass": "<insert your password>"
+      }
+    },
+    "sparrow_sms": {
+      "url": "http://api.sparrowsms.com/v2/sms",
+      "token": "<insert your token here>",
+      "from": "InfoSMS",
+      "active": false
+    },
+    "prabhu_sms": {
+      "url": "https://smsml.creationsoftnepal.com/Send",
+      "token": "<insert your token here>",
+      "from": "InfoSMS",
+      "active": true
+    },
+    "ipfs": "http://195.179.200.228:5001"
+  },
+  "blockchain": {
+    "httpProvider": "https://testnetwork.esatya.io",
+    "webSocketProvider": "http://localhost:7545",
+    "networkId": "2020",
+    "explorer": "https://explorer.testnetwork.esatya.io"
+  },
+  "test": {
+    "db": "mongodb://rahat_mongodb:27017/rahat_test"
+  }
+}
