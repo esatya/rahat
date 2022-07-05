@@ -9,8 +9,6 @@ if [ ${#project_branch} -lt 2 ]; then
   project_branch="master"
 fi
 
-echo $project_branch
-
 set current working directory
 current_dir=$(pwd)
 # set working project root folder
@@ -35,7 +33,7 @@ git clone -b $project_branch https://github.com/esatya/rahat-agency.git $abs_dir
 git clone -b $project_branch https://github.com/esatya/rahat-vendor.git $abs_dir/rahat-vendor
 git clone -b $project_branch https://github.com/esatya/rahat-mobilizer.git $abs_dir/rahat-mobilizer
 
-cp $abs_dir/rahat/scripts/docker-ci-test.sh .
-cp -r $abs_dir/rahat/scripts/docker-compose/* .
+cp $abs_dir/rahat/scripts/docker-ci-test.sh $abs_dir
+cp -r $abs_dir/rahat/scripts/docker-compose/* $abs_dir
 
 echo "Done! :)"
