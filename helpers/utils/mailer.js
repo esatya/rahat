@@ -7,12 +7,19 @@ const ses = require('nodemailer-ses-transport');
 const host_url = config.get('app.frontEndUrl');
 const {NOTIFICATION_TYPES} = require('../../constants');
 
-const transporter = nodemailer.createTransport(
+const emailConfig = config.get('services.nodemailer.prefer');
+// Defaults to AWS SES
+
+let transporter = nodemailer.createTransport(
   ses({
-    accessKeyId: config.get('services.aws.access_key_id'),
-    secretAccessKey: config.get('services.aws.secret_access_key')
+    accessKeyId: config.get('services.nodemailer.aws.accessKeyId'),
+    secretAccessKey: config.get('services.nodemailer.aws.secretAccessKey')
   })
 );
+if (emailConfig === 'gmail') {
+  transporter = nodemailer.createTransport(config.get('services.nodemailer.gmail'));
+}
+
 handlebars.registerHelper('host_url', () => host_url);
 
 const Templates = {
@@ -50,7 +57,7 @@ class Messenger {
   }
 
   async send(payload) {
-    const isEmailService = config.get('app.email_on');
+    const isEmailService = config.get('services.nodemailer.is_enabled');
     if (!isEmailService) return null;
     const me = this;
     const sender = config.get('services.otp.address');
