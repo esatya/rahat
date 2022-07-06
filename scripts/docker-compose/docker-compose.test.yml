@@ -1,0 +1,18 @@
+version: "3.8"
+services:  
+  rahat_server:
+    environment:
+      - CI=true
+    command: ["tail","-f","/dev/null"]
+
+  rahat_agency:
+    environment:
+      - CI=true #treat react warnings as errors
+      # - CI=false 
+    command: ["tail","-f","/dev/null"]
+
+  rahat_vendor:
+    environment:
+      - CI=false #allow build to pass through react warnings
+      # - CI=false 
+    command: ["tail","-f","/dev/null"]
