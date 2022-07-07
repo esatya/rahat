@@ -39,6 +39,11 @@ const schema = {
     enum: Object.values(InstitutionConstants.status),
     description: 'Status of institution'
   },
+  project: {
+    type: ObjectId,
+    ref: 'Project',
+    required: true
+  },
   logoUrl: {
     type: String,
     Description: 'Logo url of institution'
