@@ -42,11 +42,12 @@ const schema = {
   project: {
     type: ObjectId,
     ref: 'Project',
-    required: true
+    required: true,
+    description: 'Project Id associated with institution'
   },
   logoUrl: {
     type: String,
-    Description: 'Logo url of institution'
+    description: 'Logo url of institution'
   },
   agency: {
     type: ObjectId,

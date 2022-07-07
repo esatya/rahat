@@ -9,6 +9,7 @@ const logger = Logger.getInstance();
 const Institution = {
   async add(payload) {
     payload.agency = payload.currentUser.agency;
+    console.log({payload});
     const project = await InstitutionModel.create(payload);
     // TODO implement blockchain function using project._id
     return project;

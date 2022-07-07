@@ -282,6 +282,7 @@ const Project = {
   },
 
   async addNewInstitution(id, payload) {
+    console.log({id, payload});
     const institution = await Institution.add(payload);
     return this.addInstitution(id, institution.id);
   },

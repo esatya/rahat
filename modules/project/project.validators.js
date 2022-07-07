@@ -113,7 +113,9 @@ module.exports = {
       address: Institution.address.example('Kamaladi, Kathmandu'),
       phone: Institution.phone.example('01-4245980'),
       email: Institution.email.example('testinstitute@gmail.com'),
-      logoUrl: Institution.logoUrl.example('https://www.google.com/logo.png')
+      logoUrl: Institution.logoUrl.example('https://www.google.com/logo.png'),
+      account_number: Joi.string().example('0000000000000000000'),
+      project: Joi.string().example('123456')
     })
   },
   getInstitution: {
