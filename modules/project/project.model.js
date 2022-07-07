@@ -31,7 +31,7 @@ const schema = {
       success: {type: Boolean, required: true, default: false}
     }
   ],
-  project_manager: {type: String}, // Wallet address
+  project_manager: [{type: String}], // Wallet address
   location: {type: String, joi: Joi.string().example('kupondole')},
   financial_institutions: [{type: ObjectId, ref: 'Institution'}],
   description: String,

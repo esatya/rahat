@@ -73,8 +73,5 @@ module.exports = {
     payload: Joi.object({
       email: Joi.string().required()
     })
-  },
-  token: {
-    params: GooseJoi.id()
   }
 };

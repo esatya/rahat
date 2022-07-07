@@ -22,6 +22,7 @@ const Project = {
       payload.financial_institutions = payload.financial_institutions
         ? payload.financial_institutions.split(',')
         : [];
+      payload.project_manager = payload.project_manager.split(',');
       const projecCount = await ProjectModel.countDocuments();
       payload.serial_index = projecCount + 1;
       const project = await ProjectModel.create(payload);
@@ -79,7 +80,7 @@ const Project = {
     return {uploaded_beneficiaries};
   },
 
-  async changeStatus(id, payload) {
+  async changeStatus(id, payload, currentUser) {
     const {status, updated_by} = payload;
     let project = await ProjectModel.findOneAndUpdate(
       {_id: id, is_archived: false},
@@ -87,23 +88,28 @@ const Project = {
       {new: true, runValidators: true}
     );
     if (project && project.project_manager) {
-      project = await this.appendProjectManager(project, project.project_manager);
+      project = await this.appendProjectManager(project, project.project_manager, currentUser);
     }
     // TODO implement blockchain function using project._id
     return project;
   },
 
-  async appendProjectManager(doc, project_manager) {
+  async appendProjectManager(doc, project_manager, currentUser) {
     const existing_doc = doc.toObject();
-    const user = await getByWalletAddress(project_manager);
-    existing_doc.project_manager = user || null;
+    for(var i=0; i<project_manager.length; i++){
+      if (project_manager[i] == currentUser.wallet_address){
+        const user = await getByWalletAddress(project_manager[i]);
+        existing_doc.project_manager = user || null;
+        break;
+      }
+    }
     return existing_doc;
   },
 
-  async getById(id) {
+  async getById(id, currentUser) {
     let doc = await ProjectModel.findOne({_id: id});
     if (doc && doc.project_manager) {
-      doc = await this.appendProjectManager(doc, doc.project_manager);
+      doc = await this.appendProjectManager(doc, doc.project_manager, currentUser);
     }
     return doc;
   },
@@ -139,14 +145,29 @@ const Project = {
       {new: true}
     );
   },
+  filterByProjectManager(projects, currentUser) {
+  console.log('The function called filterByProjectManager', projects)
+  console.log('The function called filterByProjectManager', currentUser)
+  console.log('The function called filterByProjectManager', currentUser.id)
+    const filteredProjects = projects.map(data => {
+      console.log("data", data)
+      if(data.project_manager &&  data.project_manager.id == currentUser.id)
+        return data
+    })
+    return [];
 
-  async addProjectManageDetails(projects) {
+  },
+  async addProjectManageDetails(projects, currentUser) {
     const appended_result = [];
     for (const p of projects) {
-      if (p.project_manager) {
-        const user = await getByWalletAddress(p.project_manager);
-        if (user) p.project_manager = user;
-        else p.project_manager = null;
+      if (p.project_manager && p.project_manager.length) {
+        for(var i =0; i<p.project_manager.length; i++){
+          console.log("p.project_manager[i] = currentUser.wallet_address",p.project_manager[i] == currentUser.wallet_address)
+            const user = await getByWalletAddress(p.project_manager[i]);
+            console.log('The user is', user)
+            if (user) p.project_manager[i] = user;
+            else p.project_manager[i] = null;
+        }
         appended_result.push(p);
       } else {
         appended_result.push(p);
@@ -173,6 +194,9 @@ const Project = {
     $match.agency = currentUser.agency;
     if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
     if (query.status) $match.status = query.status;
+    console.log('The current User is ', currentUser.id)
+    $match.project_manager = currentUser.wallet_address
+    console.log('wallet_address', currentUser.wallet_address);
 
     const result = await DataUtils.paging({
       start,
@@ -183,8 +207,11 @@ const Project = {
     });
 
     if (result && result.data.length) {
-      const appended = await this.addProjectManageDetails(result.data);
+      const appended = await this.addProjectManageDetails(result.data, currentUser);
       result.data = appended;
+      console.log('the usrs are', result.project_manager)
+      console.log('the usrs are', result)
+      // result.data = this.filterByProjectManager(result.data, currentUser);
     }
     return result;
   },
@@ -278,14 +305,15 @@ const Project = {
 
   getByAidConnectId(aidConnectId) {
     return ProjectModel.findOne({'aid_connect.id': aidConnectId});
-  }
+  },
+
 };
 
 module.exports = {
   Project,
   add: req => Project.add(req.payload),
-  changeStatus: req => Project.changeStatus(req.params.id, req.payload),
-  getById: req => Project.getById(req.params.id),
+  changeStatus: req => Project.changeStatus(req.params.id, req.payload, req.currentUser),
+  getById: req => Project.getById(req.params.id, req.currentUser),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
   addCampaignFundRaiser: req => Project.addCampaignFundRaiser(req.params.id,req.currentUser, req.payload),
   list: req => Project.list(req.query, req.currentUser),
