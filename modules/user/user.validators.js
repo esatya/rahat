@@ -73,10 +73,5 @@ module.exports = {
     payload: Joi.object({
       email: Joi.string().required()
     })
-  },
-  token: {
-    query: Joi.object({
-      email: Joi.string()
-    })
   }
 };
