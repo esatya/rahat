@@ -146,9 +146,6 @@ const Project = {
     );
   },
   filterByProjectManager(projects, currentUser) {
-  console.log('The function called filterByProjectManager', projects)
-  console.log('The function called filterByProjectManager', currentUser)
-  console.log('The function called filterByProjectManager', currentUser.id)
     const filteredProjects = projects.map(data => {
       console.log("data", data)
       if(data.project_manager &&  data.project_manager.id == currentUser.id)
