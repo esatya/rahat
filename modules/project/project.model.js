@@ -21,6 +21,7 @@ const schema = {
     enum: Object.values(ProjectConstants.status),
     description: 'Status of project'
   },
+  start_date: {type: Date, description: 'Start date of project'},
   // TODO write cron job to disable project in end_date
   end_date: {type: Date, description: 'End date of project'},
   allocations: [
