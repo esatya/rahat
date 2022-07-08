@@ -1,10 +1,16 @@
 #Rumsan
 play/
 sandbox/
-config/
+config/**
 temp/
 public/
 contracts/build
+
+# allow sample configs
+!config/default.example.json
+!config/contracts.example.json
+!config/privateKey.example.json
+!config/settings.example.json
 
 uploads/
 
