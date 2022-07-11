@@ -1,24 +1,24 @@
 const jsonwebtoken = require('jsonwebtoken');
-const {Types} = require('mongoose');
-const {nanoid} = require('nanoid');
+const { Types } = require('mongoose');
+const { nanoid } = require('nanoid');
 const config = require('config');
-const {DataUtils} = require('../../helpers/utils');
-const {ProjectModel, InstitutionModel} = require('../models');
-const {Beneficiary} = require('../beneficiary/beneficiary.controllers');
-const {Vendor} = require('../vendor/vendor.controllers');
-const {readExcelFile, removeFile, uploadFile} = require('../../helpers/utils/fileManager');
-const {getByWalletAddress} = require('../user/user.controllers');
-const {addFileToIpfs} = require('../../helpers/utils/ipfs');
+const { DataUtils } = require('../../helpers/utils');
+const { ProjectModel, InstitutionModel } = require('../models');
+const { Beneficiary } = require('../beneficiary/beneficiary.controllers');
+const { Vendor } = require('../vendor/vendor.controllers');
+const { readExcelFile, removeFile, uploadFile } = require('../../helpers/utils/fileManager');
+const { getByWalletAddress } = require('../user/user.controllers');
+const { addFileToIpfs } = require('../../helpers/utils/ipfs');
 
 const aidConnectBaseURL = config.get('app.aid-connect-url');
-const {Institution} = require('../institution/institution.controllers');
+const { Institution } = require('../institution/institution.controllers');
 
 const Project = {
   // TODO: implement blockchain function using project._id
   async add(payload) {
     try {
       let uploaded_beneficiaries = 0;
-      const {file, currentUser} = payload;
+      const { file, currentUser } = payload;
       payload.agency = currentUser.agency;
       payload.financial_institutions = payload.financial_institutions
         ? payload.financial_institutions.split(',')
@@ -38,7 +38,7 @@ const Project = {
           );
         }
       }
-      return {project, uploaded_beneficiaries};
+      return { project, uploaded_beneficiaries };
     } catch (err) {
       throw Error(err);
     }
@@ -59,7 +59,7 @@ const Project = {
       // payload.project_id = projectId;
       payload.projects = projectId;
       payload.currentUser = currentUser;
-      const {name, phone} = payload;
+      const { name, phone } = payload;
       if (name && phone) {
         await Beneficiary.add(payload);
         upload_counter++;
@@ -70,22 +70,22 @@ const Project = {
 
   async uploadAndAddBenfToProject(projectId, payload) {
     let uploaded_beneficiaries = 0;
-    const {file, currentUser} = payload;
+    const { file, currentUser } = payload;
     const uploaded = await uploadFile(file);
     const rows = await readExcelFile(uploaded.file);
     if (rows.length) {
       await removeFile(uploaded.file);
       uploaded_beneficiaries = await this.addBeneficiariesToProject(rows, projectId, currentUser);
     }
-    return {uploaded_beneficiaries};
+    return { uploaded_beneficiaries };
   },
 
   async changeStatus(id, payload) {
-    const {status, updated_by} = payload;
+    const { status, updated_by } = payload;
     let project = await ProjectModel.findOneAndUpdate(
-      {_id: id, is_archived: false},
-      {status, updated_by},
-      {new: true, runValidators: true}
+      { _id: id, is_archived: false },
+      { status, updated_by },
+      { new: true, runValidators: true }
     );
     if (project && project.project_manager) {
       project = await this.appendProjectManager(project, project.project_manager);
@@ -102,7 +102,7 @@ const Project = {
   },
 
   async getById(id) {
-    let doc = await ProjectModel.findOne({_id: id});
+    let doc = await ProjectModel.findOne({ _id: id });
     if (doc && doc.project_manager) {
       doc = await this.appendProjectManager(doc, doc.project_manager);
     }
@@ -111,33 +111,33 @@ const Project = {
 
   async addTokenAllocation(id, payload) {
     const allocationId = Types.ObjectId();
-    const {amount, txhash, updated_by} = payload;
+    const { amount, txhash, updated_by } = payload;
     const allocations = {
       _id: allocationId,
       amount,
       txhash
     };
     await ProjectModel.findOneAndUpdate(
-      {_id: id},
+      { _id: id },
       {
-        $addToSet: {allocations},
+        $addToSet: { allocations },
         updated_by
       },
-      {new: true, runValidators: true}
+      { new: true, runValidators: true }
     );
     return allocations;
   },
 
   async confirmTokenAllocation(allocationId, txhash) {
     return ProjectModel.findOneAndUpdate(
-      {'allocations._id': Types.ObjectId(allocationId)},
+      { 'allocations._id': Types.ObjectId(allocationId) },
       {
         $set: {
           'allocations.$.txhash': txhash,
           'allocations.$.success': true
         }
       },
-      {new: true}
+      { new: true }
     );
   },
 
@@ -157,11 +157,11 @@ const Project = {
   },
 
   async addCampaignFundRaiser(id, currentUser, payload) {
-    const {campaignTitle, campaignId} = payload;
+    const { campaignTitle, campaignId } = payload;
     const project = await ProjectModel.findOneAndUpdate(
-      {_id: id},
-      {campaignId, campaignTitle},
-      {new: true, runValidators: true}
+      { _id: id },
+      { campaignId, campaignTitle },
+      { new: true, runValidators: true }
     );
     return project;
   },
@@ -169,18 +169,18 @@ const Project = {
     const start = query.start || 0;
     const limit = query.limit || 10;
 
-    let $match = {is_archived: false};
+    let $match = { is_archived: false };
     if (query.show_archive) $match = {};
     $match.agency = currentUser.agency;
-    if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
+    if (query.name) $match.name = { $regex: new RegExp(`${query.name}`), $options: 'i' };
     if (query.status) $match.status = query.status;
 
     const result = await DataUtils.paging({
       start,
       limit,
-      sort: {created_at: -1},
+      sort: { created_at: -1 },
       model: ProjectModel,
-      query: [{$match}]
+      query: [{ $match }]
     });
 
     if (result && result.data.length) {
@@ -193,9 +193,9 @@ const Project = {
   async remove(id, currentUser) {
     // TODO only allow if no activity has happened to the project
     const project = await ProjectModel.findOneAndUpdate(
-      {_id: id},
-      {is_archived: true},
-      {new: true, runValidators: true}
+      { _id: id },
+      { is_archived: true },
+      { new: true, runValidators: true }
     );
     // TODO blockchain call
     return project;
@@ -207,21 +207,21 @@ const Project = {
     if (payload.financial_institutions) {
       payload.financial_institutions = payload.financial_institutions.split(',');
     }
-    return ProjectModel.findOneAndUpdate({_id: id, is_archived: false}, payload, {
+    return ProjectModel.findOneAndUpdate({ _id: id, is_archived: false }, payload, {
       new: true,
       runValidators: true
     });
   },
 
   countProject(currentUser) {
-    const query = {is_archived: false};
+    const query = { is_archived: false };
     query.agency = currentUser.agency;
 
     return ProjectModel.find(query).countDocuments();
   },
 
   async getTokenAllocated(currentUser) {
-    const $match = {$and: [{is_archived: false}, {agency: currentUser.agency}]};
+    const $match = { $and: [{ is_archived: false }, { agency: currentUser.agency }] };
 
     const query = [
       {
@@ -233,72 +233,73 @@ const Project = {
       {
         $group: {
           _id: '$_id',
-          name: {$first: '$name'},
-          token: {$sum: '$allocations.amount'}
+          name: { $first: '$name' },
+          token: { $sum: '$allocations.amount' },
+          created_at: { $first: '$created_at' }
         }
       }
     ];
     const projectAllocation = await ProjectModel.aggregate(query);
-    const totalAllocation = projectAllocation.reduce((acc, {token}) => acc + token, 0);
+    const totalAllocation = projectAllocation.reduce((acc, { token }) => acc + token, 0);
 
-    return {totalAllocation, projectAllocation};
+    return { totalAllocation, projectAllocation };
   },
 
   async generateAidConnectId(projectId) {
     const project = await this.getById(projectId);
     if (project.aid_connect && project.aid_connect.id)
       return {
-        data: {...project.aid_connect, link: `${aidConnectBaseURL}/${project.aid_connect.id}`}
+        data: { ...project.aid_connect, link: `${aidConnectBaseURL}/${project.aid_connect.id}` }
       };
     const aid_connect_id = nanoid(12);
     const newProject = await ProjectModel.findOneAndUpdate(
-      {_id: projectId},
-      {aid_connect: {id: aid_connect_id, isActive: true}},
-      {new: true}
+      { _id: projectId },
+      { aid_connect: { id: aid_connect_id, isActive: true } },
+      { new: true }
     );
 
     return {
-      data: {...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}`}
+      data: { ...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}` }
     };
   },
 
   async changeAidConnectStatus(projectId, payload) {
-    const {isActive} = payload;
-    const {aid_connect} = await this.getById(projectId);
+    const { isActive } = payload;
+    const { aid_connect } = await this.getById(projectId);
     if (!aid_connect.id)
-      return {data: null, message: 'Aid-Connect Link Not Found for this project'};
+      return { data: null, message: 'Aid-Connect Link Not Found for this project' };
     const newProject = await ProjectModel.findOneAndUpdate(
-      {_id: projectId},
-      {aid_connect: {id: aid_connect.id, isActive}},
-      {new: true}
+      { _id: projectId },
+      { aid_connect: { id: aid_connect.id, isActive } },
+      { new: true }
     );
     return {
-      data: {...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}`}
+      data: { ...newProject.aid_connect, link: `${aidConnectBaseURL}/${newProject.aid_connect.id}` }
     };
   },
 
   getByAidConnectId(aidConnectId) {
-    return ProjectModel.findOne({'aid_connect.id': aidConnectId});
+    return ProjectModel.findOne({ 'aid_connect.id': aidConnectId });
   },
 
   async addNewInstitution(id, payload) {
-    console.log({id, payload});
+    console.log({ id, payload });
     const institution = await Institution.add(payload);
     return this.addInstitution(id, institution.id);
   },
 
   async addInstitution(id, institutionId) {
-    const institution = await InstitutionModel.findOne({_id: institutionId});
+    const institution = await InstitutionModel.findOne({ _id: institutionId });
     if (!institution) throw Error('Institution with given Id not found');
     return ProjectModel.findOneAndUpdate(
-      {_id: id},
-      {$addToSet: {financial_institutions: institutionId}},
-      {new: true, runValidators: true}
+      { _id: id },
+      { $addToSet: { financial_institutions: institutionId } },
+      { new: true, runValidators: true }
     );
   },
 
   async getInstitution(id) {
-    const project = await ProjectModel.findOne({_id: id}).populate('financial_institutions');
+    const project = await ProjectModel.findOne({ _id: id }).populate('financial_institutions');
     if (!project) throw Error('Project with given Id not found');
     return project.financial_institutions;
   }
