@@ -263,11 +263,57 @@ const Vendor = {
   async listTokenRedeemTx(id) {
     return vendorTokenRedeemModel.find({vendor_wallet: id});
   },
+  async parseVendorExportReportData(vendorData){
+    const vendorExportData = [];
+    for (let i=0; i< vendorData.length; i++){
+      let data = vendorData[i];
+      vendorExportData.push({
+        "Name": data.name,
+        "Phone": data.phone,
+        "Email Address": data.email,
+        "Wallet Address": data.wallet_address,
+        "Shop Name": data.shop_name,
+        "Address": data.address,
+        "Gender": data.gender,
+        "PAN Number": data.pan_number,
+        "PAN Number": data.pan_number,
+        "Total Balance": "data.pan_number",
+        "Projects Involved": "data.pan_number",
+        "Registration Date": data.created_at,
+      })
+    }
+    return vendorExportData;
 
-  async getReportingData() {
+  },
+  async getVendorExportData(from, to, projectId){
+    const dateFilter =
+        from && to
+            ? {
+              created_at: {
+                $gt: new Date(from),
+                $lt: new Date(to)
+              }
+            }
+            : null;
+    const vendorData = projectId
+        ? await VendorModel.find({
+          projects: [projectId],
+          ...dateFilter
+        })
+        : await VendorModel.find({
+          ...dateFilter
+        });
+
+    return await this.parseVendorExportReportData(vendorData);
+  },
+  async getReportingData(query) {
     const vendorByProject = await this.countVendorViaProject();
-
-    return {vendorByProject};
+    const vendorExportData = await this.getVendorExportData(
+        query.from,
+        query.to,
+        query.projectId
+    );
+    return {vendorByProject, vendorExportData};
   }
 };
 
