@@ -147,7 +147,6 @@ const Project = {
   },
   filterByProjectManager(projects, currentUser) {
     const filteredProjects = projects.map(data => {
-      console.log("data", data)
       if(data.project_manager &&  data.project_manager.id == currentUser.id)
         return data
     })
@@ -159,9 +158,7 @@ const Project = {
     for (const p of projects) {
       if (p.project_manager && p.project_manager.length) {
         for(var i =0; i<p.project_manager.length; i++){
-          console.log("p.project_manager[i] = currentUser.wallet_address",p.project_manager[i] == currentUser.wallet_address)
             const user = await getByWalletAddress(p.project_manager[i]);
-            console.log('The user is', user)
             if (user) p.project_manager[i] = user;
             else p.project_manager[i] = null;
         }
@@ -192,7 +189,7 @@ const Project = {
     if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
     if (query.status) $match.status = query.status;
     $match.project_manager = currentUser.wallet_address
-    
+
     const result = await DataUtils.paging({
       start,
       limit,
@@ -254,9 +251,10 @@ const Project = {
           name: {$first: '$name'},
           token: {$sum: '$allocations.amount'}
         }
-      }
+        },
+      { $sort: {created_at: -1, name:-1} }
     ];
-    const projectAllocation = await ProjectModel.aggregate(query);
+    const projectAllocation = await ProjectModel.aggregate(query).limit(5);
     const totalAllocation = projectAllocation.reduce((acc, {token}) => acc + token, 0);
 
     return {totalAllocation, projectAllocation};
