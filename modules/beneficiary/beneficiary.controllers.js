@@ -511,12 +511,12 @@ const Beneficiary = {
         'Permanent Address': data.address,
         'Email address': data.email,
         'Government id': data.govt_id,
-        Age: data.extras.age,
+        Age: data?.extras?.age || 'unknown',
         Gender: data.gender,
         'Projects involved': projectsName.join(' ,'),
-        Education: data.extras.education,
-        Profession: data.extras.profession,
-        'Number of Family Members': data.extras.family_members,
+        Education: data?.extras?.education || 'unknown',
+        Profession: data?.extras?.profession || 'unknown',
+        'Number of Family Members': data?.extras?.family_members || 'unknown',
         'Registration date': data.created_at,
         'Token Issues': TotalAllocations
       });
