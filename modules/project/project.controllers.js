@@ -96,6 +96,7 @@ const Project = {
 
   async appendProjectManager(doc, project_manager, currentUser) {
     const existing_doc = doc.toObject();
+
     for (let i = 0; i < project_manager.length; i++) {
       if (project_manager[i] == currentUser.wallet_address) {
         const user = await getByWalletAddress(project_manager[i]);
@@ -108,7 +109,7 @@ const Project = {
 
   async getById(id, currentUser) {
     let doc = await ProjectModel.findOne({_id: id});
-    if (doc && doc.project_manager) {
+    if (doc && doc.project_manager && currentUser) {
       doc = await this.appendProjectManager(doc, doc.project_manager, currentUser);
     }
     return doc;
