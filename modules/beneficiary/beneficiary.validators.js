@@ -106,5 +106,11 @@ module.exports = {
       to: Joi.date(),
       projectId: Joi.string().optional().description('Project ID')
     })
+  },
+
+  listBeneficiaryPhones: {
+    query: Joi.object({
+      projectId: Joi.string().optional().description('Project ID')
+    })
   }
 };
