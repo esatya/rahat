@@ -4,6 +4,12 @@ const {BENEFICIARY} = require('../../constants/permissions');
 
 const routes = {
   list: ['GET', '', 'List all beneficiarys.', [BENEFICIARY.READ, BENEFICIARY.ADMIN]],
+  listBeneficiaryPhones: [
+    'GET',
+    '/phones',
+    'List all beneficiary phones.',
+    [BENEFICIARY.READ, BENEFICIARY.ADMIN]
+  ],
   add: ['POST', '', 'Add a beneficiary.', [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]],
   addMany: ['POST', '/bulk', 'Add a beneficiary in bulk', [BENEFICIARY.WRITE, BENEFICIARY.ADMIN]],
   getbyId: [

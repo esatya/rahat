@@ -138,6 +138,14 @@ const Beneficiary = {
     return BeneficiaryModel.findOne({wallet_address, is_archived: false});
   },
 
+  listBeneficiaryphones(query) {
+    console.log('as');
+    const projectId = query.projectId || null;
+    console.log({projectId});
+    if (projectId) return BeneficiaryModel.find({projects: ObjectId(projectId)}).select('phone');
+    return BeneficiaryModel.find().select('phone');
+  },
+
   list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 10;
@@ -657,5 +665,6 @@ module.exports = {
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
   checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
-  getReportingData: req => Beneficiary.getReportingData(req.query)
+  getReportingData: req => Beneficiary.getReportingData(req.query),
+  listBeneficiaryPhones: req => Beneficiary.listBeneficiaryphones(req.query)
 };
