@@ -225,7 +225,7 @@ const Vendor = {
     const totalCount = await VendorModel.find($match).countDocuments();
     const project = await VendorModel.aggregate(query);
     const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
-    project.push({name: 'Unknown', count: unknownCount});
+    project.push({name: 'UnApproved', count: unknownCount});
     return {totalCount, project};
   },
 
