@@ -208,7 +208,7 @@ const Mobilizer = {
     const totalCount = await MobilizerModel.find($match).countDocuments();
     const project = await MobilizerModel.aggregate(query);
     const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
-    project.push({name: 'Unknown', count: unknownCount});
+    project.push({name: 'UnApproved', count: unknownCount});
     return {totalCount, project};
   },
 
@@ -220,37 +220,37 @@ const Mobilizer = {
   listTokenIssueTx(mobilizerId) {
     return TokenMobilizationModel.find({mobilizer_wallet: mobilizerId});
   },
-  async parseMobilizerExportReportData(mobilizerData){
-    const mobilizerExportData=[];
-    for (let i =0; i<mobilizerData.length; i++){
-      let data = mobilizerData[i];
+  async parseMobilizerExportReportData(mobilizerData) {
+    const mobilizerExportData = [];
+    for (let i = 0; i < mobilizerData.length; i++) {
+      const data = mobilizerData[i];
       mobilizerExportData.push({
-        'Name': data.name,
-        'Phone Number':data.phone,
-        'Email Address':data.email,
+        Name: data.name,
+        'Phone Number': data.phone,
+        'Email Address': data.email,
         'Wallet Address': data.wallet_address,
-        'Organization': '',
-        'Registration Date':data.created_at
-      })
+        Organization: '',
+        'Registration Date': data.created_at
+      });
     }
     return mobilizerExportData;
   },
-  async getMobilizerExportData(from, to, projectId){
+  async getMobilizerExportData(from, to, projectId) {
     const dateFilter =
-        from && to
-            ? {
-              created_at: {
-                $gt: new Date(from),
-                $lt: new Date(to)
-              }
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
             }
-            : null;
+          }
+        : null;
     const mobilizerData = projectId
-        ? await MobilizerModel.find({
+      ? await MobilizerModel.find({
           projects: [projectId],
           ...dateFilter
         })
-        : await MobilizerModel.find({
+      : await MobilizerModel.find({
           ...dateFilter
         });
 
@@ -258,9 +258,10 @@ const Mobilizer = {
   },
   async getReportingData(query) {
     const mobilizerByProject = await this.countMobilizersViaProject();
-    const mobilizerExportData = await this.getMobilizerExportData(query.from,
-        query.to,
-        query.projectId
+    const mobilizerExportData = await this.getMobilizerExportData(
+      query.from,
+      query.to,
+      query.projectId
     );
     return {mobilizerByProject, mobilizerExportData};
   }
