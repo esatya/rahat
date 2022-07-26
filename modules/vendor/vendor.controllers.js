@@ -263,10 +263,31 @@ const Vendor = {
   async listTokenRedeemTx(id) {
     return vendorTokenRedeemModel.find({vendor_wallet: id});
   },
+  async getProjectNames (data){
+    const projectsInvolved = [];
+    for (var i =0; i<data.projects.length; i++){
+      projects = data.projects[i];
+      projectsInvolved.push( await this.fetchProjectNameById(projects));
+    }
+    return projectsInvolved;
+  },
+  async fetchProjectNameById(projectId){
+  const {name, allocations} = await ProjectModel.findOne({_id: projectId});
+  return {name, allocations};
+},
   async parseVendorExportReportData(vendorData){
     const vendorExportData = [];
     for (let i=0; i< vendorData.length; i++){
       let data = vendorData[i];
+      const projectsInvolved = await this.getProjectNames(data);
+      const projectsName = projectsInvolved.map((projects)=>{
+        return projects.name;
+      });
+      const allocations = projectsInvolved.map((projects)=>{
+        return projects.allocations.map(allocation =>{return allocation.amount});
+      })[0];
+      let TotalAllocations =0;
+      allocations.map((amount)=>{TotalAllocations =TotalAllocations+amount});
       vendorExportData.push({
         "Name": data.name,
         "Phone": data.phone,
@@ -276,9 +297,8 @@ const Vendor = {
         "Address": data.address,
         "Gender": data.gender,
         "PAN Number": data.pan_number,
-        "PAN Number": data.pan_number,
-        "Total Balance": "data.pan_number",
-        "Projects Involved": "data.pan_number",
+        "Total Balance": TotalAllocations,
+        "Projects Involved": projectsName.join(" ,"),
         "Registration Date": data.created_at,
       })
     }
