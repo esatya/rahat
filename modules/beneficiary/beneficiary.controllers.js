@@ -38,7 +38,7 @@ const Beneficiary = {
       }
     }
 
-    if(payload.phone && BeneficiaryModel.find({phone:payload.phone})){
+    if(payload.phone && BeneficiaryModel.find({phone:payload.phone}).countDocuments()>0){
       throw Error('Duplicate phone Number');
     }
 
