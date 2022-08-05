@@ -21,6 +21,7 @@ const addFileToIpfs = async file =>
   });
 
 const isIpfsHash = hash => {
+  if (!hash) return false;
   if (hash.startsWith('Qm') && hash.length === 46) return true;
   return false;
 };

@@ -39,12 +39,17 @@ const Beneficiary = {
     }
 
     if(payload.phone && BeneficiaryModel.find({phone:payload.phone}).countDocuments()>0){
+
       throw Error('Duplicate phone Number');
     }
 
     payload.created_by = currentUser._id;
     return BeneficiaryModel.create(payload);
   },
+
+  // async checkPhoneExists(phone) {
+  //   return BeneficiaryModel.find({phone});
+  // }
 
   async addMany(payload) {
     const {currentUser} = payload;
@@ -131,6 +136,14 @@ const Beneficiary = {
 
   getbyWallet(wallet_address) {
     return BeneficiaryModel.findOne({wallet_address, is_archived: false});
+  },
+
+  listBeneficiaryphones(query) {
+    console.log('as');
+    const projectId = query.projectId || null;
+    console.log({projectId});
+    if (projectId) return BeneficiaryModel.find({projects: ObjectId(projectId)}).select('phone');
+    return BeneficiaryModel.find().select('phone');
   },
 
   list(query, currentUser) {
@@ -253,7 +266,8 @@ const Beneficiary = {
           name: {$first: '$projectData.name'},
           count: {$sum: 1}
         }
-      }, {$sort: {created_at:-1, name:-1}}
+      },
+      {$sort: {created_at: -1, name: -1}}
     ];
     const totalCount = await BeneficiaryModel.find($match).countDocuments();
     const project = await BeneficiaryModel.aggregate(query).limit(5);
@@ -469,139 +483,139 @@ const Beneficiary = {
     if (!aid_connect) return 0;
     return AidConnectModel.countDocuments({aid_connect_id: aid_connect.id});
   },
-  async getProjectNames (data){
+  async getProjectNames(data) {
     const projectsInvolved = [];
-    for (var i =0; i<data.projects.length; i++){
+    for (let i = 0; i < data.projects.length; i++) {
       projects = data.projects[i];
-      projectsInvolved.push( await this.fetchProjectNameById(projects));
+      projectsInvolved.push(await this.fetchProjectNameById(projects));
     }
     return projectsInvolved;
   },
-  async fetchProjectNameById(projectId){
+  async fetchProjectNameById(projectId) {
     const {name, allocations} = await ProjectModel.findOne({_id: projectId});
     return {name, allocations};
   },
- async parseBeneficiaryReportData(beneficiaryData){
-   const reportData = [];
-   for(var i =0; i< beneficiaryData.length; i++){
-     const data = beneficiaryData[i];
+  async parseBeneficiaryReportData(beneficiaryData) {
+    const reportData = [];
+    for (let i = 0; i < beneficiaryData.length; i++) {
+      const data = beneficiaryData[i];
       const projectsInvolved = await this.getProjectNames(data);
-      const projectsName = projectsInvolved.map((projects)=>{
+      const projectsName = projectsInvolved.map(projects => {
         return projects.name;
-     });
-      const allocations = projectsInvolved.map((projects)=>{
-        return projects.allocations.map(allocation =>{return allocation.amount});
-     })[0];
-      let TotalAllocations =0;
-      allocations.map((amount)=>{TotalAllocations =TotalAllocations+amount});
+      });
+      const allocations = projectsInvolved.map(projects => {
+        return projects.allocations.map(allocation => {
+          return allocation.amount;
+        });
+      })[0];
+      let TotalAllocations = 0;
+      allocations.map(amount => {
+        TotalAllocations += amount;
+      });
 
-      reportData.push ({
-        'Name': data.name,
+      reportData.push({
+        Name: data.name,
         'Phone Number': data.phone,
         'Permanent Address': data.address,
         'Email address': data.email,
         'Government id': data.govt_id,
-        'Age': data.extras.age,
-        'Gender':data.gender,
-        'Projects involved':projectsName.join(" ,"),
-        'Education': data.extras.education,
-        'Profession': data.extras.profession,
-        'Number of Family Members':data.extras.family_members,
-        'Registration date':data.created_at,
+        Age: data?.extras?.age || 'unknown',
+        Gender: data.gender,
+        'Projects involved': projectsName.join(' ,'),
+        Education: data?.extras?.education || 'unknown',
+        Profession: data?.extras?.profession || 'unknown',
+        'Number of Family Members': data?.extras?.family_members || 'unknown',
+        'Registration date': data.created_at,
         'Token Issues': TotalAllocations
       });
-    };
+    }
     return reportData;
   },
-  async getBeneficiariesNumber(projectId){
+  async getBeneficiariesNumber(projectId) {
     return BeneficiaryModel.countDocuments({projects: [projectId]});
   },
-  async getVendorsNumber(projectId){
+  async getVendorsNumber(projectId) {
     return VendorModel.countDocuments({projects: [projectId]});
   },
-  async getMobilizersNumber(projectId){
-    return MobilizerModel.countDocuments({"projects.project": projectId});
+  async getMobilizersNumber(projectId) {
+    return MobilizerModel.countDocuments({'projects.project': projectId});
   },
-  async getFinancialInstituesNumber(projectId){
+  async getFinancialInstituesNumber(projectId) {
     return InstitutionModel.countDocuments({projects: [projectId]});
   },
-  async parseProjectReportData(projectData){
+  async parseProjectReportData(projectData) {
     const reportData = [];
-    for(var i =0; i< projectData.length; i++){
+    for (let i = 0; i < projectData.length; i++) {
       const data = projectData[i];
       const numberOfBeneficiaries = await this.getBeneficiariesNumber(data._id);
       const numberOfVendors = await this.getVendorsNumber(data._id);
       const numberOfMobilizers = await this.getMobilizersNumber(data._id);
-      const numberOfFinancialInstitues = data.financial_institutions?data.financial_institutions.length:0;
+      const numberOfFinancialInstitues = data.financial_institutions
+        ? data.financial_institutions.length
+        : 0;
 
-      const allocations =data.allocations.map(allocation =>{return allocation.amount});
-      let TotalAllocations =0;
-      allocations.map((amount)=>{TotalAllocations =TotalAllocations+amount});
-      reportData.push ({
-        'Name': data.name,
-        'Status': data.status,
-        'Number of Beneficiaries':numberOfBeneficiaries,
-        'Number of Vendors':numberOfVendors,
-        'Number of Mobilizers':numberOfMobilizers,
-        'Number of Financial Institues':numberOfFinancialInstitues,
-        'Created Date':data.created_at,
-        'Total Token Allocations': TotalAllocations,
-        'id':data._id
-
+      const allocations = data.allocations.map(allocation => {
+        return allocation.amount;
       });
-    };
+      let TotalAllocations = 0;
+      allocations.map(amount => {
+        TotalAllocations += amount;
+      });
+      reportData.push({
+        Name: data.name,
+        Status: data.status,
+        'Number of Beneficiaries': numberOfBeneficiaries,
+        'Number of Vendors': numberOfVendors,
+        'Number of Mobilizers': numberOfMobilizers,
+        'Number of Financial Institues': numberOfFinancialInstitues,
+        'Created Date': data.created_at,
+        'Total Token Allocations': TotalAllocations,
+        id: data._id
+      });
+    }
     return reportData;
   },
-  async getBeneficiaryExportData(from, to, projectId){
+  async getBeneficiaryExportData(from, to, projectId) {
     const dateFilter =
-        from && to
-            ? {
-              created_at: {
-                $gt: new Date(from),
-                $lt: new Date(to)
-              }
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
             }
-            : null;
+          }
+        : null;
 
-    const reportData = projectId ?
-        await BeneficiaryModel.find(
-        {
+    const reportData = projectId
+      ? await BeneficiaryModel.find({
           projects: [projectId],
           ...dateFilter
-        }
-    )
-        : await BeneficiaryModel.find(
-            {
-              ...dateFilter
-            }
-        )
+        })
+      : await BeneficiaryModel.find({
+          ...dateFilter
+        });
 
     return await this.parseBeneficiaryReportData(reportData);
-
   },
-  async getProjectExportData(from, to, projectId){
+  async getProjectExportData(from, to, projectId) {
     const dateFilter =
-        from && to
-            ? {
-              created_at: {
-                $gt: new Date(from),
-                $lt: new Date(to)
-              }
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
             }
-            : null;
+          }
+        : null;
 
-    const reportData = projectId ?
-        await ProjectModel.find(
-            {
-              projects: [projectId],
-              ...dateFilter
-            }
-        )
-        : await ProjectModel.find(
-            {
-              ...dateFilter
-            }
-        );
+    const reportData = projectId
+      ? await ProjectModel.find({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await ProjectModel.find({
+          ...dateFilter
+        });
     return await this.parseProjectReportData(reportData);
   },
   async getReportingData(query) {
@@ -614,15 +628,23 @@ const Beneficiary = {
     const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
     const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
     const beneficiaryExportData = await this.getBeneficiaryExportData(
-        query.from,
-        query.to,
-        query.projectId);
-    const projectExportData = await this.getProjectExportData(
-        query.from,
-        query.to,
-        query.projectId
+      query.from,
+      query.to,
+      query.projectId
     );
-    return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect, beneficiaryExportData, projectExportData};
+    const projectExportData = await this.getProjectExportData(
+      query.from,
+      query.to,
+      query.projectId
+    );
+    return {
+      beneficiaryByGender,
+      beneficiaryByProject,
+      beneficiaryByAge,
+      beneficiaryViaAidConnect,
+      beneficiaryExportData,
+      projectExportData
+    };
   }
 };
 
@@ -643,5 +665,6 @@ module.exports = {
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
   checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
-  getReportingData: req => Beneficiary.getReportingData(req.query)
+  getReportingData: req => Beneficiary.getReportingData(req.query),
+  listBeneficiaryPhones: req => Beneficiary.listBeneficiaryphones(req.query)
 };

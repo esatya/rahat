@@ -96,8 +96,9 @@ const Project = {
 
   async appendProjectManager(doc, project_manager, currentUser) {
     const existing_doc = doc.toObject();
-    for(var i=0; i<project_manager.length; i++){
-      if (project_manager[i] == currentUser.wallet_address){
+
+    for (let i = 0; i < project_manager.length; i++) {
+      if (project_manager[i] == currentUser.wallet_address) {
         const user = await getByWalletAddress(project_manager[i]);
         existing_doc.project_manager = user || null;
         break;
@@ -108,7 +109,7 @@ const Project = {
 
   async getById(id, currentUser) {
     let doc = await ProjectModel.findOne({_id: id});
-    if (doc && doc.project_manager) {
+    if (doc && doc.project_manager && currentUser) {
       doc = await this.appendProjectManager(doc, doc.project_manager, currentUser);
     }
     return doc;
@@ -147,20 +148,18 @@ const Project = {
   },
   filterByProjectManager(projects, currentUser) {
     const filteredProjects = projects.map(data => {
-      if(data.project_manager &&  data.project_manager.id == currentUser.id)
-        return data
-    })
+      if (data.project_manager && data.project_manager.id == currentUser.id) return data;
+    });
     return [];
-
   },
   async addProjectManageDetails(projects, currentUser) {
     const appended_result = [];
     for (const p of projects) {
       if (p.project_manager && p.project_manager.length) {
-        for(var i =0; i<p.project_manager.length; i++){
-            const user = await getByWalletAddress(p.project_manager[i]);
-            if (user) p.project_manager[i] = user;
-            else p.project_manager[i] = null;
+        for (let i = 0; i < p.project_manager.length; i++) {
+          const user = await getByWalletAddress(p.project_manager[i]);
+          if (user) p.project_manager[i] = user;
+          else p.project_manager[i] = null;
         }
         appended_result.push(p);
       } else {
@@ -182,13 +181,13 @@ const Project = {
   async list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 10;
-
+    console.log(currentUser);
     let $match = {is_archived: false};
     if (query.show_archive) $match = {};
     $match.agency = currentUser.agency;
     if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
     if (query.status) $match.status = query.status;
-    $match.project_manager = currentUser.wallet_address
+    if (!currentUser.roles.includes('Admin')) $match.project_manager = currentUser.wallet_address;
 
     const result = await DataUtils.paging({
       start,
@@ -201,7 +200,7 @@ const Project = {
     if (result && result.data.length) {
       const appended = await this.addProjectManageDetails(result.data, currentUser);
       result.data = appended;
-      }
+    }
     return result;
   },
 
@@ -251,8 +250,8 @@ const Project = {
           name: {$first: '$name'},
           token: {$sum: '$allocations.amount'}
         }
-        },
-      { $sort: {created_at: -1, name:-1} }
+      },
+      {$sort: {created_at: -1, name: -1}}
     ];
     const projectAllocation = await ProjectModel.aggregate(query).limit(5);
     const totalAllocation = projectAllocation.reduce((acc, {token}) => acc + token, 0);

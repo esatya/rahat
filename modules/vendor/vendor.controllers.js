@@ -60,29 +60,35 @@ const Vendor = {
   },
 
   async register(agencyId, payload) {
-    payload.agencies = [{agency: agencyId}];
-    if (!isIpfsHash(payload.photo)) {
-      const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
-      payload.photo = ipfsPhotoHash;
-    }
-    if (!isIpfsHash(payload.govt_id_image)) {
-      const ipfsIdHash = await this.uploadToIpfs(
-        this.decodeBase64Image(payload.govt_id_image).data
-      );
-      payload.govt_id_image = ipfsIdHash;
-    }
-    const vendor = await VendorModel.create(payload);
-    await Notification.create({
-      type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
-      ...vendor._doc
-    });
+    try {
+      payload.agencies = [{agency: agencyId}];
 
-    await User.sendMailToAdmin({
-      template: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
-      data: {user_id: vendor._id, user_name: vendor?.name}
-    });
+      if (!isIpfsHash(payload.photo)) {
+        const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+        payload.photo = ipfsPhotoHash;
+      }
+      if (!isIpfsHash(payload.govt_id_image)) {
+        const ipfsIdHash = await this.uploadToIpfs(
+          this.decodeBase64Image(payload.govt_id_image).data
+        );
+        payload.govt_id_image = ipfsIdHash;
+      }
+      const vendor = await VendorModel.create(payload);
+      await Notification.create({
+        type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+        ...vendor._doc
+      });
 
-    return vendor;
+      await User.sendMailToAdmin({
+        template: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+        data: {user_id: vendor._id, user_name: vendor?.name}
+      });
+
+      return vendor;
+    } catch (e) {
+      console.log(e);
+      throw Error(e);
+    }
   },
 
   decodeBase64Image(dataString) {
@@ -219,7 +225,7 @@ const Vendor = {
     const totalCount = await VendorModel.find($match).countDocuments();
     const project = await VendorModel.aggregate(query);
     const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
-    project.push({name: 'Unknown', count: unknownCount});
+    project.push({name: 'UnApproved', count: unknownCount});
     return {totalCount, project};
   },
 
@@ -301,26 +307,26 @@ const Vendor = {
         "Projects Involved": projectsName.join(" ,"),
         "Registration Date": data.created_at,
       })
+
     }
     return vendorExportData;
-
   },
-  async getVendorExportData(from, to, projectId){
+  async getVendorExportData(from, to, projectId) {
     const dateFilter =
-        from && to
-            ? {
-              created_at: {
-                $gt: new Date(from),
-                $lt: new Date(to)
-              }
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
             }
-            : null;
+          }
+        : null;
     const vendorData = projectId
-        ? await VendorModel.find({
+      ? await VendorModel.find({
           projects: [projectId],
           ...dateFilter
         })
-        : await VendorModel.find({
+      : await VendorModel.find({
           ...dateFilter
         });
 
@@ -328,11 +334,7 @@ const Vendor = {
   },
   async getReportingData(query) {
     const vendorByProject = await this.countVendorViaProject();
-    const vendorExportData = await this.getVendorExportData(
-        query.from,
-        query.to,
-        query.projectId
-    );
+    const vendorExportData = await this.getVendorExportData(query.from, query.to, query.projectId);
     return {vendorByProject, vendorExportData};
   }
 };
