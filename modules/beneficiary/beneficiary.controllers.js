@@ -38,8 +38,8 @@ const Beneficiary = {
       }
     }
 
-    const benExists = await BeneficiaryModel.findOne({phone: payload.phone});
-    if (payload.phone && benExists) {
+    if(payload.phone && BeneficiaryModel.find({phone:payload.phone}).countDocuments()>0){
+
       throw Error('Duplicate phone Number');
     }
 

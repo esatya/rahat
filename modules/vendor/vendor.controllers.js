@@ -3,7 +3,7 @@ const {Types} = require('mongoose');
 const {addFileToIpfs, isIpfsHash} = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const {DataUtils} = require('../../helpers/utils');
-const {VendorModel} = require('../models');
+const {VendorModel, ProjectModel} = require('../models');
 const {Notification} = require('../notification/notification.controller');
 const {TokenRedemption} = require('./vendorTokenRedemption.model');
 const {VendorConstants} = require('../../constants');
@@ -269,24 +269,45 @@ const Vendor = {
   async listTokenRedeemTx(id) {
     return vendorTokenRedeemModel.find({vendor_wallet: id});
   },
-  async parseVendorExportReportData(vendorData) {
+  async getProjectNames (data){
+    const projectsInvolved = [];
+    for (var i =0; i<data.projects.length; i++){
+      projects = data.projects[i];
+      projectsInvolved.push( await this.fetchProjectNameById(projects));
+    }
+    return projectsInvolved;
+  },
+  async fetchProjectNameById(projectId){
+  const {name, allocations} = await ProjectModel.findOne({_id: projectId});
+  return {name, allocations};
+},
+  async parseVendorExportReportData(vendorData){
     const vendorExportData = [];
-    for (let i = 0; i < vendorData.length; i++) {
-      const data = vendorData[i];
-      vendorExportData.push({
-        Name: data.name,
-        Phone: data.phone,
-        'Email Address': data.email,
-        'Wallet Address': data.wallet_address,
-        'Shop Name': data.shop_name,
-        Address: data.address,
-        Gender: data.gender,
-        'PAN Number': data.pan_number,
-        'PAN Number': data.pan_number,
-        'Total Balance': 'data.pan_number',
-        'Projects Involved': 'data.pan_number',
-        'Registration Date': data.created_at
+    for (let i=0; i< vendorData.length; i++){
+      let data = vendorData[i];
+      const projectsInvolved = await this.getProjectNames(data);
+      const projectsName = projectsInvolved.map((projects)=>{
+        return projects.name;
       });
+      const allocations = projectsInvolved.map((projects)=>{
+        return projects.allocations.map(allocation =>{return allocation.amount});
+      })[0];
+      let TotalAllocations =0;
+      allocations.map((amount)=>{TotalAllocations =TotalAllocations+amount});
+      vendorExportData.push({
+        "Name": data.name,
+        "Phone": data.phone,
+        "Email Address": data.email,
+        "Wallet Address": data.wallet_address,
+        "Shop Name": data.shop_name,
+        "Address": data.address,
+        "Gender": data.gender,
+        "PAN Number": data.pan_number,
+        "Total Balance": TotalAllocations,
+        "Projects Involved": projectsName.join(" ,"),
+        "Registration Date": data.created_at,
+      })
+
     }
     return vendorExportData;
   },
