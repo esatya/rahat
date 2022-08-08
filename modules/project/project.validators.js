@@ -106,5 +106,8 @@ module.exports = {
   },
   getInstitution: {
     params: GooseJoi.id()
+  },
+  countDetails: {
+    params: GooseJoi.id()
   }
 };
