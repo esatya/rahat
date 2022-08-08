@@ -3,7 +3,7 @@ const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
 const config = require('config');
 const {DataUtils} = require('../../helpers/utils');
-const {ProjectModel, InstitutionModel} = require('../models');
+const {ProjectModel, InstitutionModel, BeneficiaryModel, VendorModel, MobilizerModel} = require('../models');
 const {Beneficiary} = require('../beneficiary/beneficiary.controllers');
 const {Vendor} = require('../vendor/vendor.controllers');
 const {readExcelFile, removeFile, uploadFile} = require('../../helpers/utils/fileManager');
@@ -43,12 +43,67 @@ const Project = {
       throw Error(err);
     }
   },
-
+async countDetails(id){
+  try{
+    console.log('id', id)
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    // const benefCount = await BeneficiaryModel.find($match).countDocuments();
+    let vendorCount = 0;
+    let mobCount = 0;
+    const projectBenef = await BeneficiaryModel.aggregate(query);
+    const projectVendor = await VendorModel.aggregate(query);
+    const projectMob = await MobilizerModel.aggregate(query);
+    let benefCount =0;
+    for (let i=0; i< projectBenef.length; i++ ){
+      const benef = projectBenef[i];
+      if (benef._id == id){
+        benefCount = benef.count;
+      }
+    } for (let i=0; i< projectVendor.length; i++ ){
+      const vendor = projectVendor[i];
+      if (vendor._id == id){
+        vendorCount = vendor.count;
+      }
+    } for (let i=0; i< projectMob.length; i++ ){
+      const mob = projectMob[i];
+      if (mob._id == id){
+        mobCount = mob.count;
+      }
+    }
+    return {benefCount,vendorCount, mobCount}
+    // const vendorCount = VendorModel.find({project: id}).countDocuments();
+    // const mobCount = MobilizerModel.find({project: id}).countDocuments();
+    // return {benefCount, vendorCount, mobCount}
+  }catch(e){
+    throw Error(e);}
+},
   async addBeneficiariesToProject(rows, projectId, currentUser) {
     // SKIP HEADER
     let upload_counter = 0;
     rows.shift();
     for (const r of rows) {
+      console.log("The r are", r);
       const payload = {
         name: r[0],
         address_temporary: r[1],
@@ -61,8 +116,13 @@ const Project = {
       payload.currentUser = currentUser;
       const {name, phone} = payload;
       if (name && phone) {
+        const count = await BeneficiaryModel.find({phone:phone}).countDocuments();
+        if(count==0){
         await Beneficiary.add(payload);
         upload_counter++;
+      }else{
+          throw Error(`Duplicate Phone Number found phone ${phone}`);
+        }
       }
     }
     return upload_counter;
@@ -340,5 +400,6 @@ module.exports = {
   generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
   changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload),
   addInstitution: req => Project.addInstitution(req.params.id, req.payload.institutionId),
-  getInstitution: req => Project.getInstitution(req.params.id)
+  getInstitution: req => Project.getInstitution(req.params.id),
+  countDetails: req => Project.countDetails(req.params.id)
 };
