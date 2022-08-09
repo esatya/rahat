@@ -618,6 +618,83 @@ const Beneficiary = {
         });
     return await this.parseProjectReportData(reportData);
   },
+  async countBeneficiaryViaGroup(projectId) {
+    let group;
+    let totalCount;
+    if (projectId) {
+      totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
+      group = await BeneficiaryModel.find({projects: [projectId]}).select('extras.group');
+    } else {
+      group = await BeneficiaryModel.find().select('extras.group');
+      totalCount = await BeneficiaryModel.countDocuments();
+    }
+
+    let groups ={
+      "Differently_Abled":0,
+      "Maternity":0,
+      "Senior_Citizens":0,
+      "Covid_Victim":0,
+      "Natural_Calamities_Victim":0,
+      "Under_Privileged":0,
+      "Severe_Health_Issues":0,
+      "Single_Women":0,
+      "Orphan":0,
+      "Unkown": 0
+    }
+    group.map(el =>{
+      console.log(el);
+      if(el.extras && el.extras.group){
+        const group = el.extras.group;
+        if (group =="Differently_Abled") groups.Differently_Abled ++;
+        if (group =="Maternity") groups.Maternity ++;
+        if (group =="Senior_Citizens") groups.Senior_Citizens ++;
+        if (group =="Covid_Victim") groups.Covid_Victim ++;
+        if (group =="Natural_Calamities_Victim") groups.Natural_Calamities_Victim ++;
+        if (group =="Under_Privileged") groups.Under_Privileged ++;
+        if (group =="Severe_Health_Issues") groups.Severe_Health_Issues ++;
+        if (group =="Single_Women") groups.Single_Women ++;
+        if (group =="Orphan") groups.Orphan ++;
+      }else groups.Unkown ++;
+    })
+    const data = {
+      totalCount,
+      beneficiaries: [
+        {
+          group: 'Differently Abled',
+          value: groups.Differently_Abled
+        },{
+          group: 'Maternity',
+          value: groups.Maternity
+        },{
+          group: 'Senior Citizens',
+          value: groups.Senior_Citizens
+        },{
+          group: 'Covid Victim',
+          value: groups.Covid_Victim
+        },{
+          group: 'Natural Calamities Victim',
+          value: groups.Natural_Calamities_Victim
+        },{
+          group: 'Under Privileged',
+          value: groups.Under_Privileged
+        },{
+          group: 'Severe Health Issues',
+          value: groups.Severe_Health_Issues
+        },{
+          group: 'Single Women',
+          value: groups.Single_Women
+        }, {
+          group: 'Orphan',
+          value: groups.Orphan
+        },{
+          group: 'Unkown',
+          value: groups.Unkown
+        }
+      ]
+    };
+    return data;
+
+  },
   async getReportingData(query) {
     const beneficiaryByGender = await this.countBeneficiaryViaGender(
       query.from,
@@ -627,6 +704,7 @@ const Beneficiary = {
     const beneficiaryByProject = await this.countBeneficiaryViaProject();
     const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
     const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
+    const beneficiaryByGroup = await  this.countBeneficiaryViaGroup(query.projectId);
     const beneficiaryExportData = await this.getBeneficiaryExportData(
       query.from,
       query.to,
@@ -639,6 +717,7 @@ const Beneficiary = {
     );
     return {
       beneficiaryByGender,
+      beneficiaryByGroup,
       beneficiaryByProject,
       beneficiaryByAge,
       beneficiaryViaAidConnect,
