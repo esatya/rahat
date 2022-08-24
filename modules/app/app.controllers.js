@@ -55,43 +55,37 @@ const App = {
   },
 
   async setup(payload) {
-    console.log('herr');
     let isSetup = false;
     let agency = await Agency.getFirst();
     if (agency) isSetup = true;
     if (isSetup) return app.error('Server has already been setup.', 500);
     const {token, admin} = payload;
-    try {
-      const contracts = await this.setupContracts(
-        admin.wallet_address,
-        token.name,
-        token.symbol,
-        token.supply
-      );
-      // const settingsData = JSON.parse(fs.readFileSync(settingsPath));
-      // settingsData.contracts = contracts;
-      // fs.writeFileSync(settingsPath, JSON.stringify(settingsData));
-      payload.contracts = contracts;
-      agency = await Agency.add(payload);
-      await Agency.approve(agency._id);
-      payload.admin.roles = ['Admin'];
-      payload.admin.agency = agency._id;
-      payload.admin.wallet_address = payload.admin.wallet_address.toLowerCase();
-      await User.create(payload.admin);
-      const settings = await this.listSettings();
-      settings.user = await getByWalletAddress(payload.admin.wallet_address);
-
-      return settings;
-    } catch (e) {
-      throw Error(e);
-    }
+    const contracts = await this.setupContracts(
+      admin.wallet_address,
+      token.name,
+      token.symbol,
+      token.supply
+    );
+    // const settingsData = JSON.parse(fs.readFileSync(settingsPath));
+    // settingsData.contracts = contracts;
+    // fs.writeFileSync(settingsPath, JSON.stringify(settingsData));
+    payload.contracts = contracts;
+    agency = await Agency.add(payload);
+    await Agency.approve(agency._id);
+    payload.admin.roles = ['Admin'];
+    payload.admin.agency = agency._id;
+    payload.admin.wallet_address = payload.admin.wallet_address.toLowerCase();
+    await User.create(payload.admin);
+    const settings = await this.listSettings();
+    settings.user = await getByWalletAddress(payload.admin.wallet_address);
+    return 'setup completed';
   },
 
-  async listSettings(req,h) {
+  async listSettings(req, h) {
     let settings = fs.readFileSync(settingsPath);
     settings = JSON.parse(settings);
     const agency = await Agency.getFirst();
-    if(!agency) return h.response({ isSetup: false }).code(404);
+    if (!agency) return h.response({isSetup: false}).code(404);
     return Object.assign(settings, {
       isSetup: agency != null,
       version: packageJson.version,
@@ -118,30 +112,27 @@ const App = {
     const {bytecode: rahatBytecode} = getBytecode('Rahat');
     const {abi: rahatAdminAbi} = getAbi('RahatAdmin');
     const {bytecode: rahatAdminBytecode} = getBytecode('RahatAdmin');
-    try {
-      const rahat_erc20 = await deployContract(erc20Abi, erc20Bytecode, [
-        tokenName,
-        tokenSymbol,
-        adminAccount
-      ]);
-      console.log({rahat_erc20});
-      const rahat_erc1155 = await deployContract(erc1155Abi, erc1155Bytecode, [adminAccount]);
-      const rahat = await deployContract(rahatAbi, rahatBytecode, [
-        rahat_erc20,
-        rahat_erc1155,
-        adminAccount
-      ]);
-      const rahat_admin = await deployContract(rahatAdminAbi, rahatAdminBytecode, [
-        rahat_erc20,
-        rahat_erc1155,
-        rahat,
-        initialSupply,
-        adminAccount
-      ]);
-      return {rahat_erc20, rahat_erc1155, rahat, rahat_admin};
-    } catch (e) {
-      throw Error(`ERROR:${e}`);
-    }
+
+    const rahat_erc20 = await deployContract(erc20Abi, erc20Bytecode, [
+      tokenName,
+      tokenSymbol,
+      adminAccount
+    ]);
+    console.log({rahat_erc20});
+    const rahat_erc1155 = await deployContract(erc1155Abi, erc1155Bytecode, [adminAccount]);
+    const rahat = await deployContract(rahatAbi, rahatBytecode, [
+      rahat_erc20,
+      rahat_erc1155,
+      adminAccount
+    ]);
+    const rahat_admin = await deployContract(rahatAdminAbi, rahatAdminBytecode, [
+      rahat_erc20,
+      rahat_erc1155,
+      rahat,
+      initialSupply,
+      adminAccount
+    ]);
+    return {rahat_erc20, rahat_erc1155, rahat, rahat_admin};
   },
   async getDashboardData(currentUser) {
     const projectCount = await Project.countProject(currentUser);
@@ -210,7 +201,7 @@ module.exports = {
     return App.setup(req.payload);
   },
   setupWallet: req => App.setupWallet(),
-  listSettings: (req,h) => App.listSettings(req,h),
+  listSettings: (req, h) => App.listSettings(req, h),
   getContractAbi: req => App.getContractAbi(req.params.contractName),
   getContractBytecode: req => App.getContractBytecode(req.params.contractName),
   setupContracts: req => App.setupContracts(),
