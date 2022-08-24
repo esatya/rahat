@@ -34,6 +34,12 @@ function wsWeb3Contract(contractName, contractAddress) {
 async function deployContract(abi, bytecode, args) {
   const {privateKey} = require('../../config/privateKey.json');
   const signer = new ethers.Wallet(privateKey, provider);
+  const balance = ethers.utils.formatEther(await signer.getBalance());
+  if (balance < 0.1) {
+    throw new Error(
+      `Wallet [${signer.address}] must have at least 0.1 token for deployment. Current balance: ${balance}`
+    );
+  }
   const factory = new ethers.ContractFactory(abi, bytecode, signer);
   const contract = await factory.deploy(...args);
 
