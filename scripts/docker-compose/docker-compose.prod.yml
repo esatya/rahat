@@ -15,6 +15,8 @@ services:
     container_name: rahat_server
     build:
       context: ./rahat
+    volumes:
+      - ./rahat/config:/usr/src/app/config
     ports:
       - 3601:3601 
     restart: always
@@ -25,6 +27,8 @@ services:
     depends_on:
       - rahat_server
     container_name: rahat_otp
+    volumes:
+      - ./rahat-otp/config:/usr/src/app/config
     build:
       context: ./rahat-otp
     restart: always
