@@ -1,5 +1,5 @@
 const {connectDatabase, closeDatabase, clearDatabase} = require('../common');
-const {Vendor, User} = require('../../modules');
+const {Vendor, User, Project} = require('../../modules');
 
 const userData = {
   name: 'Manjik',
@@ -14,9 +14,28 @@ const payload = {
   phone: '90909',
   email: 'san@gamil.com',
   address: 'kupondole',
-  govt_id: '12454'
+  govt_id: '12454',
+    projects: "5f6b2f815685931cbfe4dad8"
 };
+
+var projectPayload = {
+    name: "Flood Collection",
+    end_date: "2023-01-03",
+    location: "kathmandu",
+    description: "Rescue mission",
+    allocations: [
+        {
+            date: "2022-01-01",
+            amount: 100,
+            txhash: "0x7c0179776BB143a36C9d338F3Fa6149F40BaAc30",
+            success: true
+        }
+    ]
+
+}
+
 let currentUser;
+let projects;
 
 describe('Vendor CRUD', () => {
   let vendor;
@@ -24,6 +43,12 @@ describe('Vendor CRUD', () => {
     await connectDatabase();
     currentUser = await User.create(userData);
     payload.currentUser = currentUser;
+      projectPayload.currentUser = currentUser;
+      projectPayload.project_manager = currentUser.id;
+      projects = await Project.add(projectPayload);
+      payload.projects = projects.project.id
+      console.log('payloads are,<><><><><><><>',payload,projects)
+      console.log(payload)
   });
   afterAll(async () => {
     await closeDatabase();
@@ -53,8 +78,24 @@ describe('Vendor CRUD', () => {
     delete payload.currentUser;
     delete payload.agencies;
     delete payload.photo;
+    delete payload.projects;
     expect(data.data).toEqual(expect.arrayContaining([expect.objectContaining(payload)]));
   });
+
+
+    it('should get report by Vendor', async () => {
+        let
+            query = {
+                from:"2021-01-01",
+                to: "2023-01-01",
+                projectId :projects.project.id
+            }
+        const reportData = await Vendor.getReportingData(query);
+
+        expect(reportData.vendorExportData[0].Name).toBe(payload.name);
+    });
+
+
   it('should update vendor details', async () => {
     const dataToUpdate = {
       name: 'mountain',
@@ -71,4 +112,6 @@ describe('Vendor CRUD', () => {
 
     expect(archivedData.is_archived).toBe(true);
   });
+
+
 });
