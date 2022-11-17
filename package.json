@@ -34,7 +34,8 @@
     "ignore": [
       "public/*",
       "play/*",
-      "test1/*"
+      "test1/*",
+      "scripts/*"
     ]
   },
   "dependencies": {
@@ -45,6 +46,7 @@
     "axios": "^0.21.1",
     "config": "^3.3.1",
     "cross-env": "^7.0.2",
+    "eth-crypto": "^2.4.0",
     "ethers": "^5.0.9",
     "form-data": "^4.0.0",
     "handlebars": "^4.7.7",

@@ -44,6 +44,11 @@
       "from": "InfoSMS",
       "active": true
     },
+    "twilio_sms": {
+      "url": "<twilio url>",
+      "token": "<insert your token here>",
+      "active": false
+    },
     "ipfs": "http://195.179.200.228:5001"
   },
   "blockchain": {

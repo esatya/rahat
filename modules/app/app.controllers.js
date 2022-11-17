@@ -72,7 +72,7 @@ const App = {
     payload.contracts = contracts;
     agency = await Agency.add(payload);
     await Agency.approve(agency._id);
-    payload.admin.roles = ['Admin'];
+    payload.admin.roles = ['Admin', 'Manager'];
     payload.admin.agency = agency._id;
     payload.admin.wallet_address = payload.admin.wallet_address.toLowerCase();
     await User.create(payload.admin);
@@ -120,11 +120,13 @@ const App = {
     ]);
     console.log({rahat_erc20});
     const rahat_erc1155 = await deployContract(erc1155Abi, erc1155Bytecode, [adminAccount]);
+    console.log({rahat_erc1155});
     const rahat = await deployContract(rahatAbi, rahatBytecode, [
       rahat_erc20,
       rahat_erc1155,
       adminAccount
     ]);
+    console.log({rahat});
     const rahat_admin = await deployContract(rahatAdminAbi, rahatAdminBytecode, [
       rahat_erc20,
       rahat_erc1155,
@@ -132,6 +134,7 @@ const App = {
       initialSupply,
       adminAccount
     ]);
+    console.log({rahat_admin});
     return {rahat_erc20, rahat_erc1155, rahat, rahat_admin};
   },
   async getDashboardData(currentUser) {
