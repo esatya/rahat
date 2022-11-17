@@ -23,17 +23,17 @@ services:
     networks:
       - rahat_network
 
-  rahat_otp:
-    depends_on:
-      - rahat_server
-    container_name: rahat_otp
-    volumes:
-      - ./rahat-otp/config:/usr/src/app/config
-    build:
-      context: ./rahat-otp
-    restart: always
-    networks:
-      - rahat_network
+#   rahat_otp:
+#     depends_on:
+#       - rahat_server
+#     container_name: rahat_otp
+#     volumes:
+#       - ./rahat-otp/config:/usr/src/app/config
+#     build:
+#       context: ./rahat-otp
+#     restart: always
+#     networks:
+#       - rahat_network
 
   rahat_agency:
     depends_on:
