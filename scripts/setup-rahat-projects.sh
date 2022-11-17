@@ -28,7 +28,7 @@ echo "Successfully created '$project_dir' !"
 echo "Creating required project repositories and configurations..."
 
 git clone -b $project_branch https://github.com/esatya/rahat.git $abs_dir/rahat
-git clone -b $project_branch https://github.com/esatya/rahat-otp.git $abs_dir/rahat-otp
+#git clone -b $project_branch https://github.com/esatya/rahat-otp.git $abs_dir/rahat-otp
 git clone -b $project_branch https://github.com/esatya/rahat-agency.git $abs_dir/rahat-agency
 git clone -b $project_branch https://github.com/esatya/rahat-vendor.git $abs_dir/rahat-vendor
 git clone -b $project_branch https://github.com/esatya/rahat-mobilizer.git $abs_dir/rahat-mobilizer
@@ -45,7 +45,7 @@ cp $abs_dir/rahat/config/privateKey.example.json $abs_dir/rahat/config/privateKe
 cp $abs_dir/rahat/config/settings.example.json $abs_dir/rahat/config/settings.json
 
 # rahat otp 
-cp $abs_dir/rahat-otp/config/default.example.json $abs_dir/rahat-otp/config/default.json
+#cp $abs_dir/rahat-otp/config/default.example.json $abs_dir/rahat-otp/config/default.json
 
 # rahat agency
 cp $abs_dir/rahat-agency/env.example $abs_dir/rahat-agency/.env
