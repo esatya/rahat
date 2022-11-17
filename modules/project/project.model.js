@@ -6,6 +6,8 @@ const {ProjectConstants} = require('../../constants');
 const {ObjectId} = mongoose.Schema;
 
 const schema = {
+  campaignId: String,
+  campaignTitle: String,
   name: {
     type: String,
     required: true,

@@ -1,6 +1,7 @@
 const validators = require('./project.validators');
 const controllers = require('./project.controllers');
 const {PROJECT, BENEFICIARY, VENDOR} = require('../../constants/permissions');
+const {addInstitution} = require('./project.controllers');
 
 const UPLOAD_SIZE_MB = 10;
 
@@ -62,7 +63,20 @@ const routes = {
     [VENDOR.READ, VENDOR.ADMIN]
   ],
   generateAidConnectId: ['GET', '/{id}/aid-connect', 'generate / Get the aid-connect id'],
-  changeAidConnectStatus: ['PATCH', '/{id}/aid-connect/status', 'change aid-connect status']
+  changeAidConnectStatus: ['PATCH', '/{id}/aid-connect/status', 'change aid-connect status'],
+  addCampaignFundRaiser: {
+    method: 'POST',
+    path: '/{id}/addCampaign',
+    description: 'Add Campaign Fundraiser',
+    permissions: [PROJECT.READ, PROJECT.ADMIN]
+  },
+  addInstitution: [
+    'POST',
+    '/{id}/institutions',
+    'Add institution to the project',
+    [PROJECT.READ, PROJECT.ADMIN]
+  ],
+  getInstitution: ['GET', '/{id}/institutions', 'Get institution', [PROJECT.READ, PROJECT.ADMIN]]
 };
 
 /**

@@ -2,6 +2,7 @@ const Joi = require('joi');
 const {ProjectModel, BeneficiaryModel} = require('../models');
 
 const GooseJoi = require('../../helpers/utils/goosejoi');
+const {addInstitution} = require('./project.controllers');
 
 const Project = GooseJoi.convert(ProjectModel);
 const Beneficiary = GooseJoi.convert(BeneficiaryModel);
@@ -88,5 +89,22 @@ module.exports = {
     payload: Joi.object({
       isActive: Joi.bool()
     })
+  },
+  addCampaignFundRaiser: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      campaignTitle: Joi.string(),
+      campaignId: Joi.string()
+    })
+  },
+
+  addInstitution: {
+    params: GooseJoi.id(),
+    payload: Joi.object({
+      institutionId: Joi.string()
+    })
+  },
+  getInstitution: {
+    params: GooseJoi.id()
   }
 };

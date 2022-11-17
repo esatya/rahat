@@ -1,0 +1,47 @@
+version: "3.8"
+services:  
+  rahat_server:
+    container_name: rahat_server
+    image: node:14.17
+    volumes:
+      - type: bind
+        source: ./rahat 
+        target: /rahat-server
+    working_dir: /rahat-server
+    networks:
+      - rahat_network
+
+  rahat_agency:
+    depends_on:
+      - rahat_server
+    container_name: rahat_agency
+    image: node:14.17.0-alpine3.13
+    volumes:
+      - type: bind
+        source: ./rahat-agency
+        target: /rahat-agency
+    working_dir: /rahat-agency
+    networks:
+      - rahat_network
+
+  rahat_vendor:
+    depends_on:
+      - rahat_server
+    container_name: rahat_vendor
+    image: node:14.17.0-alpine3.13
+    volumes:
+      - type: bind
+        source: ./rahat-vendor
+        target: /rahat-vendor
+    working_dir: /rahat-vendor
+    networks:
+      - rahat_network
+
+networks:
+  rahat_network:
+    driver: bridge
+
+
+
+   
+
