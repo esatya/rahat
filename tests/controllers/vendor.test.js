@@ -17,6 +17,15 @@ const payload = {
   govt_id: '12454',
     projects: "5f6b2f815685931cbfe4dad8"
 };
+const payload2 = {
+  name: 'Alice Vendor2',
+  wallet_address: '0xasdfyiuyqwe',
+  phone: '909091',
+  email: 'san@gami1l.com',
+  address: 'kupondole1',
+  govt_id: '1245412',
+    projects: "5f6b2f815685931cbfe4dad8"
+};
 
 var projectPayload = {
     name: "Flood Collection",
@@ -43,12 +52,12 @@ describe('Vendor CRUD', () => {
     await connectDatabase();
     currentUser = await User.create(userData);
     payload.currentUser = currentUser;
+    payload2.currentUser = currentUser;
       projectPayload.currentUser = currentUser;
       projectPayload.project_manager = currentUser.id;
       projects = await Project.add(projectPayload);
       payload.projects = projects.project.id
-      console.log('payloads are,<><><><><><><>',payload,projects)
-      console.log(payload)
+      payload2.projects = projects.project.id
   });
   afterAll(async () => {
     await closeDatabase();
@@ -57,6 +66,11 @@ describe('Vendor CRUD', () => {
     vendor = await Vendor.add(payload);
     expect(vendor._id).toBeDefined();
     expect(vendor.name).toBe(payload.name);
+  });
+  it('can be created correctly2', async () => {
+    vendor2 = await Vendor.add(payload2);
+    expect(vendor2._id).toBeDefined();
+    expect(vendor2.name).toBe(payload2.name);
   });
 
   it('can get Vendor by id', async () => {
@@ -82,6 +96,31 @@ describe('Vendor CRUD', () => {
     expect(data.data).toEqual(expect.arrayContaining([expect.objectContaining(payload)]));
   });
 
+    it('should list all the Vendor', async () => {
+        const data = await Vendor.list({}, currentUser);
+        expect(data.data.length).toEqual(2);
+    });
+
+
+
+    it('should list the Vendor, Pagination: limit 1 items', async() => {
+        const data = await Vendor.list({ limit:1}, currentUser);
+        expect(data.data.length).toEqual(1);
+    })
+
+    it('should list the Vendor, Pagination: start 1 items', async() => {
+
+        const data = await Vendor.list({start:1}, currentUser);
+        expect(data.data.length).toEqual(1);
+
+    })
+
+    it('should list the Vendor, Pagination:start1, limit 2 items', async() => {
+
+        const data = await Vendor.list({start:1, limit:2}, currentUser);
+        expect(data.data.length).toEqual(1);
+    })
+
 
     it('should get report by Vendor', async () => {
         let
@@ -91,8 +130,7 @@ describe('Vendor CRUD', () => {
                 projectId :projects.project.id
             }
         const reportData = await Vendor.getReportingData(query);
-
-        expect(reportData.vendorExportData[0].Name).toBe(payload.name);
+        expect(reportData.vendorByProject.project[0].name).toBe(projectPayload.name);
     });
 
 
@@ -112,6 +150,7 @@ describe('Vendor CRUD', () => {
 
     expect(archivedData.is_archived).toBe(true);
   });
+
 
 
 });

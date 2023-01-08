@@ -35,6 +35,19 @@ let currentUser;
         projects: "5f6b2f815685931cbfe4dad8"
 
     }
+    var payload2 = {
+        name: "Disabled Beneficiary2",
+        phone: "90978791",
+        wallet_address: "0x7c0179776BB143a36C9d338F3Fa6149F40BaAc30",
+        email: "san@gamil.com",
+        address: "kathmandu",
+        address_temporary: "kathmandu",
+        gender: 'M',
+        govt_id: "78945",
+        agency: '5f770576880d16420eaedefb',
+        projects: "5f6b2f815685931cbfe4dad8"
+
+    }
 
 
 
@@ -47,10 +60,12 @@ describe('Beneficiary CRUD', () => {
         await connectDatabase();
         currentUser = await User.create(userData);
         payload.currentUser = currentUser;
+        payload2.currentUser = currentUser;
         projectPayload.currentUser = currentUser;
         projectPayload.project_manager = currentUser.id;
         project = await Project.add(projectPayload);
         payload.projects = project.id;
+        payload2.projects = project.id;
         token= TokenDistributionModel(payload);
     });
     afterAll(async () => {
@@ -59,8 +74,11 @@ describe('Beneficiary CRUD', () => {
 
     it ('beneficiary can be created correctly', async() => {
         benf = await Beneficiary.add(payload);
+        benf2 = await Beneficiary.add(payload2);
         expect(benf._id).toBeDefined();
         expect(benf.name).toBe(payload.name);
+        expect(benf2._id).toBeDefined();
+        expect(benf2.name).toBe(payload2.name);
     });
 
     it('can get Vendor by id', async () => {
@@ -72,8 +90,28 @@ describe('Beneficiary CRUD', () => {
 
     it('should list all the Beneficiary', async () => {
         const data = await Beneficiary.list({}, currentUser);
-        expect(data.data.length).toEqual(1);
+        expect(data.data.length).toEqual(2);
     });
+
+
+
+    it('should list the Beneficiary, Pagination: limit 1 items', async() => {
+        const data = await Beneficiary.list({ limit:1}, currentUser);
+        expect(data.data.length).toEqual(1);
+    })
+
+    it('should list the Beneficiary, Pagination: start 1 items', async() => {
+
+        const data = await Beneficiary.list({start:1}, currentUser);
+        expect(data.data.length).toEqual(1);
+
+    })
+
+    it('should list the Beneficiary, Pagination:start1, limit 2 items', async() => {
+
+        const data = await Beneficiary.list({start:1, limit:2}, currentUser);
+        expect(data.data.length).toEqual(1);
+    })
 
     it('should update Beneficiary details', async () => {
         const dataToUpdate = {
@@ -117,7 +155,8 @@ describe('Beneficiary CRUD', () => {
         }
         const proj = await Beneficiary.getReportingData(query);
 
-        expect(proj.beneficiaryByGroup.totalCount).toBe(1);
+        expect(proj.beneficiaryByGroup.totalCount).toBe(2);
     });
+
 
 });
