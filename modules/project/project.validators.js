@@ -13,7 +13,7 @@ module.exports = {
       name: Project.name,
       file: Joi.any(),
       end_date: Project.end_date,
-      project_manager: Project.project_manager,
+      project_manager: Joi.string(),
       location: Project.location,
       description: Joi.string().allow(''),
       financial_institutions: Joi.string()
@@ -105,6 +105,9 @@ module.exports = {
     })
   },
   getInstitution: {
+    params: GooseJoi.id()
+  },
+  countDetails: {
     params: GooseJoi.id()
   }
 };

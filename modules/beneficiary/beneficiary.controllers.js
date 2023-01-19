@@ -7,7 +7,10 @@ const {
   TokenRedemptionModel,
   TokenDistributionModel,
   AidConnectModel,
-  ProjectModel
+  ProjectModel,
+  VendorModel,
+  InstitutionModel,
+  MobilizerModel
 } = require('../models');
 const {addFileToIpfs} = require('../../helpers/utils/ipfs');
 const {updateTotalSupply} = require('../nft/nft.controller');
@@ -35,9 +38,18 @@ const Beneficiary = {
       }
     }
 
+    if(payload.phone && BeneficiaryModel.find({phone:payload.phone}).countDocuments()>0){
+
+      throw Error('Duplicate phone Number');
+    }
+
     payload.created_by = currentUser._id;
     return BeneficiaryModel.create(payload);
   },
+
+  // async checkPhoneExists(phone) {
+  //   return BeneficiaryModel.find({phone});
+  // }
 
   async addMany(payload) {
     const {currentUser} = payload;
@@ -124,6 +136,14 @@ const Beneficiary = {
 
   getbyWallet(wallet_address) {
     return BeneficiaryModel.findOne({wallet_address, is_archived: false});
+  },
+
+  listBeneficiaryphones(query) {
+    console.log('as');
+    const projectId = query.projectId || null;
+    console.log({projectId});
+    if (projectId) return BeneficiaryModel.find({projects: ObjectId(projectId)}).select('phone');
+    return BeneficiaryModel.find().select('phone');
   },
 
   list(query, currentUser) {
@@ -246,10 +266,11 @@ const Beneficiary = {
           name: {$first: '$projectData.name'},
           count: {$sum: 1}
         }
-      }
+      },
+      {$sort: {created_at: -1, name: -1}}
     ];
     const totalCount = await BeneficiaryModel.find($match).countDocuments();
-    const project = await BeneficiaryModel.aggregate(query);
+    const project = await BeneficiaryModel.aggregate(query).limit(5);
 
     return {totalCount, project};
   },
@@ -462,6 +483,218 @@ const Beneficiary = {
     if (!aid_connect) return 0;
     return AidConnectModel.countDocuments({aid_connect_id: aid_connect.id});
   },
+  async getProjectNames(data) {
+    const projectsInvolved = [];
+    for (let i = 0; i < data.projects.length; i++) {
+      projects = data.projects[i];
+      projectsInvolved.push(await this.fetchProjectNameById(projects));
+    }
+    return projectsInvolved;
+  },
+  async fetchProjectNameById(projectId) {
+    const {name, allocations} = await ProjectModel.findOne({_id: projectId});
+    return {name, allocations};
+  },
+  async parseBeneficiaryReportData(beneficiaryData) {
+    const reportData = [];
+    for (let i = 0; i < beneficiaryData.length; i++) {
+      const data = beneficiaryData[i];
+      const projectsInvolved = await this.getProjectNames(data);
+      const projectsName = projectsInvolved.map(projects => {
+        return projects.name;
+      });
+      const allocations = projectsInvolved.map(projects => {
+        return projects.allocations.map(allocation => {
+          return allocation.amount;
+        });
+      })[0];
+      let TotalAllocations = 0;
+      allocations.map(amount => {
+        TotalAllocations += amount;
+      });
+
+      reportData.push({
+        Name: data.name,
+        'Phone Number': data.phone,
+        'Permanent Address': data.address,
+        'Email address': data.email,
+        'Government id': data.govt_id,
+        Age: data?.extras?.age || 'unknown',
+        Gender: data.gender,
+        'Projects involved': projectsName.join(' ,'),
+        Education: data?.extras?.education || 'unknown',
+        Profession: data?.extras?.profession || 'unknown',
+        'Number of Family Members': data?.extras?.family_members || 'unknown',
+        'Registration date': data.created_at,
+        'Token Issues': TotalAllocations
+      });
+    }
+    return reportData;
+  },
+  async getBeneficiariesNumber(projectId) {
+    return BeneficiaryModel.countDocuments({projects: [projectId]});
+  },
+  async getVendorsNumber(projectId) {
+    return VendorModel.countDocuments({projects: [projectId]});
+  },
+  async getMobilizersNumber(projectId) {
+    return MobilizerModel.countDocuments({'projects.project': projectId});
+  },
+  async getFinancialInstituesNumber(projectId) {
+    return InstitutionModel.countDocuments({projects: [projectId]});
+  },
+  async parseProjectReportData(projectData) {
+    const reportData = [];
+    for (let i = 0; i < projectData.length; i++) {
+      const data = projectData[i];
+      const numberOfBeneficiaries = await this.getBeneficiariesNumber(data._id);
+      const numberOfVendors = await this.getVendorsNumber(data._id);
+      const numberOfMobilizers = await this.getMobilizersNumber(data._id);
+      const numberOfFinancialInstitues = data.financial_institutions
+        ? data.financial_institutions.length
+        : 0;
+
+      const allocations = data.allocations.map(allocation => {
+        return allocation.amount;
+      });
+      let TotalAllocations = 0;
+      allocations.map(amount => {
+        TotalAllocations += amount;
+      });
+      reportData.push({
+        Name: data.name,
+        Status: data.status,
+        'Number of Beneficiaries': numberOfBeneficiaries,
+        'Number of Vendors': numberOfVendors,
+        'Number of Mobilizers': numberOfMobilizers,
+        'Number of Financial Institues': numberOfFinancialInstitues,
+        'Created Date': data.created_at,
+        'Total Token Allocations': TotalAllocations,
+        id: data._id
+      });
+    }
+    return reportData;
+  },
+  async getBeneficiaryExportData(from, to, projectId) {
+    const dateFilter =
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
+            }
+          }
+        : null;
+
+    const reportData = projectId
+      ? await BeneficiaryModel.find({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await BeneficiaryModel.find({
+          ...dateFilter
+        });
+
+    return await this.parseBeneficiaryReportData(reportData);
+  },
+  async getProjectExportData(from, to, projectId) {
+    const dateFilter =
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
+            }
+          }
+        : null;
+
+    const reportData = projectId
+      ? await ProjectModel.find({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await ProjectModel.find({
+          ...dateFilter
+        });
+    return await this.parseProjectReportData(reportData);
+  },
+  async countBeneficiaryViaGroup(projectId) {
+    let group;
+    let totalCount;
+    if (projectId) {
+      totalCount = await BeneficiaryModel.countDocuments({projects: [projectId]});
+      group = await BeneficiaryModel.find({projects: [projectId]}).select('extras.group');
+    } else {
+      group = await BeneficiaryModel.find().select('extras.group');
+      totalCount = await BeneficiaryModel.countDocuments();
+    }
+
+    let groups ={
+      "Differently_Abled":0,
+      "Maternity":0,
+      "Senior_Citizens":0,
+      "Covid_Victim":0,
+      "Natural_Calamities_Victim":0,
+      "Under_Privileged":0,
+      "Severe_Health_Issues":0,
+      "Single_Women":0,
+      "Orphan":0,
+      "Unkown": 0
+    }
+    group.map(el =>{
+      console.log(el);
+      if(el.extras && el.extras.group){
+        const group = el.extras.group;
+        if (group =="Differently_Abled") groups.Differently_Abled ++;
+        if (group =="Maternity") groups.Maternity ++;
+        if (group =="Senior_Citizens") groups.Senior_Citizens ++;
+        if (group =="Covid_Victim") groups.Covid_Victim ++;
+        if (group =="Natural_Calamities_Victim") groups.Natural_Calamities_Victim ++;
+        if (group =="Under_Privileged") groups.Under_Privileged ++;
+        if (group =="Severe_Health_Issues") groups.Severe_Health_Issues ++;
+        if (group =="Single_Women") groups.Single_Women ++;
+        if (group =="Orphan") groups.Orphan ++;
+      }else groups.Unkown ++;
+    })
+    const data = {
+      totalCount,
+      beneficiaries: [
+        {
+          group: 'Differently Abled',
+          value: groups.Differently_Abled
+        },{
+          group: 'Maternity',
+          value: groups.Maternity
+        },{
+          group: 'Senior Citizens',
+          value: groups.Senior_Citizens
+        },{
+          group: 'Covid Victim',
+          value: groups.Covid_Victim
+        },{
+          group: 'Natural Calamities Victim',
+          value: groups.Natural_Calamities_Victim
+        },{
+          group: 'Under Privileged',
+          value: groups.Under_Privileged
+        },{
+          group: 'Severe Health Issues',
+          value: groups.Severe_Health_Issues
+        },{
+          group: 'Single Women',
+          value: groups.Single_Women
+        }, {
+          group: 'Orphan',
+          value: groups.Orphan
+        },{
+          group: 'Unkown',
+          value: groups.Unkown
+        }
+      ]
+    };
+    return data;
+
+  },
   async getReportingData(query) {
     const beneficiaryByGender = await this.countBeneficiaryViaGender(
       query.from,
@@ -471,7 +704,26 @@ const Beneficiary = {
     const beneficiaryByProject = await this.countBeneficiaryViaProject();
     const beneficiaryByAge = await this.countBeneficiaryViaAge(query.projectId);
     const beneficiaryViaAidConnect = await this.countBeneficiaryViaAidConnect(query.projectId);
-    return {beneficiaryByGender, beneficiaryByProject, beneficiaryByAge, beneficiaryViaAidConnect};
+    const beneficiaryByGroup = await  this.countBeneficiaryViaGroup(query.projectId);
+    const beneficiaryExportData = await this.getBeneficiaryExportData(
+      query.from,
+      query.to,
+      query.projectId
+    );
+    const projectExportData = await this.getProjectExportData(
+      query.from,
+      query.to,
+      query.projectId
+    );
+    return {
+      beneficiaryByGender,
+      beneficiaryByGroup,
+      beneficiaryByProject,
+      beneficiaryByAge,
+      beneficiaryViaAidConnect,
+      beneficiaryExportData,
+      projectExportData
+    };
   }
 };
 
@@ -492,5 +744,6 @@ module.exports = {
     return Beneficiary.addToProjectByBenfId(benfId, projectId);
   },
   checkBeneficiary: req => Beneficiary.checkBeneficiary(req.params.phone),
-  getReportingData: req => Beneficiary.getReportingData(req.query)
+  getReportingData: req => Beneficiary.getReportingData(req.query),
+  listBeneficiaryPhones: req => Beneficiary.listBeneficiaryphones(req.query)
 };

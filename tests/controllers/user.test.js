@@ -1,5 +1,6 @@
 const common = require('../common');
 const {User} = require('../../modules/user/user.controllers');
+const UserController = require('../../modules/user/user.controllers');
 
 const userData = {
   name: 'Test User',
@@ -24,5 +25,15 @@ describe('User Model Test', () => {
     expect(savedUser.phone).toBe(userData.phone);
     expect(savedUser.email).toBe(userData.email);
     expect(savedUser.wallet_address).toBe(userData.wallet_address);
+  });
+
+  it('fetch token', async () => {
+    req = {
+    query:{
+      email : 'test@mail.com'
+    }
+    }
+    const token = await UserController.token(req);
+    expect(token).toBeDefined();
   });
 });

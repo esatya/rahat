@@ -76,7 +76,8 @@ const routes = {
     'Add institution to the project',
     [PROJECT.READ, PROJECT.ADMIN]
   ],
-  getInstitution: ['GET', '/{id}/institutions', 'Get institution', [PROJECT.READ, PROJECT.ADMIN]]
+  getInstitution: ['GET', '/{id}/institutions', 'Get institution', [PROJECT.READ, PROJECT.ADMIN]],
+  countDetails: ['GET','/{id}/countDetails', 'Get Count Details of Beneficiary, Vendor, Mobilizers', [PROJECT.READ]]
 };
 
 /**
