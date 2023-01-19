@@ -3,7 +3,7 @@ const {Types} = require('mongoose');
 const {addFileToIpfs, isIpfsHash} = require('../../helpers/utils/ipfs');
 const Logger = require('../../helpers/logger');
 const {DataUtils} = require('../../helpers/utils');
-const {VendorModel} = require('../models');
+const {VendorModel, ProjectModel} = require('../models');
 const {Notification} = require('../notification/notification.controller');
 const {TokenRedemption} = require('./vendorTokenRedemption.model');
 const {VendorConstants} = require('../../constants');
@@ -60,29 +60,35 @@ const Vendor = {
   },
 
   async register(agencyId, payload) {
-    payload.agencies = [{agency: agencyId}];
-    if (!isIpfsHash(payload.photo)) {
-      const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
-      payload.photo = ipfsPhotoHash;
-    }
-    if (!isIpfsHash(payload.govt_id_image)) {
-      const ipfsIdHash = await this.uploadToIpfs(
-        this.decodeBase64Image(payload.govt_id_image).data
-      );
-      payload.govt_id_image = ipfsIdHash;
-    }
-    const vendor = await VendorModel.create(payload);
-    await Notification.create({
-      type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
-      ...vendor._doc
-    });
+    try {
+      payload.agencies = [{agency: agencyId}];
 
-    await User.sendMailToAdmin({
-      template: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
-      data: {user_id: vendor._id, user_name: vendor?.name}
-    });
+      if (!isIpfsHash(payload.photo)) {
+        const ipfsPhotoHash = await this.uploadToIpfs(this.decodeBase64Image(payload.photo).data);
+        payload.photo = ipfsPhotoHash;
+      }
+      if (!isIpfsHash(payload.govt_id_image)) {
+        const ipfsIdHash = await this.uploadToIpfs(
+          this.decodeBase64Image(payload.govt_id_image).data
+        );
+        payload.govt_id_image = ipfsIdHash;
+      }
+      const vendor = await VendorModel.create(payload);
+      await Notification.create({
+        type: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+        ...vendor._doc
+      });
 
-    return vendor;
+      await User.sendMailToAdmin({
+        template: CONSTANT.NOTIFICATION_TYPES.vendor_registered,
+        data: {user_id: vendor._id, user_name: vendor?.name}
+      });
+
+      return vendor;
+    } catch (e) {
+      console.log(e);
+      throw Error(e);
+    }
   },
 
   decodeBase64Image(dataString) {
@@ -219,7 +225,7 @@ const Vendor = {
     const totalCount = await VendorModel.find($match).countDocuments();
     const project = await VendorModel.aggregate(query);
     const unknownCount = totalCount - project.reduce((prev, curr) => prev + curr.count, 0);
-    project.push({name: 'Unknown', count: unknownCount});
+    project.push({name: 'UnApproved', count: unknownCount});
     return {totalCount, project};
   },
 
@@ -263,11 +269,73 @@ const Vendor = {
   async listTokenRedeemTx(id) {
     return vendorTokenRedeemModel.find({vendor_wallet: id});
   },
+  async getProjectNames (data){
+    const projectsInvolved = [];
+    for (var i =0; i<data.projects.length; i++){
+      projects = data.projects[i];
+      projectsInvolved.push( await this.fetchProjectNameById(projects));
+    }
+    return projectsInvolved;
+  },
+  async fetchProjectNameById(projectId){
+  const {name, allocations} = await ProjectModel.findOne({_id: projectId});
+  return {name, allocations};
+},
+  async parseVendorExportReportData(vendorData){
+    const vendorExportData = [];
+    for (let i=0; i< vendorData.length; i++){
+      let data = vendorData[i];
+      const projectsInvolved = await this.getProjectNames(data);
+      const projectsName = projectsInvolved.map((projects)=>{
+        return projects.name;
+      });
+      const allocations = projectsInvolved.map((projects)=>{
+        return projects.allocations.map(allocation =>{return allocation.amount});
+      })[0];
+      let TotalAllocations =0;
+      allocations.map((amount)=>{TotalAllocations =TotalAllocations+amount});
+      vendorExportData.push({
+        "Name": data.name,
+        "Phone": data.phone,
+        "Email Address": data.email,
+        "Wallet Address": data.wallet_address,
+        "Shop Name": data.shop_name,
+        "Address": data.address,
+        "Gender": data.gender,
+        "PAN Number": data.pan_number,
+        "Total Balance": TotalAllocations,
+        "Projects Involved": projectsName.join(" ,"),
+        "Registration Date": data.created_at,
+      })
 
-  async getReportingData() {
+    }
+    return vendorExportData;
+  },
+  async getVendorExportData(from, to, projectId) {
+    const dateFilter =
+      from && to
+        ? {
+            created_at: {
+              $gt: new Date(from),
+              $lt: new Date(to)
+            }
+          }
+        : null;
+    const vendorData = projectId
+      ? await VendorModel.find({
+          projects: [projectId],
+          ...dateFilter
+        })
+      : await VendorModel.find({
+          ...dateFilter
+        });
+
+    return await this.parseVendorExportReportData(vendorData);
+  },
+  async getReportingData(query) {
     const vendorByProject = await this.countVendorViaProject();
-
-    return {vendorByProject};
+    const vendorExportData = await this.getVendorExportData(query.from, query.to, query.projectId);
+    return {vendorByProject, vendorExportData};
   }
 };
 

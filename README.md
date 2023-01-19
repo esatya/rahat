@@ -29,7 +29,7 @@ It uses MongoDB as a database for regular non-blockchain data persistence and so
 ## Pre-requisite
 To run Rahat in your system please make user you have following app and libraries installed.
 
-- ```Node-js --version == 10.18.1```
+- ```Node-js --version == 14.17.0```
 - ```Yarn --version == 1.21.1```
 - ```MongoDB --version >= 4.2.8```
 - ```Truffle --version == 5.1.22```

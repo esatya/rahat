@@ -3,7 +3,7 @@ const {Types} = require('mongoose');
 const {nanoid} = require('nanoid');
 const config = require('config');
 const {DataUtils} = require('../../helpers/utils');
-const {ProjectModel, InstitutionModel} = require('../models');
+const {ProjectModel, InstitutionModel, BeneficiaryModel, VendorModel, MobilizerModel} = require('../models');
 const {Beneficiary} = require('../beneficiary/beneficiary.controllers');
 const {Vendor} = require('../vendor/vendor.controllers');
 const {readExcelFile, removeFile, uploadFile} = require('../../helpers/utils/fileManager');
@@ -22,6 +22,7 @@ const Project = {
       payload.financial_institutions = payload.financial_institutions
         ? payload.financial_institutions.split(',')
         : [];
+      payload.project_manager = payload.project_manager.split(',');
       const projecCount = await ProjectModel.countDocuments();
       payload.serial_index = projecCount + 1;
       const project = await ProjectModel.create(payload);
@@ -42,12 +43,67 @@ const Project = {
       throw Error(err);
     }
   },
-
+async countDetails(id){
+  try{
+    console.log('id', id)
+    const $match = {is_archived: false};
+    const query = [
+      {$match},
+      {
+        $lookup: {
+          from: 'projects',
+          localField: 'projects',
+          foreignField: '_id',
+          as: 'projectData'
+        }
+      },
+      {
+        $unwind: '$projectData'
+      },
+      {
+        $group: {
+          _id: '$projectData._id',
+          name: {$first: '$projectData.name'},
+          count: {$sum: 1}
+        }
+      }
+    ];
+    // const benefCount = await BeneficiaryModel.find($match).countDocuments();
+    let vendorCount = 0;
+    let mobCount = 0;
+    const projectBenef = await BeneficiaryModel.aggregate(query);
+    const projectVendor = await VendorModel.aggregate(query);
+    const projectMob = await MobilizerModel.aggregate(query);
+    let benefCount =0;
+    for (let i=0; i< projectBenef.length; i++ ){
+      const benef = projectBenef[i];
+      if (benef._id == id){
+        benefCount = benef.count;
+      }
+    } for (let i=0; i< projectVendor.length; i++ ){
+      const vendor = projectVendor[i];
+      if (vendor._id == id){
+        vendorCount = vendor.count;
+      }
+    } for (let i=0; i< projectMob.length; i++ ){
+      const mob = projectMob[i];
+      if (mob._id == id){
+        mobCount = mob.count;
+      }
+    }
+    return {benefCount,vendorCount, mobCount}
+    // const vendorCount = VendorModel.find({project: id}).countDocuments();
+    // const mobCount = MobilizerModel.find({project: id}).countDocuments();
+    // return {benefCount, vendorCount, mobCount}
+  }catch(e){
+    throw Error(e);}
+},
   async addBeneficiariesToProject(rows, projectId, currentUser) {
     // SKIP HEADER
     let upload_counter = 0;
     rows.shift();
     for (const r of rows) {
+      console.log("The r are", r);
       const payload = {
         name: r[0],
         address_temporary: r[1],
@@ -60,8 +116,13 @@ const Project = {
       payload.currentUser = currentUser;
       const {name, phone} = payload;
       if (name && phone) {
+        const count = await BeneficiaryModel.find({phone:phone}).countDocuments();
+        if(count==0){
         await Beneficiary.add(payload);
         upload_counter++;
+      }else{
+          throw Error(`Duplicate Phone Number found phone ${phone}`);
+        }
       }
     }
     return upload_counter;
@@ -79,7 +140,7 @@ const Project = {
     return {uploaded_beneficiaries};
   },
 
-  async changeStatus(id, payload) {
+  async changeStatus(id, payload, currentUser) {
     const {status, updated_by} = payload;
     let project = await ProjectModel.findOneAndUpdate(
       {_id: id, is_archived: false},
@@ -87,23 +148,29 @@ const Project = {
       {new: true, runValidators: true}
     );
     if (project && project.project_manager) {
-      project = await this.appendProjectManager(project, project.project_manager);
+      project = await this.appendProjectManager(project, project.project_manager, currentUser);
     }
     // TODO implement blockchain function using project._id
     return project;
   },
 
-  async appendProjectManager(doc, project_manager) {
+  async appendProjectManager(doc, project_manager, currentUser) {
     const existing_doc = doc.toObject();
-    const user = await getByWalletAddress(project_manager);
-    existing_doc.project_manager = user || null;
+
+    for (let i = 0; i < project_manager.length; i++) {
+      if (project_manager[i] == currentUser.wallet_address) {
+        const user = await getByWalletAddress(project_manager[i]);
+        existing_doc.project_manager = user || null;
+        break;
+      }
+    }
     return existing_doc;
   },
 
-  async getById(id) {
+  async getById(id, currentUser) {
     let doc = await ProjectModel.findOne({_id: id});
-    if (doc && doc.project_manager) {
-      doc = await this.appendProjectManager(doc, doc.project_manager);
+    if (doc && doc.project_manager && currentUser) {
+      doc = await this.appendProjectManager(doc, doc.project_manager, currentUser);
     }
     return doc;
   },
@@ -139,14 +206,21 @@ const Project = {
       {new: true}
     );
   },
-
-  async addProjectManageDetails(projects) {
+  filterByProjectManager(projects, currentUser) {
+    const filteredProjects = projects.map(data => {
+      if (data.project_manager && data.project_manager.id == currentUser.id) return data;
+    });
+    return [];
+  },
+  async addProjectManageDetails(projects, currentUser) {
     const appended_result = [];
     for (const p of projects) {
-      if (p.project_manager) {
-        const user = await getByWalletAddress(p.project_manager);
-        if (user) p.project_manager = user;
-        else p.project_manager = null;
+      if (p.project_manager && p.project_manager.length) {
+        for (let i = 0; i < p.project_manager.length; i++) {
+          const user = await getByWalletAddress(p.project_manager[i]);
+          if (user) p.project_manager[i] = user;
+          else p.project_manager[i] = null;
+        }
         appended_result.push(p);
       } else {
         appended_result.push(p);
@@ -167,12 +241,13 @@ const Project = {
   async list(query, currentUser) {
     const start = query.start || 0;
     const limit = query.limit || 10;
-
+    console.log(currentUser);
     let $match = {is_archived: false};
     if (query.show_archive) $match = {};
     $match.agency = currentUser.agency;
     if (query.name) $match.name = {$regex: new RegExp(`${query.name}`), $options: 'i'};
     if (query.status) $match.status = query.status;
+    if (!currentUser.roles.includes('Admin')) $match.project_manager = currentUser.wallet_address;
 
     const result = await DataUtils.paging({
       start,
@@ -183,7 +258,7 @@ const Project = {
     });
 
     if (result && result.data.length) {
-      const appended = await this.addProjectManageDetails(result.data);
+      const appended = await this.addProjectManageDetails(result.data, currentUser);
       result.data = appended;
     }
     return result;
@@ -235,9 +310,10 @@ const Project = {
           name: {$first: '$name'},
           token: {$sum: '$allocations.amount'}
         }
-      }
+      },
+      {$sort: {created_at: -1, name: -1}}
     ];
-    const projectAllocation = await ProjectModel.aggregate(query);
+    const projectAllocation = await ProjectModel.aggregate(query).limit(5);
     const totalAllocation = projectAllocation.reduce((acc, {token}) => acc + token, 0);
 
     return {totalAllocation, projectAllocation};
@@ -300,8 +376,8 @@ const Project = {
 module.exports = {
   Project,
   add: req => Project.add(req.payload),
-  changeStatus: req => Project.changeStatus(req.params.id, req.payload),
-  getById: req => Project.getById(req.params.id),
+  changeStatus: req => Project.changeStatus(req.params.id, req.payload, req.currentUser),
+  getById: req => Project.getById(req.params.id, req.currentUser),
   addTokenAllocation: req => Project.addTokenAllocation(req.params.id, req.payload),
   addCampaignFundRaiser: req =>
     Project.addCampaignFundRaiser(req.params.id, req.currentUser, req.payload),
@@ -324,5 +400,6 @@ module.exports = {
   generateAidConnectId: req => Project.generateAidConnectId(req.params.id),
   changeAidConnectStatus: req => Project.changeAidConnectStatus(req.params.id, req.payload),
   addInstitution: req => Project.addInstitution(req.params.id, req.payload.institutionId),
-  getInstitution: req => Project.getInstitution(req.params.id)
+  getInstitution: req => Project.getInstitution(req.params.id),
+  countDetails: req => Project.countDetails(req.params.id)
 };
