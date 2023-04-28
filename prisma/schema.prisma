@@ -12,3 +12,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+model User {
+  id        Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  role      String[]
+  password  String
+ 
+}
+
+
+model Project {
+  id        Int     @id @default(autoincrement())
+  title     String
+  isApproved  Boolean @default(true)
+  description String
+  contractAddress String 
+}
