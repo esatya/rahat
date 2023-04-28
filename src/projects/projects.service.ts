@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-
+import { PrismaClient } from '@prisma/client';
 @Injectable()
-export class ProjectsService {
+export class ProjectsService extends PrismaClient {
   create(createProjectDto: CreateProjectDto) {
-    return 'This action adds a new project';
+    return this.project.create({ data: createProjectDto });
   }
 
   findAll() {
-    return `This action returns all projects`;
+    return this.project.findMany();
   }
 
   findOne(id: number) {
@@ -17,10 +17,13 @@ export class ProjectsService {
   }
 
   update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+    return this.project.update({
+      where: { id: id },
+      data: updateProjectDto,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} project`;
+    return this.project.delete({ where: { id: id } });
   }
 }
