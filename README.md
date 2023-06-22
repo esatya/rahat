@@ -32,6 +32,11 @@
 $ yarn install
 ```
 
+```bash
+npx generate
+
+```
+
 ## Running the app
 
 ```bash

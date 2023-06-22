@@ -1,32 +1,33 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-
 generator client {
   provider = "prisma-client-js"
 }
-
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-model User {
-  id        Int     @id @default(autoincrement())
-  name     String
-  email    String  @unique
-  role      String[]
-  password  String
- 
+generator dbml {
+  provider            = "prisma-dbml-generator"
+  output              = "./dbml"
+  outputName          = "donation-tracker-model.dbml"
+  projectName         = "Donation Tracker"
+  projectDatabaseType = "PostgreSQL"
+  projectNote         = "Donation Tracker"
 }
 
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "./docs"
+}
 
-model Project {
-  id        Int     @id @default(autoincrement())
-  title     String
-  isApproved  Boolean @default(true)
-  description String
-  contractAddress String 
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  walletAddress Bytes?  @unique
+  profileImage  String?
+
 }
