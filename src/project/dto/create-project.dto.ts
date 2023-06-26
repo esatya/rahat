@@ -90,5 +90,5 @@ export class CreateProjectDto {
     required: false,
     default: false,
   })
-  isApproved?: boolean = false;
+  isApproved?: boolean;
 }

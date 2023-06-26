@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { paginate } from '@utils/paginate';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { ListProjectDto } from './dto/list-project-dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
@@ -8,35 +11,105 @@ export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
   create(createProjectDto: CreateProjectDto) {
-    // const contractAddress = Buffer.from(
-    //   createProjectDto.contractAddress.substring(2),
-    //   'hex',
-    // );
-    // return this.prisma.project.create({
-    //   data: {
-    //     ...createProjectDto,
-    //     contractAddress,
-    //   },
-    // });
-    return this.prisma.project.create({ data: createProjectDto });
+    const { owner, contractAddress, ...rest } = createProjectDto;
+
+    // contractAddress =
+    return this.prisma.project.create({
+      data: {
+        ...rest,
+
+        contractAddress: Buffer.from(contractAddress.substring(2), 'hex'),
+        owner: {
+          connect: {
+            id: owner,
+          },
+        },
+      },
+    });
   }
 
-  findAll() {
-    return this.prisma.project.findMany({});
+  findAll(query: ListProjectDto) {
+    const { page, perPage, ...rest } = query;
+    const where: Prisma.ProjectWhereInput = {
+      deletedAt: null,
+    };
+    const include: Prisma.ProjectInclude = {
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          walletAddress: true,
+        },
+      },
+    };
+
+    if (rest.name) {
+      where.name = {
+        contains: rest.name,
+        mode: 'insensitive',
+      };
+    }
+
+    return paginate(
+      this.prisma.project,
+      { where, include },
+      {
+        page,
+        perPage,
+      },
+    );
   }
 
-  findOne(id: number) {
-    return this.prisma.project.findUnique({ where: { id } });
+  findOne(contractAddress: string) {
+    return this.prisma.project.findFirst({
+      where: {
+        contractAddress: {
+          equals: Buffer.from(contractAddress.substring(2), 'hex'),
+        },
+      },
+    });
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
+  async update(id: number, updateProjectDto: UpdateProjectDto) {
+    const { owner, contractAddress, ...rest } = updateProjectDto;
+
     return this.prisma.project.update({
-      where: { id },
-      data: updateProjectDto,
+      data: {
+        ...rest,
+        contractAddress: Buffer.from(contractAddress.substring(2), 'hex'),
+        owner: {
+          connect: {
+            id: owner,
+          },
+        },
+      },
+      where: {
+        id,
+      },
+    });
+  }
+
+  approve(contractAddress: string) {
+    return this.prisma.project.update({
+      data: {
+        isApproved: true,
+      },
+      where: {
+        contractAddress: {
+          equals: Buffer.from(contractAddress.substring(2), 'hex'),
+        },
+      },
     });
   }
 
   remove(id: number) {
-    return this.prisma.project.delete({ where: { id } });
+    return this.prisma.project.update({
+      data: {
+        deletedAt: new Date(),
+      },
+      where: {
+        id,
+      },
+    });
   }
 }

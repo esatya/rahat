@@ -29,22 +29,27 @@ model User {
   updatedAt     DateTime @updatedAt
   walletAddress Bytes?   @unique
   profileImage  String?
+
+  projects Project[] @relation("UserProjects")
 }
 
 model Project {
-  id              Int      @id @default(autoincrement())
-  name            String   @unique
-  startDate       String
-  endDate         String
-  owner           Int      @default(1)
-  budget          Int      @default(0)
-  disbursed       Int      @default(0)
-  extras          String
-  location        String
-  projectType     String
-  projectManager  String
-  description     String
-  contractAddress String
-  deletedAt       String
-  isApproved      Boolean  @default(false)
+  id              Int       @id @default(autoincrement())
+  name            String
+  startDate       DateTime
+  endDate         DateTime
+  budget          Int       @default(0)
+  disbursed       Int       @default(0)
+  extras          Json?
+  location        String?
+  projectType     String?
+  projectManager  String?
+  description     String?
+  contractAddress Bytes?    @unique
+  deletedAt       DateTime?
+  isApproved      Boolean   @default(false)
+
+  owner     User[]   @relation("UserProjects")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
