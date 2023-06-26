@@ -16,3 +16,21 @@ Table User {
   walletAddress Bytes [unique]
   profileImage String
 }
+
+Table Project {
+  id Int [pk, increment]
+  name String [unique, not null]
+  startDate String [not null]
+  endDate String [not null]
+  owner Int [not null, default: 1]
+  budget Int [not null, default: 0]
+  disbursed Int [not null, default: 0]
+  extras String [not null]
+  location String [not null]
+  projectType String [not null]
+  projectManager String [not null]
+  description String [not null]
+  contractAddress String [not null]
+  deletedAt String [not null]
+  isApproved Boolean [not null, default: false]
+}

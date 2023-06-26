@@ -27,7 +27,24 @@ model User {
   email         String   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  walletAddress Bytes?  @unique
+  walletAddress Bytes?   @unique
   profileImage  String?
+}
 
+model Project {
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  startDate       String
+  endDate         String
+  owner           Int      @default(1)
+  budget          Int      @default(0)
+  disbursed       Int      @default(0)
+  extras          String
+  location        String
+  projectType     String
+  projectManager  String
+  description     String
+  contractAddress String
+  deletedAt       String
+  isApproved      Boolean  @default(false)
 }
