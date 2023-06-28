@@ -5,7 +5,10 @@ import { hexStringToBuffer } from '@utils/string-format';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import { ListBeneficiaryDto } from './dto/list-beneficiary.dto';
-import { UpdateBeneficiaryDto } from './dto/update-beneficiary.dto';
+import {
+  UpdateBeneficiaryBalanceDto,
+  UpdateBeneficiaryDto,
+} from './dto/update-beneficiary.dto';
 
 @Injectable()
 export class BeneficiaryService {
@@ -120,6 +123,29 @@ export class BeneficiaryService {
       },
       where: {
         id,
+      },
+    });
+  }
+
+  overrideBalance(
+    walletAddress: string,
+    balanceUpdateData: UpdateBeneficiaryBalanceDto,
+  ) {
+    const updateData: Prisma.BeneficiaryUpdateInput = {};
+    const { tokenAssigned, tokensClaimed } = balanceUpdateData;
+
+    if (+tokenAssigned) {
+      updateData.tokensAssigned = +tokenAssigned;
+      updateData.isActive = +tokenAssigned > 0 ? true : false;
+    }
+    if (+tokensClaimed) {
+      updateData.tokensClaimed = +tokensClaimed;
+    }
+
+    return this.prisma.beneficiary.update({
+      data: updateData,
+      where: {
+        walletAddress: hexStringToBuffer(walletAddress),
       },
     });
   }

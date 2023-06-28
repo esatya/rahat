@@ -62,7 +62,7 @@ Table Beneficiary {
   tokensAssigned Int [not null, default: 0]
   tokensClaimed Int [not null, default: 0]
   isActive Boolean [not null, default: false]
-  extra Json [not null]
+  extra Json
   projects Project [not null]
 }
 
@@ -77,9 +77,9 @@ Table Distributor {
   updatedAt DateTime [not null]
   deletedAt DateTime
   isActive Boolean [not null, default: false]
-  tokenBalance BigInt [not null, default: 0]
-  tokenPending BigInt [not null, default: 0]
-  tokenDisbursed BigInt [not null, default: 0]
+  tokenBalance Int [not null, default: 0]
+  tokenPending Int [not null, default: 0]
+  tokenDisbursed Int [not null, default: 0]
   projects Project [not null]
 }
 

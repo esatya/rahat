@@ -102,9 +102,9 @@ model Distributor {
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
   isActive       Boolean   @default(false)
-  tokenBalance   BigInt    @default(0)
-  tokenPending   BigInt    @default(0)
-  tokenDisbursed BigInt    @default(0)
+  tokenBalance   Int    @default(0)
+  tokenPending   Int    @default(0)
+  tokenDisbursed Int    @default(0)
 
   projects Project[] @relation("ProjectDistributors")
 }

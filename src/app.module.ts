@@ -5,10 +5,11 @@ import { AbilitiesGuard } from './ability/abilities.guard';
 import { AbilityModule } from './ability/ability.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { UserModule } from './user/user.module';
-import { ProjectModule } from './project/project.module';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { ProjectModule } from './project/project.module';
+import { UserModule } from './user/user.module';
+import { DistributorModule } from './distributor/distributor.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { BeneficiaryModule } from './beneficiary/beneficiary.module';
     AbilityModule,
     ProjectModule,
     BeneficiaryModule,
+    DistributorModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AbilitiesGuard }],

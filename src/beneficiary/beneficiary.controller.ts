@@ -12,7 +12,10 @@ import { ApiTags } from '@nestjs/swagger';
 import { BeneficiaryService } from './beneficiary.service';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import { ListBeneficiaryDto } from './dto/list-beneficiary.dto';
-import { UpdateBeneficiaryDto } from './dto/update-beneficiary.dto';
+import {
+  UpdateBeneficiaryBalanceDto,
+  UpdateBeneficiaryDto,
+} from './dto/update-beneficiary.dto';
 
 @Controller('beneficiary')
 @ApiTags('beneficiary')
@@ -45,5 +48,13 @@ export class BeneficiaryController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.beneficiaryService.remove(+id);
+  }
+
+  @Get(':walletAddres/overrider-balance')
+  overrideBalance(
+    @Param('walletAddress') walletAddress: string,
+    @Body() updatedata: UpdateBeneficiaryBalanceDto,
+  ) {
+    return this.beneficiaryService.overrideBalance(walletAddress, updatedata);
   }
 }
