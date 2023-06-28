@@ -21,6 +21,21 @@ generator docs {
   output   = "./docs"
 }
 
+enum Gender {
+  Male
+  Female
+  Others
+  Unknown
+}
+
+model AppSettings {
+  id        Int      @id @default(autoincrement())
+  name      String
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id            Int      @id @default(autoincrement())
   name          String
@@ -49,7 +64,47 @@ model Project {
   deletedAt       DateTime?
   isApproved      Boolean   @default(false)
 
-  owner     User[]   @relation("UserProjects")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  owner         User[]        @relation("UserProjects")
+  beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
+  vendors       Distributor[] @relation("ProjectDistributors")
+}
+
+model Beneficiary {
+  id             Int       @id @default(autoincrement())
+  name           String
+  gender         Gender    @default(Unknown)
+  walletAddress  Bytes?    @unique
+  phone          String?
+  email          String?
+  address        Json
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  tokensAssigned Int       @default(0)
+  tokensClaimed  Int       @default(0)
+  isActive       Boolean   @default(false)
+
+  extra Json?
+
+  projects Project[] @relation("BeneficiaryProjects")
+}
+
+model Distributor {
+  id             Int       @id @default(autoincrement())
+  name           String
+  walletAddress  Bytes?    @unique
+  phone          String?
+  email          String?
+  address        Json
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  isActive       Boolean   @default(false)
+  tokenBalance   BigInt    @default(0)
+  tokenPending   BigInt    @default(0)
+  tokenDisbursed BigInt    @default(0)
+
+  projects Project[] @relation("ProjectDistributors")
 }

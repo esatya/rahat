@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@utils/paginate';
+import { hexStringToBuffer } from '@utils/string-format';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ListProjectDto } from './dto/list-project-dto';
@@ -41,6 +42,13 @@ export class ProjectService {
           walletAddress: true,
         },
       },
+      _count: {
+        select: {
+          beneficiaries: true,
+          owner: true,
+          vendors: true,
+        },
+      },
     };
 
     if (rest.name) {
@@ -61,10 +69,19 @@ export class ProjectService {
   }
 
   findOne(contractAddress: string) {
-    return this.prisma.project.findFirst({
+    return this.prisma.project.findFirstOrThrow({
       where: {
         contractAddress: {
-          equals: Buffer.from(contractAddress.substring(2), 'hex'),
+          equals: hexStringToBuffer(contractAddress),
+        },
+      },
+      include: {
+        _count: {
+          select: {
+            beneficiaries: true,
+            owner: true,
+            vendors: true,
+          },
         },
       },
     });
@@ -76,7 +93,7 @@ export class ProjectService {
     return this.prisma.project.update({
       data: {
         ...rest,
-        contractAddress: Buffer.from(contractAddress.substring(2), 'hex'),
+        contractAddress: hexStringToBuffer(contractAddress),
         owner: {
           connect: {
             id: owner,
@@ -90,16 +107,16 @@ export class ProjectService {
   }
 
   approve(contractAddress: string) {
-    return this.prisma.project.update({
-      data: {
-        isApproved: true,
-      },
-      where: {
-        contractAddress: {
-          equals: Buffer.from(contractAddress.substring(2), 'hex'),
-        },
-      },
-    });
+    const bufferedAddress = hexStringToBuffer(contractAddress);
+    // return this.prisma.project.update({
+    //   data: {
+    //     isApproved: true,
+    //   },
+    //   where: {
+    //     contractAddress: {
+    //     },
+    //   },
+    // });
   }
 
   remove(id: number) {

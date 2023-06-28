@@ -8,9 +8,10 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { ProjectModule } from './project/project.module';
+import { BeneficiaryModule } from './beneficiary/beneficiary.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, AbilityModule, ProjectModule],
+  imports: [PrismaModule, UserModule, AbilityModule, ProjectModule, BeneficiaryModule],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AbilitiesGuard }],
 })
