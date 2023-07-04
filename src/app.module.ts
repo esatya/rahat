@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ProjectModule } from './project/project.module';
 import { UserModule } from './user/user.module';
 import { DistributorModule } from './distributor/distributor.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { DistributorModule } from './distributor/distributor.module';
     ProjectModule,
     BeneficiaryModule,
     DistributorModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AbilitiesGuard }],

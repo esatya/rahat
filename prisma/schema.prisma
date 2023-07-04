@@ -10,10 +10,10 @@ datasource db {
 generator dbml {
   provider            = "prisma-dbml-generator"
   output              = "./dbml"
-  outputName          = "donation-tracker-model.dbml"
-  projectName         = "Donation Tracker"
+  outputName          = "rahat-system-model.dbml"
+  projectName         = "Rahat System"
   projectDatabaseType = "PostgreSQL"
-  projectNote         = "Donation Tracker"
+  projectNote         = "Rahat System"
 }
 
 generator docs {
@@ -54,7 +54,7 @@ model Project {
   startDate       DateTime
   endDate         DateTime
   budget          Int       @default(0)
-  disbursed       Int       @default(0)
+  disbursed       Int       @default(0) 
   extras          Json?
   location        String?
   projectType     String?
@@ -63,9 +63,9 @@ model Project {
   contractAddress Bytes?    @unique
   deletedAt       DateTime?
   isApproved      Boolean   @default(false)
-
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+
   owner         User[]        @relation("UserProjects")
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
   vendors       Distributor[] @relation("ProjectDistributors")
@@ -85,8 +85,7 @@ model Beneficiary {
   tokensAssigned Int       @default(0)
   tokensClaimed  Int       @default(0)
   isActive       Boolean   @default(false)
-
-  extra Json?
+  extra          Json?
 
   projects Project[] @relation("BeneficiaryProjects")
 }
@@ -102,9 +101,9 @@ model Distributor {
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
   isActive       Boolean   @default(false)
-  tokenBalance   Int    @default(0)
-  tokenPending   Int    @default(0)
-  tokenDisbursed Int    @default(0)
+  tokenBalance   Int       @default(0)
+  tokenPending   Int       @default(0)
+  tokenDisbursed Int       @default(0)
 
   projects Project[] @relation("ProjectDistributors")
 }

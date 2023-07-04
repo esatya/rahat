@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateAppSettingDto } from './app-settings.dto';
+import { CreateAppSettingDto, GetContractByNameDto } from './app-settings.dto';
 import { AppService } from './app.service';
 
 @Controller('app')
@@ -14,7 +14,17 @@ export class AppController {
   }
 
   @Get('settings')
-  getAppSettings() {
-    return this.appService.getAppSettings();
+  getAppSettings(@Query() query: GetContractByNameDto) {
+    return this.appService.getAppSettings(query);
+  }
+
+  @Get('contracts')
+  getContracts() {
+    return this.appService.getContracts();
+  }
+
+  @Get('contracts/:contractName')
+  getContractByName(@Param('contractName') contractName: string) {
+    return this.appService.getContractByName(contractName);
   }
 }

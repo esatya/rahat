@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class CreateAppSettingDto {
   @ApiProperty({
@@ -21,4 +21,14 @@ export class CreateAppSettingDto {
     },
   })
   value: Prisma.JsonObject;
+}
+
+export class GetContractByNameDto {
+  @ApiProperty({
+    example: 'CONTRACT_ADDRESS',
+    description: 'Name of the app settings',
+    required: true,
+  })
+  @IsString()
+  name: string;
 }
