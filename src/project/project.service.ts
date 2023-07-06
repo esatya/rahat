@@ -106,19 +106,6 @@ export class ProjectService {
     });
   }
 
-  approve(contractAddress: string) {
-    const bufferedAddress = hexStringToBuffer(contractAddress);
-    // return this.prisma.project.update({
-    //   data: {
-    //     isApproved: true,
-    //   },
-    //   where: {
-    //     contractAddress: {
-    //     },
-    //   },
-    // });
-  }
-
   remove(id: number) {
     return this.prisma.project.update({
       data: {
@@ -126,6 +113,23 @@ export class ProjectService {
       },
       where: {
         id,
+      },
+    });
+  }
+
+  getBeneficiaries(address: string) {
+    return this.prisma.project.findUniqueOrThrow({
+      where: {
+        contractAddress: hexStringToBuffer(address),
+      },
+      select: {
+        _count: {
+          select: {
+            beneficiaries: true,
+          },
+        },
+        contractAddress: true,
+        beneficiaries: true,
       },
     });
   }

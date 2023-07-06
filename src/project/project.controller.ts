@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
@@ -29,9 +28,9 @@ export class ProjectController {
     return this.projectService.findAll(query);
   }
 
-  @Get(':walletAddress')
-  findOne(@Param('walletAddress') walletAddress: string) {
-    return this.projectService.findOne(walletAddress);
+  @Get(':address')
+  findOne(@Param('address') address: string) {
+    return this.projectService.findOne(address);
   }
 
   @Patch(':id')
@@ -39,13 +38,8 @@ export class ProjectController {
     return this.projectService.update(+id, updateProjectDto);
   }
 
-  @Patch(':contractAddress/approve')
-  approve(@Param('contractAddress') contractAddress: string) {
-    return this.projectService.approve(contractAddress);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectService.remove(+id);
+  @Get(':address/beneficiaries')
+  getBeneficiaries(@Param('address') address: string) {
+    return this.projectService.getBeneficiaries(address);
   }
 }
