@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 type Address = {
   street: string;
@@ -31,14 +30,29 @@ export class CreateBeneficiaryDto {
   address: Address;
 
   @ApiProperty({
-    type: 'object',
-  })
-  extra: Prisma.JsonObject;
-
-  @ApiProperty({
     example: '1',
   })
   @IsOptional()
   @IsString()
   projectId: string;
+
+  @ApiProperty({
+    example: '1',
+  })
+  @IsOptional()
+  @IsNumber()
+  latitude: number;
+
+  @ApiProperty({
+    example: '1',
+  })
+  @IsOptional()
+  @IsNumber()
+  longitude: number;
+
+  @ApiProperty({
+    example: false,
+  })
+  @IsBoolean()
+  isApproved: boolean;
 }

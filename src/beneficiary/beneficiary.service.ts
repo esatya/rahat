@@ -1,18 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@utils/paginate';
-import { hexStringToBuffer } from '@utils/string-format';
+import { hexStringToBuffer, stringifyWithBigInt } from '@utils/string-format';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
-import { ListBeneficiaryDto } from './dto/list-beneficiary.dto';
 import {
-  UpdateBeneficiaryBalanceDto,
+  ListBeneficiaryDto,
+  ListBeneficiaryTransactionsDto,
+} from './dto/list-beneficiary.dto';
+import {
   UpdateBeneficiaryDto,
+  UpdateBeneficiaryStatusDto,
 } from './dto/update-beneficiary.dto';
 
 @Injectable()
 export class BeneficiaryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) {
+    prisma.$on<any>('query', (event: Prisma.QueryEvent) => {
+      console.log('Query: ' + event.query);
+      console.log('Duration: ' + event.duration + 'ms');
+    });
+  }
 
   create(createBeneficiaryDto: CreateBeneficiaryDto) {
     let optional: { walletAddress: Buffer | null; project: any | null };
@@ -82,12 +90,10 @@ export class BeneficiaryService {
     );
   }
 
-  findOne(walletAddress: string) {
+  findOne(uuid: string) {
     return this.prisma.beneficiary.findFirstOrThrow({
       where: {
-        walletAddress: {
-          equals: hexStringToBuffer(walletAddress),
-        },
+        uuid,
         deletedAt: null,
       },
       include: {
@@ -101,7 +107,7 @@ export class BeneficiaryService {
     });
   }
 
-  update(id: number, updateBeneficiaryDto: UpdateBeneficiaryDto) {
+  update(uuid: string, updateBeneficiaryDto: UpdateBeneficiaryDto) {
     const bufferedWallet = hexStringToBuffer(
       updateBeneficiaryDto?.walletAddress,
     );
@@ -111,41 +117,146 @@ export class BeneficiaryService {
         walletAddress: bufferedWallet,
       },
       where: {
-        id,
+        uuid,
       },
     });
   }
 
-  remove(id: number) {
+  remove(uuid: string) {
     return this.prisma.beneficiary.update({
       data: {
         deletedAt: new Date(),
       },
       where: {
-        id,
+        uuid,
       },
     });
   }
 
-  overrideBalance(
-    walletAddress: string,
-    balanceUpdateData: UpdateBeneficiaryBalanceDto,
-  ) {
-    const updateData: Prisma.BeneficiaryUpdateInput = {};
-    const { tokenAssigned, tokensClaimed } = balanceUpdateData;
+  getTransactions(uuid: string, query: ListBeneficiaryTransactionsDto) {
+    const { page, perPage } = query;
 
-    if (+tokenAssigned) {
-      updateData.tokensAssigned = +tokenAssigned;
-      updateData.isActive = +tokenAssigned > 0 ? true : false;
-    }
-    if (+tokensClaimed) {
-      updateData.tokensClaimed = +tokensClaimed;
-    }
+    const where: Prisma.BeneficiaryWhereInput = {
+      uuid,
+    };
 
+    const select: Prisma.BeneficiarySelect = {
+      uuid: true,
+      transactions: true,
+      _count: {
+        select: {
+          transactions: true,
+        },
+      },
+    };
+
+    return paginate(
+      this.prisma.beneficiary,
+      {
+        where,
+        select,
+      },
+      {
+        page,
+        perPage,
+      },
+    );
+  }
+
+  assignProject(uuid: string, projectId: number) {
     return this.prisma.beneficiary.update({
-      data: updateData,
+      data: {
+        projects: {
+          connect: {
+            id: projectId,
+          },
+        },
+      },
       where: {
-        walletAddress: hexStringToBuffer(walletAddress),
+        uuid,
+      },
+    });
+  }
+
+  async getGeoLocation() {
+    const ben = await this.prisma.beneficiary.findMany({
+      select: {
+        latitude: true,
+        longitude: true,
+      },
+    });
+    return ben;
+  }
+
+  async getStats() {
+    let totalCount = await this.prisma.$queryRaw`
+  SELECT
+    SUM(CASE WHEN "gender" = 'MALE' THEN 1 ELSE 0 END) as "maleCount",
+    SUM(CASE WHEN "gender" = 'FEMALE' THEN 1 ELSE 0 END) as "femaleCount",
+    SUM(CASE WHEN "gender" = 'OTHERS' THEN 1 ELSE 0 END) as "othersCount",
+    SUM(CASE WHEN "gender" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownCount",
+    SUM(CASE WHEN "bankStatus" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownBankCount",
+    SUM(CASE WHEN "bankStatus" = 'UNBANKED' THEN 1 ELSE 0 END) as "unbankedCount",
+    SUM(CASE WHEN "bankStatus" = 'BANKED' THEN 1 ELSE 0 END) as "bankedCount",
+    SUM(CASE WHEN "bankStatus" = 'UNDERBANKED' THEN 1 ELSE 0 END) as "underbankedCount",
+    SUM(CASE WHEN "phoneStatus" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownPhoneCount",
+    SUM(CASE WHEN "phoneStatus" = 'NO_PHONE' THEN 1 ELSE 0 END) as "noPhoneCount",
+    SUM(CASE WHEN "phoneStatus" = 'FEATURE_PHONE' THEN 1 ELSE 0 END) as "featurePhoneCount",
+    SUM(CASE WHEN "phoneStatus" = 'SMART_PHONE' THEN 1 ELSE 0 END) as "smartPhoneCount",
+    SUM(CASE WHEN "internetStatus" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownInternetCount",
+    SUM(CASE WHEN "internetStatus" = 'NO_INTERNET' THEN 1 ELSE  0 END) as "noInternetCount",
+    SUM(CASE WHEN "internetStatus" = 'PHONE_INTERNET' THEN 1 ELSE 0 END) as "phoneInternetCount",
+    SUM(CASE WHEN "internetStatus" = 'HOME_INTERNET' THEN 1 ELSE 0 END) as "homeInternetCount"
+  FROM "Beneficiary"
+`;
+
+    totalCount = stringifyWithBigInt(totalCount);
+
+    const gender = {
+      MALE: totalCount[0].maleCount,
+      FEMALE: totalCount[0].femaleCount,
+      OTHERS: totalCount[0].othersCount,
+      UNKNOWN: totalCount[0].unknownCount,
+    };
+
+    const bankStatus = {
+      UNKNOWN: totalCount[0].unknownBankCount,
+      UNBANKED: totalCount[0].unbankedCount,
+      BANKED: totalCount[0].bankedCount,
+      UNDERBANKED: totalCount[0].underbankedCount,
+    };
+
+    const phoneStatus = {
+      UNKNOWN: totalCount[0].unknownPhoneCount,
+      NO_PHONE: totalCount[0].noPhoneCount,
+      FEATURE_PHONE: totalCount[0].featurePhoneCount,
+      SMART_PHONE: totalCount[0].smartPhoneCount,
+    };
+
+    const internetStatus = {
+      UNKNOWN: totalCount[0].unknownInternetCount,
+      NO_INTERNET: totalCount[0].noInternetCount,
+      PHONE_INTERNET: totalCount[0].phoneInternetCount,
+      HOME_INTERNET: totalCount[0].homeInternetCount,
+    };
+
+    const groups = {
+      gender,
+      internetStatus,
+      phoneStatus,
+      bankStatus,
+    };
+
+    return groups;
+  }
+
+  async updateStatus(uuid: string, updateDto: UpdateBeneficiaryStatusDto) {
+    return this.prisma.beneficiary.update({
+      where: {
+        uuid,
+      },
+      data: {
+        isApproved: updateDto.isApproved,
       },
     });
   }

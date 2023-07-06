@@ -11,10 +11,14 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { BeneficiaryService } from './beneficiary.service';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
-import { ListBeneficiaryDto } from './dto/list-beneficiary.dto';
 import {
-  UpdateBeneficiaryBalanceDto,
+  ListBeneficiaryDto,
+  ListBeneficiaryTransactionsDto,
+} from './dto/list-beneficiary.dto';
+import {
+  AssignBeneficiaryToProjectDto,
   UpdateBeneficiaryDto,
+  UpdateBeneficiaryStatusDto,
 } from './dto/update-beneficiary.dto';
 
 @Controller('beneficiary')
@@ -32,29 +36,59 @@ export class BeneficiaryController {
     return this.beneficiaryService.findAll(query);
   }
 
-  @Get(':walletAddress')
-  findOne(@Param('walletAddress') walletAddress: string) {
-    return this.beneficiaryService.findOne(walletAddress);
+  @Get('geo')
+  getGeoLocation() {
+    console.log('here');
+    return this.beneficiaryService.getGeoLocation();
   }
 
-  @Patch(':id')
+  @Get('stats')
+  getStats() {
+    return this.beneficiaryService.getStats();
+  }
+
+  @Get(':uuid')
+  findOne(@Param('uuid') uuid: string) {
+    return this.beneficiaryService.findOne(uuid);
+  }
+
+  @Patch(':uuid')
   update(
-    @Param('id') id: string,
+    @Param('uuid') uuid: string,
     @Body() updateBeneficiaryDto: UpdateBeneficiaryDto,
   ) {
-    return this.beneficiaryService.update(+id, updateBeneficiaryDto);
+    return this.beneficiaryService.update(uuid, updateBeneficiaryDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.beneficiaryService.remove(+id);
+  @Delete(':uuid')
+  remove(@Param('uuid') uuid: string) {
+    return this.beneficiaryService.remove(uuid);
   }
 
-  @Get(':walletAddres/overrider-balance')
-  overrideBalance(
-    @Param('walletAddress') walletAddress: string,
-    @Body() updatedata: UpdateBeneficiaryBalanceDto,
+  @Get(':uuid/transactions')
+  getTransactions(
+    @Param('uuid') uuid: string,
+    @Query() query: ListBeneficiaryTransactionsDto,
   ) {
-    return this.beneficiaryService.overrideBalance(walletAddress, updatedata);
+    return this.beneficiaryService.getTransactions(uuid, query);
+  }
+
+  @Post(':uuid/projects')
+  assignProject(
+    @Param('uuid') uuid: string,
+    @Body() updateProjectData: AssignBeneficiaryToProjectDto,
+  ) {
+    return this.beneficiaryService.assignProject(
+      uuid,
+      +updateProjectData.projectId,
+    );
+  }
+
+  @Patch(':uuid/status')
+  updateStatus(
+    @Param('uuid') uuid: string,
+    @Body() update: UpdateBeneficiaryStatusDto,
+  ) {
+    return this.beneficiaryService.updateStatus(uuid, update);
   }
 }

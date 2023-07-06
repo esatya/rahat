@@ -1,21 +1,21 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { CreateBeneficiaryDto } from './create-beneficiary.dto';
 
 export class UpdateBeneficiaryDto extends PartialType(CreateBeneficiaryDto) {}
 
-export class UpdateBeneficiaryBalanceDto {
+export class UpdateBeneficiaryStatusDto {
   @ApiProperty({
-    example: '2',
+    example: true,
   })
-  @IsOptional()
-  @IsString()
-  tokenAssigned?: string;
+  @IsBoolean()
+  isApproved: boolean;
+}
 
+export class AssignBeneficiaryToProjectDto {
   @ApiProperty({
     example: '2',
   })
-  @IsOptional()
   @IsString()
-  tokensClaimed?: string;
+  projectId: string;
 }

@@ -22,10 +22,31 @@ generator docs {
 }
 
 enum Gender {
-  Male
-  Female
-  Others
-  Unknown
+  MALE
+  FEMALE
+  OTHERS
+  UNKNOWN
+}
+
+enum BANK_STATUS {
+  UNKNOWN
+  UNBANKED
+  BANKED
+  UNDERBANKED
+}
+
+enum PHONE_STATUS {
+  UNKNOWN
+  NO_PHONE
+  FEATURE_PHONE
+  SMART_PHONE
+}
+
+enum INTERNET_STATUS {
+  UNKNOWN
+  NO_INTERNET
+  PHONE_INTERNET
+  HOME_INTERNET
 }
 
 model AppSettings {
@@ -37,12 +58,13 @@ model AppSettings {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   name          String
-  email         String   @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  walletAddress Bytes?   @unique
+  email         String    @unique
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  walletAddress Bytes?    @unique
   profileImage  String?
 
   projects Project[] @relation("UserProjects")
@@ -54,7 +76,7 @@ model Project {
   startDate       DateTime
   endDate         DateTime
   budget          Int       @default(0)
-  disbursed       Int       @default(0) 
+  disbursed       Int       @default(0)
   extras          Json?
   location        String?
   projectType     String?
@@ -63,8 +85,8 @@ model Project {
   contractAddress Bytes?    @unique
   deletedAt       DateTime?
   isApproved      Boolean   @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   owner         User[]        @relation("UserProjects")
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
@@ -72,22 +94,29 @@ model Project {
 }
 
 model Beneficiary {
-  id             Int       @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
+  uuid           String          @unique @default(uuid())
   name           String
-  gender         Gender    @default(Unknown)
-  walletAddress  Bytes?    @unique
+  gender         Gender          @default(UNKNOWN)
+  walletAddress  Bytes?          @unique
   phone          String?
   email          String?
+  dob            DateTime?
+  isApproved     Boolean
   address        Json
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  tokensAssigned Int             @default(0)
+  tokensClaimed  Int             @default(0)
+  bankStatus     BANK_STATUS     @default(UNKNOWN)
+  phoneStatus    PHONE_STATUS    @default(UNKNOWN)
+  internetStatus INTERNET_STATUS @default(UNKNOWN)
+  latitude       Float
+  longitude      Float
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   deletedAt      DateTime?
-  tokensAssigned Int       @default(0)
-  tokensClaimed  Int       @default(0)
-  isActive       Boolean   @default(false)
-  extra          Json?
 
-  projects Project[] @relation("BeneficiaryProjects")
+  projects     Project[]     @relation("BeneficiaryProjects")
+  transactions Transaction[] @relation("BeneficiaryTransactions")
 }
 
 model Distributor {
@@ -106,4 +135,11 @@ model Distributor {
   tokenDisbursed Int       @default(0)
 
   projects Project[] @relation("ProjectDistributors")
+}
+
+model Transaction {
+  id     Int    @id @default(autoincrement())
+  txHash Bytes? @unique
+
+  beneficiary Beneficiary[] @relation("BeneficiaryTransactions")
 }

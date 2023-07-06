@@ -8,18 +8,19 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
-import {
-  CheckAbilities,
-  ReadUserAbility,
-} from '../ability/abilities.decorator';
+import { ApiTags } from '@nestjs/swagger';
 import { AbilityFactory, Action } from '../ability/ability.factory';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ListUserDto } from './dto/list-user.dto';
+import { RequestUserOtpDto, VerifyUserOtpDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
 @Controller('users')
+@ApiTags('users')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -42,27 +43,37 @@ export class UserController {
   }
 
   @Get()
-  @CheckAbilities(new ReadUserAbility())
-  findAll() {
-    return this.userService.findAll();
+  // @CheckAbilities(new ReadUserAbility())
+  findAll(@Query() query: ListUserDto) {
+    return this.userService.findAll(query);
   }
 
   @Get(':id')
-  @CheckAbilities(new ReadUserAbility())
+  // @CheckAbilities(new ReadUserAbility())
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
   @Patch(':id')
-  @CheckAbilities({ action: Action.UPDATE, subject: User })
+  // @CheckAbilities({ action: Action.UPDATE, subject: User })
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     // Pull user data from DB before executing the CASL check
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  @CheckAbilities({ action: Action.DELETE, subject: User })
+  // @CheckAbilities({ action: Action.DELETE, subject: User })
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  @Post('login/otp')
+  requestOtp(@Body() requestOtpDto: RequestUserOtpDto) {
+    return this.userService.requestOtp(requestOtpDto);
+  }
+
+  @Post('login/verify-otp')
+  verifyOtp(@Body() verifyOtpDto: VerifyUserOtpDto) {
+    return this.userService.verifyOtp(verifyOtpDto);
   }
 }

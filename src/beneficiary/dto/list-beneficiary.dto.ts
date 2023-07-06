@@ -53,3 +53,22 @@ export class ListBeneficiaryDto {
   @IsOptional()
   isTokenAssigned?: BeneficiaryFilter['isTokenAssigned'];
 }
+
+export class ListBeneficiaryTransactionsDto {
+  @ApiProperty({
+    description: 'Page to load',
+    example: '1',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  page?: string;
+
+  @ApiProperty({
+    example: '10',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  perPage?: string;
+}

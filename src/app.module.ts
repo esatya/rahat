@@ -11,6 +11,7 @@ import { ProjectModule } from './project/project.module';
 import { UserModule } from './user/user.module';
 import { DistributorModule } from './distributor/distributor.module';
 import { ReportsModule } from './reports/reports.module';
+import { AuthsModule } from './auths/auths.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { ReportsModule } from './reports/reports.module';
     BeneficiaryModule,
     DistributorModule,
     ReportsModule,
+    AuthsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AbilitiesGuard }],
