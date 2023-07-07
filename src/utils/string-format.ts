@@ -6,6 +6,7 @@ export function replaceWith(str: string | any, replaceWith: string): any {
 }
 
 export function hexStringToBuffer(str: string): Buffer {
+  if (!str) return;
   return Buffer.from(str.substring(2), 'hex');
 }
 

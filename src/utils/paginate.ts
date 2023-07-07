@@ -46,4 +46,4 @@ const paginator = (defaultOptions: PaginateOptions): PaginateFunction => {
   };
 };
 
-export const paginate: PaginateFunction = paginator({ perPage: 10 });
+export const paginate: PaginateFunction = paginator({ perPage: 20 });
