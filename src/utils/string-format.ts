@@ -10,6 +10,11 @@ export function hexStringToBuffer(str: string): Buffer {
   return Buffer.from(str.substring(2), 'hex');
 }
 
+export function bufferToHexString(buffer: Buffer): string {
+  if (!buffer) return;
+  return `0x${buffer.toString('hex')}`;
+}
+
 export const stringifyWithBigInt = (obj: any): any => {
   const jsonString = JSON.stringify(obj, (key, value) => {
     if (typeof value === 'bigint') {
