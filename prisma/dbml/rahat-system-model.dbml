@@ -62,17 +62,15 @@ Table Beneficiary {
   address Json [not null]
   tokensAssigned Int [not null, default: 0]
   tokensClaimed Int [not null, default: 0]
-  isActive Boolean [not null, default: false]
-  bankStatus BANK_STATUS [not null, default: 'UNKNOWN']
-  phoneStatus PHONE_STATUS [not null, default: 'UNKNOWN']
-  internetStatus INTERNET_STATUS [not null, default: 'UNKNOWN']
+  bankStatus BankStatus [not null, default: 'UNKNOWN']
+  phoneStatus PhoneOwnership [not null, default: 'UNKNOWN']
+  internetStatus InternetAccess [not null, default: 'UNKNOWN']
   latitude Float [not null]
   longitude Float [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
   projects Project [not null]
-  transactions Transaction [not null]
 }
 
 Table Distributor {
@@ -92,36 +90,54 @@ Table Distributor {
   projects Project [not null]
 }
 
-Table Transaction {
+Table tbl_transactions {
   id Int [pk, increment]
-  txHash Bytes [unique]
-  beneficiary Beneficiary [not null]
+  txHash Bytes [unique, not null]
+  txStatus TxStatus [not null, default: 'NEW']
+  contractAddress String
+  timestamp Int
+  method String
+  methodParams Json[] [not null]
+  blockNumber Int
+  from String
+  to String
+  value String
+  remarks String
+  events Json [not null, default: '{}']
 }
 
 Enum Gender {
   MALE
   FEMALE
-  OTHERS
+  OTHER
   UNKNOWN
 }
 
-Enum BANK_STATUS {
+Enum BankStatus {
   UNKNOWN
   UNBANKED
-  BANKED
   UNDERBANKED
+  BANKED
 }
 
-Enum PHONE_STATUS {
+Enum PhoneOwnership {
   UNKNOWN
   NO_PHONE
-  FEATURE_PHONE
-  SMART_PHONE
+  FEATURE
+  SMART
 }
 
-Enum INTERNET_STATUS {
+Enum InternetAccess {
   UNKNOWN
   NO_INTERNET
   PHONE_INTERNET
   HOME_INTERNET
+}
+
+Enum TxStatus {
+  NEW
+  PENDING
+  SUCCESS
+  FAIL
+  ERROR
 }

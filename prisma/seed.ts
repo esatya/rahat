@@ -1,8 +1,8 @@
 import {
-  BANK_STATUS,
+  BankStatus,
   Gender,
-  INTERNET_STATUS,
-  PHONE_STATUS,
+  InternetAccess,
+  PhoneOwnership,
   PrismaClient,
   TxStatus,
 } from '@prisma/client';
@@ -90,9 +90,9 @@ async function seed() {
       isApproved: true,
       latitude: 20323.2321,
       longitude: 293213.42,
-      bankStatus: BANK_STATUS.BANKED,
-      internetStatus: INTERNET_STATUS.HOME_INTERNET,
-      phoneStatus: PHONE_STATUS.SMART_PHONE,
+      bankStatus: BankStatus.BANKED,
+      internetStatus: InternetAccess.HOME_INTERNET,
+      phoneStatus: PhoneOwnership.SMART,
       address: {
         location: 'ktm',
       },
@@ -112,9 +112,9 @@ async function seed() {
       isApproved: true,
       latitude: 20323.2321,
       longitude: 293213.42,
-      bankStatus: BANK_STATUS.UNBANKED,
-      internetStatus: INTERNET_STATUS.PHONE_INTERNET,
-      phoneStatus: PHONE_STATUS.FEATURE_PHONE,
+      bankStatus: BankStatus.UNBANKED,
+      internetStatus: InternetAccess.PHONE_INTERNET,
+      phoneStatus: PhoneOwnership.FEATURE,
       address: {
         location: 'ktm',
       },
