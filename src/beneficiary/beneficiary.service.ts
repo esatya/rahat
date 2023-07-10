@@ -165,12 +165,6 @@ export class BeneficiaryService {
 
     const select: Prisma.BeneficiarySelect = {
       uuid: true,
-      transactions: true,
-      _count: {
-        select: {
-          transactions: true,
-        },
-      },
     };
 
     return paginate(
