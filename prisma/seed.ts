@@ -4,6 +4,7 @@ import {
   INTERNET_STATUS,
   PHONE_STATUS,
   PrismaClient,
+  TxStatus,
 } from '@prisma/client';
 import { hexStringToBuffer } from '../src/utils/string-format';
 
@@ -154,33 +155,12 @@ async function seed() {
     },
   });
 
-  const transactions1 = [...Array(20)].map((_, index) => ({
+  const transactions1 = [...Array(2)].map((_, index) => ({
     txHash: hexStringToBuffer(`0x${index}23182u3y12${index}`),
-    beneficiary: {
-      connect: {
-        id: beneficiary1.id,
-      },
-    },
+    txStatus: TxStatus.NEW,
   }));
 
   for (const trans of transactions1) {
-    await prisma.transaction.create({
-      data: {
-        ...trans,
-      },
-    });
-  }
-
-  const transactions2 = [...Array(20)].map((_, index) => ({
-    txHash: hexStringToBuffer(`0x${index}8437812gh323182u3y12${index}`),
-    beneficiary: {
-      connect: {
-        id: beneficiary2.id,
-      },
-    },
-  }));
-
-  for (const trans of transactions2) {
     await prisma.transaction.create({
       data: {
         ...trans,
@@ -198,7 +178,6 @@ async function seed() {
     distributor1,
     distributor2,
     transactions1,
-    transactions2,
   });
 }
 

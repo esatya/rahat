@@ -49,6 +49,14 @@ enum INTERNET_STATUS {
   HOME_INTERNET
 }
 
+enum TxStatus {
+  NEW
+  PENDING
+  SUCCESS
+  FAIL
+  ERROR
+}
+
 model AppSettings {
   id        Int      @id @default(autoincrement())
   name      String
@@ -115,8 +123,7 @@ model Beneficiary {
   updatedAt      DateTime        @updatedAt
   deletedAt      DateTime?
 
-  projects     Project[]     @relation("BeneficiaryProjects")
-  transactions Transaction[] @relation("BeneficiaryTransactions")
+  projects Project[] @relation("BeneficiaryProjects")
 }
 
 model Distributor {
@@ -138,8 +145,19 @@ model Distributor {
 }
 
 model Transaction {
-  id     Int    @id @default(autoincrement())
-  txHash Bytes? @unique
+  id              Int      @id @default(autoincrement())
+  txHash          Bytes    @unique
+  txStatus        TxStatus @default(NEW)
+  contractAddress String?
+  timestamp       Int?
+  method          String?
+  methodParams    Json[]
+  blockNumber     Int?
+  from            String?
+  to              String?
+  value           String?
+  remarks         String?
+  events          Json     @default("{}")
 
-  beneficiary Beneficiary[] @relation("BeneficiaryTransactions")
+  @@map(name: "tbl_transactions")
 }
