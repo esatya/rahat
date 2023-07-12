@@ -1,9 +1,10 @@
 import {
-  BANK_STATUS,
+  BankStatus,
   Gender,
-  INTERNET_STATUS,
-  PHONE_STATUS,
+  InternetAccess,
+  PhoneOwnership,
   PrismaClient,
+  TxStatus,
 } from '@prisma/client';
 import { hexStringToBuffer } from '../src/utils/string-format';
 
@@ -89,9 +90,9 @@ async function seed() {
       isApproved: true,
       latitude: 20323.2321,
       longitude: 293213.42,
-      bankStatus: BANK_STATUS.BANKED,
-      internetStatus: INTERNET_STATUS.HOME_INTERNET,
-      phoneStatus: PHONE_STATUS.SMART_PHONE,
+      bankStatus: BankStatus.BANKED,
+      internetStatus: InternetAccess.HOME_INTERNET,
+      phoneStatus: PhoneOwnership.SMART,
       address: {
         location: 'ktm',
       },
@@ -111,9 +112,9 @@ async function seed() {
       isApproved: true,
       latitude: 20323.2321,
       longitude: 293213.42,
-      bankStatus: BANK_STATUS.UNBANKED,
-      internetStatus: INTERNET_STATUS.PHONE_INTERNET,
-      phoneStatus: PHONE_STATUS.FEATURE_PHONE,
+      bankStatus: BankStatus.UNBANKED,
+      internetStatus: InternetAccess.PHONE_INTERNET,
+      phoneStatus: PhoneOwnership.FEATURE,
       address: {
         location: 'ktm',
       },
@@ -154,33 +155,12 @@ async function seed() {
     },
   });
 
-  const transactions1 = [...Array(20)].map((_, index) => ({
+  const transactions1 = [...Array(2)].map((_, index) => ({
     txHash: hexStringToBuffer(`0x${index}23182u3y12${index}`),
-    beneficiary: {
-      connect: {
-        id: beneficiary1.id,
-      },
-    },
+    txStatus: TxStatus.NEW,
   }));
 
   for (const trans of transactions1) {
-    await prisma.transaction.create({
-      data: {
-        ...trans,
-      },
-    });
-  }
-
-  const transactions2 = [...Array(20)].map((_, index) => ({
-    txHash: hexStringToBuffer(`0x${index}8437812gh323182u3y12${index}`),
-    beneficiary: {
-      connect: {
-        id: beneficiary2.id,
-      },
-    },
-  }));
-
-  for (const trans of transactions2) {
     await prisma.transaction.create({
       data: {
         ...trans,
@@ -198,7 +178,6 @@ async function seed() {
     distributor1,
     distributor2,
     transactions1,
-    transactions2,
   });
 }
 

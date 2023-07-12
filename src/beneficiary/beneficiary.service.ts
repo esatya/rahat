@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@utils/paginate';
-import { hexStringToBuffer, stringifyWithBigInt } from '@utils/string-format';
+import {
+  bufferToHexString,
+  hexStringToBuffer,
+  stringifyWithBigInt,
+} from '@utils/string-format';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import {
@@ -66,12 +70,6 @@ export class BeneficiaryService {
       };
     }
 
-    if (rest.isActive) {
-      where.isActive = {
-        equals: rest.isActive,
-      };
-    }
-
     if (rest.isTokenAssigned) {
       where.tokensAssigned = {
         gt: 0,
@@ -84,12 +82,20 @@ export class BeneficiaryService {
       {
         page,
         perPage,
+        transformRows: (rows) => {
+          return rows.map((row) => {
+            return {
+              ...row,
+              walletAddress: bufferToHexString(row.walletAddress),
+            };
+          });
+        },
       },
     );
   }
 
-  findOne(uuid: string) {
-    return this.prisma.beneficiary.findFirstOrThrow({
+  async findOne(uuid: string) {
+    const result = await this.prisma.beneficiary.findFirstOrThrow({
       where: {
         uuid,
         deletedAt: null,
@@ -100,9 +106,26 @@ export class BeneficiaryService {
             projects: true,
           },
         },
-        projects: true,
+        projects: {
+          select: {
+            name: true,
+            projectType: true,
+            contractAddress: true,
+          },
+        },
       },
     });
+
+    return {
+      ...result,
+      walletAddress: bufferToHexString(result.walletAddress),
+      projects: result.projects.map((project) => {
+        return {
+          ...project,
+          contractAddress: bufferToHexString(project.contractAddress),
+        };
+      }),
+    };
   }
 
   update(uuid: string, updateBeneficiaryDto: UpdateBeneficiaryDto) {
@@ -140,12 +163,6 @@ export class BeneficiaryService {
 
     const select: Prisma.BeneficiarySelect = {
       uuid: true,
-      transactions: true,
-      _count: {
-        select: {
-          transactions: true,
-        },
-      },
     };
 
     return paginate(

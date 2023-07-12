@@ -1,14 +1,17 @@
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHERS', 'UNKNOWN');
+CREATE TYPE "Gender" AS ENUM ('MALE', 'FEMALE', 'OTHER', 'UNKNOWN');
 
 -- CreateEnum
-CREATE TYPE "BANK_STATUS" AS ENUM ('UNKNOWN', 'UNBANKED', 'BANKED', 'UNDERBANKED');
+CREATE TYPE "BankStatus" AS ENUM ('UNKNOWN', 'UNBANKED', 'UNDERBANKED', 'BANKED');
 
 -- CreateEnum
-CREATE TYPE "PHONE_STATUS" AS ENUM ('UNKNOWN', 'NO_PHONE', 'FEATURE_PHONE', 'SMART_PHONE');
+CREATE TYPE "PhoneOwnership" AS ENUM ('UNKNOWN', 'NO_PHONE', 'FEATURE', 'SMART');
 
 -- CreateEnum
-CREATE TYPE "INTERNET_STATUS" AS ENUM ('UNKNOWN', 'NO_INTERNET', 'PHONE_INTERNET', 'HONE_INTERNET');
+CREATE TYPE "InternetAccess" AS ENUM ('UNKNOWN', 'NO_INTERNET', 'PHONE_INTERNET', 'HOME_INTERNET');
+
+-- CreateEnum
+CREATE TYPE "TxStatus" AS ENUM ('NEW', 'PENDING', 'SUCCESS', 'FAIL', 'ERROR');
 
 -- CreateTable
 CREATE TABLE "AppSettings" (
@@ -60,6 +63,7 @@ CREATE TABLE "Project" (
 -- CreateTable
 CREATE TABLE "Beneficiary" (
     "id" SERIAL NOT NULL,
+    "uuid" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "gender" "Gender" NOT NULL DEFAULT 'UNKNOWN',
     "walletAddress" BYTEA,
@@ -70,10 +74,9 @@ CREATE TABLE "Beneficiary" (
     "address" JSONB NOT NULL,
     "tokensAssigned" INTEGER NOT NULL DEFAULT 0,
     "tokensClaimed" INTEGER NOT NULL DEFAULT 0,
-    "isActive" BOOLEAN NOT NULL DEFAULT false,
-    "bankStatus" "BANK_STATUS" NOT NULL DEFAULT 'UNKNOWN',
-    "phoneStatus" "PHONE_STATUS" NOT NULL DEFAULT 'UNKNOWN',
-    "internetStatus" "INTERNET_STATUS" NOT NULL DEFAULT 'UNKNOWN',
+    "bankStatus" "BankStatus" NOT NULL DEFAULT 'UNKNOWN',
+    "phoneStatus" "PhoneOwnership" NOT NULL DEFAULT 'UNKNOWN',
+    "internetStatus" "InternetAccess" NOT NULL DEFAULT 'UNKNOWN',
     "latitude" DOUBLE PRECISION NOT NULL,
     "longitude" DOUBLE PRECISION NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -100,6 +103,25 @@ CREATE TABLE "Distributor" (
     "tokenDisbursed" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "Distributor_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tbl_transactions" (
+    "id" SERIAL NOT NULL,
+    "txHash" BYTEA NOT NULL,
+    "txStatus" "TxStatus" NOT NULL DEFAULT 'NEW',
+    "contractAddress" TEXT,
+    "timestamp" INTEGER,
+    "method" TEXT,
+    "methodParams" JSONB[],
+    "blockNumber" INTEGER,
+    "from" TEXT,
+    "to" TEXT,
+    "value" TEXT,
+    "remarks" TEXT,
+    "events" JSONB NOT NULL DEFAULT '{}',
+
+    CONSTRAINT "tbl_transactions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -130,10 +152,16 @@ CREATE UNIQUE INDEX "User_walletAddress_key" ON "User"("walletAddress");
 CREATE UNIQUE INDEX "Project_contractAddress_key" ON "Project"("contractAddress");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Beneficiary_uuid_key" ON "Beneficiary"("uuid");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Beneficiary_walletAddress_key" ON "Beneficiary"("walletAddress");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Distributor_walletAddress_key" ON "Distributor"("walletAddress");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tbl_transactions_txHash_key" ON "tbl_transactions"("txHash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserProjects_AB_unique" ON "_UserProjects"("A", "B");

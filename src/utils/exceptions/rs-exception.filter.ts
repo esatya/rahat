@@ -99,7 +99,9 @@ export class RsExceptionFilter implements PipeTransform<any>, ExceptionFilter {
     } else if (exception instanceof Prisma?.PrismaClientKnownRequestError) {
       responseData.name = exception.code;
       //responseData.meta = exception.meta;
-      responseData.message = PrimsaFriendlyErrorMessage(exception);
+      const prismaError = PrimsaFriendlyErrorMessage(exception);
+      responseData.message = prismaError.message;
+      responseData.statusCode = prismaError.httpCode;
       responseData.group = 'DBERROR';
     } else if (exception instanceof Error) {
       responseData.name = exception.name;

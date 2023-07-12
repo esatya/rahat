@@ -24,29 +24,37 @@ generator docs {
 enum Gender {
   MALE
   FEMALE
-  OTHERS
+  OTHER
   UNKNOWN
 }
 
-enum BANK_STATUS {
+enum BankStatus {
   UNKNOWN
   UNBANKED
-  BANKED
   UNDERBANKED
+  BANKED
 }
 
-enum PHONE_STATUS {
+enum PhoneOwnership {
   UNKNOWN
   NO_PHONE
-  FEATURE_PHONE
-  SMART_PHONE
+  FEATURE
+  SMART
 }
 
-enum INTERNET_STATUS {
+enum InternetAccess {
   UNKNOWN
   NO_INTERNET
   PHONE_INTERNET
   HOME_INTERNET
+}
+
+enum TxStatus {
+  NEW
+  PENDING
+  SUCCESS
+  FAIL
+  ERROR
 }
 
 model AppSettings {
@@ -94,29 +102,28 @@ model Project {
 }
 
 model Beneficiary {
-  id             Int             @id @default(autoincrement())
-  uuid           String          @unique @default(uuid())
+  id             Int            @id @default(autoincrement())
+  uuid           String         @unique @default(uuid())
   name           String
-  gender         Gender          @default(UNKNOWN)
-  walletAddress  Bytes?          @unique
+  gender         Gender         @default(UNKNOWN)
+  walletAddress  Bytes?         @unique
   phone          String?
   email          String?
   dob            DateTime?
   isApproved     Boolean
   address        Json
-  tokensAssigned Int             @default(0)
-  tokensClaimed  Int             @default(0)
-  bankStatus     BANK_STATUS     @default(UNKNOWN)
-  phoneStatus    PHONE_STATUS    @default(UNKNOWN)
-  internetStatus INTERNET_STATUS @default(UNKNOWN)
+  tokensAssigned Int            @default(0)
+  tokensClaimed  Int            @default(0)
+  bankStatus     BankStatus     @default(UNKNOWN)
+  phoneStatus    PhoneOwnership @default(UNKNOWN)
+  internetStatus InternetAccess @default(UNKNOWN)
   latitude       Float
   longitude      Float
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   deletedAt      DateTime?
 
-  projects     Project[]     @relation("BeneficiaryProjects")
-  transactions Transaction[] @relation("BeneficiaryTransactions")
+  projects Project[] @relation("BeneficiaryProjects")
 }
 
 model Distributor {
@@ -138,8 +145,19 @@ model Distributor {
 }
 
 model Transaction {
-  id     Int    @id @default(autoincrement())
-  txHash Bytes? @unique
+  id              Int      @id @default(autoincrement())
+  txHash          Bytes    @unique
+  txStatus        TxStatus @default(NEW)
+  contractAddress String?
+  timestamp       Int?
+  method          String?
+  methodParams    Json[]
+  blockNumber     Int?
+  from            String?
+  to              String?
+  value           String?
+  remarks         String?
+  events          Json     @default("{}")
 
-  beneficiary Beneficiary[] @relation("BeneficiaryTransactions")
+  @@map(name: "tbl_transactions")
 }

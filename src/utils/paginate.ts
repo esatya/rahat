@@ -11,6 +11,7 @@ export interface PaginatedResult<T> {
 export type PaginateOptions = {
   page?: number | string;
   perPage?: number | string;
+  transformRows?: (rows: any[]) => any[];
 };
 export type PaginateFunction = <T, K>(
   model: any,
@@ -33,15 +34,23 @@ const paginator = (defaultOptions: PaginateOptions): PaginateFunction => {
       }),
     ]);
     const lastPage = Math.ceil(total / perPage);
+    const meta = {
+      total,
+      lastPage,
+      currentPage: page,
+      perPage,
+    };
+
+    if (options?.transformRows) {
+      return {
+        rows: options.transformRows(rows),
+        meta,
+      };
+    }
 
     return {
       rows,
-      meta: {
-        total,
-        lastPage,
-        currentPage: page,
-        perPage,
-      },
+      meta,
     };
   };
 };
