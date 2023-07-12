@@ -21,8 +21,8 @@ import {
   UpdateBeneficiaryStatusDto,
 } from './dto/update-beneficiary.dto';
 
-@Controller('beneficiary')
-@ApiTags('beneficiary')
+@Controller('beneficiaries')
+@ApiTags('beneficiaries')
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 
