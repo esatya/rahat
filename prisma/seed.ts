@@ -125,10 +125,10 @@ async function seed() {
     },
   });
 
-  // Create distributors
-  const distributor1 = await prisma.distributor.create({
+  // Create vendors
+  const vendor1 = await prisma.vendor.create({
     data: {
-      name: 'Distributor 1',
+      name: 'Vendor 1',
       walletAddress: hexStringToBuffer(
         '0x92b1DF3274DcF866621716D43bc18a5D67b78704',
       ),
@@ -140,9 +140,9 @@ async function seed() {
       },
     },
   });
-  const distributor2 = await prisma.distributor.create({
+  const vendor2 = await prisma.vendor.create({
     data: {
-      name: 'Distributor 2',
+      name: 'Vendor 2',
       walletAddress: hexStringToBuffer(
         '0xd1FD8ca9F40A3DD2aa212A6d89Ef5Ee68041D26c',
       ),
@@ -175,8 +175,8 @@ async function seed() {
     user2,
     beneficiary1,
     beneficiary2,
-    distributor1,
-    distributor2,
+    vendor1,
+    vendor2,
     transactions1,
   });
 }

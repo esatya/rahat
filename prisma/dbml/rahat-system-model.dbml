@@ -46,7 +46,7 @@ Table Project {
   updatedAt DateTime [not null]
   owner User [not null]
   beneficiaries Beneficiary [not null]
-  vendors Distributor [not null]
+  vendors Vendor [not null]
 }
 
 Table Beneficiary {
@@ -73,7 +73,7 @@ Table Beneficiary {
   projects Project [not null]
 }
 
-Table Distributor {
+Table Vendor {
   id Int [pk, increment]
   name String [not null]
   walletAddress Bytes [unique]

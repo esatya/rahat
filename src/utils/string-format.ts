@@ -16,7 +16,7 @@ export function bufferToHexString(buffer: Buffer): string {
 }
 
 export const stringifyWithBigInt = (obj: any): any => {
-  const jsonString = JSON.stringify(obj, (key, value) => {
+  const jsonString = JSON.stringify(obj, (_, value) => {
     if (typeof value === 'bigint') {
       return value.toString(); // Convert BigInt to string
     }
