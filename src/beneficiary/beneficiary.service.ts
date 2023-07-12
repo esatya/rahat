@@ -62,6 +62,11 @@ export class BeneficiaryService {
         },
       },
     };
+    const orderBy: Prisma.BeneficiaryOrderByWithRelationInput = {};
+
+    if (rest.order && rest.orderBy) {
+      orderBy[rest.orderBy] = rest.order;
+    }
 
     if (rest.name) {
       where.name = {
@@ -78,7 +83,7 @@ export class BeneficiaryService {
 
     return paginate(
       this.prisma.beneficiary,
-      { where, include },
+      { where, include, orderBy },
       {
         page,
         perPage,

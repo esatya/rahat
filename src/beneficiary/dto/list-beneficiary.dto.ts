@@ -6,6 +6,7 @@ interface BeneficiaryFilter {
   isActive?: boolean;
   isTokenAssigned?: boolean;
   orderBy?: string;
+  order?: 'asc' | 'desc';
 }
 
 export class ListBeneficiaryDto {
@@ -36,8 +37,16 @@ export class ListBeneficiaryDto {
   @ApiProperty({
     type: 'string',
     required: false,
+    example: 'name',
   })
   orderBy: BeneficiaryFilter['orderBy'];
+
+  @ApiProperty({
+    type: 'string',
+    required: false,
+    example: 'asc',
+  })
+  order: BeneficiaryFilter['order'];
 
   @ApiProperty({
     type: 'boolean',
