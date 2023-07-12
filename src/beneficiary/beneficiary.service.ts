@@ -24,7 +24,6 @@ export class BeneficiaryService {
 
   create(createBeneficiaryDto: CreateBeneficiaryDto) {
     let optional: { walletAddress: Buffer | null; project: any | null };
-    console.log('createBeneficiaryDto', createBeneficiaryDto);
 
     if (createBeneficiaryDto.walletAddress) {
       optional.walletAddress = hexStringToBuffer(
@@ -38,7 +37,6 @@ export class BeneficiaryService {
         },
       };
     }
-    console.log('optional', optional);
 
     return this.prisma.beneficiary.create({
       data: {
