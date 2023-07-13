@@ -54,5 +54,6 @@ export class CreateBeneficiaryDto {
     example: false,
   })
   @IsBoolean()
+  @IsOptional()
   isApproved: boolean;
 }
