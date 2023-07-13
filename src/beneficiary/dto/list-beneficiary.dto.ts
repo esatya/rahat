@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { BankStatus, InternetAccess, PhoneOwnership } from '@prisma/client';
 import { IsOptional, IsString } from 'class-validator';
 
 interface BeneficiaryFilter {
   name?: string;
-  isActive?: boolean;
-  isTokenAssigned?: boolean;
   orderBy?: string;
   order?: 'asc' | 'desc';
+  bankStatus: BankStatus;
+  phoneStatus: PhoneOwnership;
+  internetStatus: InternetAccess;
 }
 
 export class ListBeneficiaryDto {
@@ -49,18 +51,25 @@ export class ListBeneficiaryDto {
   order: BeneficiaryFilter['order'];
 
   @ApiProperty({
-    type: 'boolean',
+    type: PhoneOwnership,
     required: false,
   })
   @IsOptional()
-  isActive?: BeneficiaryFilter['isActive'];
+  phoneStatus?: BeneficiaryFilter['phoneStatus'];
 
   @ApiProperty({
-    type: 'boolean',
+    type: BankStatus,
     required: false,
   })
   @IsOptional()
-  isTokenAssigned?: BeneficiaryFilter['isTokenAssigned'];
+  bankStatus?: BeneficiaryFilter['bankStatus'];
+
+  @ApiProperty({
+    type: InternetAccess,
+    required: false,
+  })
+  @IsOptional()
+  internetStatus?: BeneficiaryFilter['internetStatus'];
 }
 
 export class ListBeneficiaryTransactionsDto {

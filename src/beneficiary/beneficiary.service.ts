@@ -75,11 +75,23 @@ export class BeneficiaryService {
       };
     }
 
-    if (rest.isTokenAssigned) {
-      where.tokensAssigned = {
-        gt: 0,
-      };
+    if (rest.bankStatus) {
+      where.bankStatus = rest.bankStatus;
     }
+
+    if (rest.internetStatus) {
+      where.internetStatus = rest.internetStatus;
+    }
+
+    if (rest.phoneStatus) {
+      where.phoneStatus = rest.phoneStatus;
+    }
+
+    // if (rest.isTokenAssigned) {
+    //   where.tokensAssigned = {
+    //     gt: 0,
+    //   };
+    // }
 
     return paginate(
       this.prisma.beneficiary,
