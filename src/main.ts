@@ -1,9 +1,10 @@
 // src/main.ts
 import { Logger, VersioningType } from '@nestjs/common';
 
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PORT } from 'src/config';
 import { AppModule } from './app.module';
 import { RsExceptionFilter } from './utils/exceptions/rs-exception.filter';
 
@@ -13,9 +14,12 @@ async function bootstrap() {
     AppModule,
     // new FastifyAdapter({ logger: false }), // turn on/off for production
   );
+  const configService = app.get(ConfigService);
+  const appPort = configService.get<number>('PORT', 3000);
 
   app.enableCors();
 
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalFilters(new RsExceptionFilter());
 
   app.setGlobalPrefix('api').enableVersioning({
@@ -24,30 +28,30 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('Rahat System')
-    .setDescription('Rahat System')
+    .setTitle('Rahat Platform')
+    .setDescription('Rahat Platform')
     .setVersion('0.1')
     .addBearerAuth(
       {
         scheme: 'Bearer',
         bearerFormat: 'Bearer',
         type: 'apiKey',
-        name: 'access_token',
+        name: 'rs-access-token',
         description: 'Enter access token here',
         in: 'header',
       },
-      'access_token',
+      'rs-access-token',
     ) // This name here is important for matching up with @ApiBearerAuth() in your controller!)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  console.log(`Listening on port ${PORT}...`);
-  console.log(`Swagger UI: http://localhost:${PORT}/api/docs`);
+  console.log(`Listening on port ${appPort}...`);
+  console.log(`Swagger UI: http://localhost:${appPort}/api/docs`);
 
-  logger.log(`Application listening on port ${PORT}`);
+  logger.log(`Application listening on port ${appPort}`);
 
-  await app.listen(PORT);
+  await app.listen(appPort);
 }
 bootstrap();

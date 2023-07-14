@@ -155,12 +155,34 @@ async function seed() {
     },
   });
 
-  const transactions1 = [...Array(2)].map((_, index) => ({
-    txHash: hexStringToBuffer(`0x${index}23182u3y12${index}`),
-    txStatus: TxStatus.NEW,
-  }));
+  const transactions = [
+    {
+      txHash: hexStringToBuffer(
+        `0x885fd64b56dd9a419728fc684a21abcfbcd88613b5af124a1a7d330e62c7b04b`,
+      ),
+      txStatus: TxStatus.NEW,
+    },
+    {
+      txHash: hexStringToBuffer(
+        `0xaa4c5412881f428ca73adeea35275d3bace9a863f66ba7be98936cfe1c498cb6`,
+      ),
+      txStatus: TxStatus.NEW,
+    },
+    {
+      txHash: hexStringToBuffer(
+        `0x461863b2107fc9988bc01834e4f375dcb612da55a72b13dbafef49763591be99`,
+      ),
+      txStatus: TxStatus.NEW,
+    },
+    {
+      txHash: hexStringToBuffer(
+        `0xdf80efead23a4080acddfe5a69fd067428812639ea445d7c2b113f22622992a8`,
+      ),
+      txStatus: TxStatus.NEW,
+    },
+  ];
 
-  for (const trans of transactions1) {
+  for (const trans of transactions) {
     await prisma.transaction.create({
       data: {
         ...trans,
@@ -177,7 +199,7 @@ async function seed() {
     beneficiary2,
     distributor1,
     distributor2,
-    transactions1,
+    transactions,
   });
 }
 

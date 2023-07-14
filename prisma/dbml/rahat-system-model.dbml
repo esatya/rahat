@@ -94,6 +94,7 @@ Table tbl_transactions {
   id Int [pk, increment]
   txHash Bytes [unique, not null]
   txStatus TxStatus [not null, default: 'NEW']
+  contractName String
   contractAddress String
   timestamp Int
   method String

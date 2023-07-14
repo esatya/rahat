@@ -110,6 +110,7 @@ CREATE TABLE "tbl_transactions" (
     "id" SERIAL NOT NULL,
     "txHash" BYTEA NOT NULL,
     "txStatus" "TxStatus" NOT NULL DEFAULT 'NEW',
+    "contractName" TEXT,
     "contractAddress" TEXT,
     "timestamp" INTEGER,
     "method" TEXT,

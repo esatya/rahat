@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@utils/paginate';
 import { hexStringToBuffer } from '@utils/string-format';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ListUserDto } from './dto/list-user.dto';
 import { RequestUserOtpDto, VerifyUserOtpDto } from './dto/login-user.dto';

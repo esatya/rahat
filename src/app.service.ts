@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateAppSettingDto, GetContractByNameDto } from './app-settings.dto';
-import { PrismaService } from './prisma/prisma.service';
 
 @Injectable()
 export class AppService {

@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -148,6 +149,7 @@ model Transaction {
   id              Int      @id @default(autoincrement())
   txHash          Bytes    @unique
   txStatus        TxStatus @default(NEW)
+  contractName    String?
   contractAddress String?
   timestamp       Int?
   method          String?

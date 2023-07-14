@@ -25,5 +25,8 @@
       "@utils/*": ["src/utils/*"],
       "@config": ["src/config.ts"]
     }
+  },
+  "watchOptions": {
+    "excludeFiles": ["play"]
   }
 }

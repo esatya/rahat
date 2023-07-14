@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@utils/paginate';
+import { PrismaWriteOperations } from '@utils/prisma/prisma.extensions';
 import {
   bufferToHexString,
   hexStringToBuffer,
   stringifyWithBigInt,
 } from '@utils/string-format';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from 'nestjs-prisma';
 import { CreateBeneficiaryDto } from './dto/create-beneficiary.dto';
 import {
   ListBeneficiaryDto,
@@ -19,11 +20,9 @@ import {
 
 @Injectable()
 export class BeneficiaryService {
-  constructor(private prisma: PrismaService) {
-    // prisma.$on<any>('query', (event: Prisma.QueryEvent) => {
-    //   console.log('Query: ' + event.query);
-    //   console.log('Duration: ' + event.duration + 'ms');
-    // });
+  prisma = null;
+  constructor(private _prisma: PrismaService) {
+    this.prisma = _prisma.$extends(PrismaWriteOperations);
   }
 
   create(createBeneficiaryDto: CreateBeneficiaryDto) {
