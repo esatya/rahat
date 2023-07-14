@@ -15,14 +15,15 @@ import {
   ListBeneficiaryDto,
   ListBeneficiaryTransactionsDto,
 } from './dto/list-beneficiary.dto';
+
 import {
   AssignBeneficiaryToProjectDto,
   UpdateBeneficiaryDto,
   UpdateBeneficiaryStatusDto,
 } from './dto/update-beneficiary.dto';
 
-@Controller('beneficiary')
-@ApiTags('beneficiary')
+@Controller('beneficiaries')
+@ApiTags('beneficiaries')
 export class BeneficiaryController {
   constructor(private readonly beneficiaryService: BeneficiaryService) {}
 

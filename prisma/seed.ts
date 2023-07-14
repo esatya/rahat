@@ -79,56 +79,69 @@ async function seed() {
     },
   });
 
-  // Create beneficiaries
-  const beneficiary1 = await prisma.beneficiary.create({
-    data: {
-      name: 'Beneficiary 1',
-      gender: Gender.MALE,
-      walletAddress: hexStringToBuffer(
-        '0x881595732642f4D73884b2b1ea39D20Af1D3e888',
-      ),
-      isApproved: true,
-      latitude: 20323.2321,
-      longitude: 293213.42,
-      bankStatus: BankStatus.BANKED,
-      internetStatus: InternetAccess.HOME_INTERNET,
-      phoneStatus: PhoneOwnership.SMART,
-      address: {
-        location: 'ktm',
-      },
+  const beneficiary1 = [...Array(25)].map((_, index) => ({
+    name: `Beneficiary ${index}`,
+    gender: Gender.MALE,
+    walletAddress: hexStringToBuffer(
+      `0x${index}881595732642f4D73884b2b1ea39D20Af1D3e888`,
+    ),
+    isApproved: true,
 
-      projects: {
-        connect: { id: proj1.id },
-      },
+    latitude: 27.713009571767344,
+    longitude: 85.38533286023136,
+    bankStatus: BankStatus.BANKED,
+    internetStatus: InternetAccess.HOME_INTERNET,
+    phoneStatus: PhoneOwnership.SMART,
+    address: {
+      location: 'ktm',
     },
-  });
-  const beneficiary2 = await prisma.beneficiary.create({
-    data: {
-      name: 'Beneficiary 2',
-      gender: Gender.FEMALE,
-      walletAddress: hexStringToBuffer(
-        '0xac0C1207D054a64FFc68830b0db2e17Fc1e93766',
-      ),
-      isApproved: true,
-      latitude: 20323.2321,
-      longitude: 293213.42,
-      bankStatus: BankStatus.UNBANKED,
-      internetStatus: InternetAccess.PHONE_INTERNET,
-      phoneStatus: PhoneOwnership.FEATURE,
-      address: {
-        location: 'ktm',
-      },
 
-      projects: {
-        connect: { id: proj2.id },
-      },
+    projects: {
+      connect: { id: proj1.id },
     },
-  });
+  }));
 
-  // Create distributors
-  const distributor1 = await prisma.distributor.create({
+  for (const bens of beneficiary1) {
+    await prisma.beneficiary.create({
+      data: {
+        ...bens,
+      },
+    });
+  }
+  const beneficiary2 = [...Array(20)].map((_, index) => ({
+    name: `Beneficiary ${index + 19}`,
+    gender: Gender.FEMALE,
+    walletAddress: hexStringToBuffer(
+      `0x${index * 5}81595732642f4D73884b2b1ea39D20Af1D3e888`,
+    ),
+    isApproved: false,
+
+    latitude: 27.713009571767344,
+    longitude: 85.38533286023136,
+    bankStatus: BankStatus.UNDERBANKED,
+    internetStatus: InternetAccess.PHONE_INTERNET,
+    phoneStatus: PhoneOwnership.FEATURE,
+    address: {
+      location: 'ktm',
+    },
+
+    projects: {
+      connect: { id: proj2.id },
+    },
+  }));
+
+  for (const bens of beneficiary2) {
+    await prisma.beneficiary.create({
+      data: {
+        ...bens,
+      },
+    });
+  }
+
+  // Create vendors
+  const vendor1 = await prisma.vendor.create({
     data: {
-      name: 'Distributor 1',
+      name: 'Vendor 1',
       walletAddress: hexStringToBuffer(
         '0x92b1DF3274DcF866621716D43bc18a5D67b78704',
       ),
@@ -140,9 +153,9 @@ async function seed() {
       },
     },
   });
-  const distributor2 = await prisma.distributor.create({
+  const vendor2 = await prisma.vendor.create({
     data: {
-      name: 'Distributor 2',
+      name: 'Vendor 2',
       walletAddress: hexStringToBuffer(
         '0xd1FD8ca9F40A3DD2aa212A6d89Ef5Ee68041D26c',
       ),
@@ -197,8 +210,8 @@ async function seed() {
     user2,
     beneficiary1,
     beneficiary2,
-    distributor1,
-    distributor2,
+    vendor1,
+    vendor2,
     transactions,
   });
 }

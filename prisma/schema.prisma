@@ -99,7 +99,7 @@ model Project {
 
   owner         User[]        @relation("UserProjects")
   beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
-  vendors       Distributor[] @relation("ProjectDistributors")
+  vendors       Vendor[] @relation("ProjectVendors")
 }
 
 model Beneficiary {
@@ -107,19 +107,19 @@ model Beneficiary {
   uuid           String         @unique @default(uuid())
   name           String
   gender         Gender         @default(UNKNOWN)
-  walletAddress  Bytes?         @unique
+  walletAddress  Bytes         @unique
   phone          String?
   email          String?
   dob            DateTime?
-  isApproved     Boolean
-  address        Json
-  tokensAssigned Int            @default(0)
-  tokensClaimed  Int            @default(0)
-  bankStatus     BankStatus     @default(UNKNOWN)
-  phoneStatus    PhoneOwnership @default(UNKNOWN)
-  internetStatus InternetAccess @default(UNKNOWN)
-  latitude       Float
-  longitude      Float
+  isApproved     Boolean?       @default(false)
+  address        Json?
+  tokensAssigned Int?            @default(0)
+  tokensClaimed  Int?            @default(0)
+  bankStatus     BankStatus?     @default(UNKNOWN)
+  phoneStatus    PhoneOwnership? @default(UNKNOWN)
+  internetStatus InternetAccess? @default(UNKNOWN)
+  latitude       Float?
+  longitude      Float?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   deletedAt      DateTime?
@@ -127,7 +127,7 @@ model Beneficiary {
   projects Project[] @relation("BeneficiaryProjects")
 }
 
-model Distributor {
+model Vendor {
   id             Int       @id @default(autoincrement())
   name           String
   walletAddress  Bytes?    @unique
@@ -142,7 +142,7 @@ model Distributor {
   tokenPending   Int       @default(0)
   tokenDisbursed Int       @default(0)
 
-  projects Project[] @relation("ProjectDistributors")
+  projects Project[] @relation("ProjectVendors")
 }
 
 model Transaction {

@@ -26,14 +26,8 @@ export class BeneficiaryService {
   }
 
   create(createBeneficiaryDto: CreateBeneficiaryDto) {
-    let optional: { walletAddress: Buffer | null; project: any | null };
-    console.log('createBeneficiaryDto', createBeneficiaryDto);
+    let optional: { project: any | null };
 
-    if (createBeneficiaryDto.walletAddress) {
-      optional.walletAddress = hexStringToBuffer(
-        createBeneficiaryDto.walletAddress,
-      );
-    }
     if (createBeneficiaryDto.projectId) {
       optional.project = {
         connect: {
@@ -41,12 +35,11 @@ export class BeneficiaryService {
         },
       };
     }
-    console.log('optional', optional);
 
     return this.prisma.beneficiary.create({
       data: {
         ...createBeneficiaryDto,
-        ...optional,
+        walletAddress: hexStringToBuffer(createBeneficiaryDto.walletAddress),
       },
     });
   }
@@ -63,6 +56,11 @@ export class BeneficiaryService {
         },
       },
     };
+    const orderBy: Prisma.BeneficiaryOrderByWithRelationInput = {};
+
+    if (rest.order && rest.orderBy) {
+      orderBy[rest.orderBy] = rest.order;
+    }
 
     if (rest.name) {
       where.name = {
@@ -71,15 +69,27 @@ export class BeneficiaryService {
       };
     }
 
-    if (rest.isTokenAssigned) {
-      where.tokensAssigned = {
-        gt: 0,
-      };
+    if (rest.bankStatus) {
+      where.bankStatus = rest.bankStatus;
     }
+
+    if (rest.internetStatus) {
+      where.internetStatus = rest.internetStatus;
+    }
+
+    if (rest.phoneStatus) {
+      where.phoneStatus = rest.phoneStatus;
+    }
+
+    // if (rest.isTokenAssigned) {
+    //   where.tokensAssigned = {
+    //     gt: 0,
+    //   };
+    // }
 
     return paginate(
       this.prisma.beneficiary,
-      { where, include },
+      { where, include, orderBy },
       {
         page,
         perPage,

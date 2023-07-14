@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Project } from '@prisma/client';
 import { paginate } from '@utils/paginate';
-import { hexStringToBuffer } from '@utils/string-format';
+import { bufferToHexString, hexStringToBuffer } from '@utils/string-format';
 import { PrismaService } from 'nestjs-prisma';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ListProjectDto } from './dto/list-project-dto';
@@ -11,11 +11,11 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
 
-  create(createProjectDto: CreateProjectDto) {
+  async create(createProjectDto: CreateProjectDto) {
     const { owner, contractAddress, ...rest } = createProjectDto;
 
     // contractAddress =
-    return this.prisma.project.create({
+    const created: Project = await this.prisma.project.create({
       data: {
         ...rest,
 
@@ -27,6 +27,11 @@ export class ProjectService {
         },
       },
     });
+
+    return {
+      ...created,
+      contractAddress: bufferToHexString(created.contractAddress),
+    };
   }
 
   findAll(query: ListProjectDto) {
@@ -64,17 +69,28 @@ export class ProjectService {
       {
         page,
         perPage,
+        transformRows: (rows) => {
+          return rows.map((r) => ({
+            ...r,
+            contractAddress: bufferToHexString(r.contractAddress),
+            owner: r.owner.map((o) => ({
+              ...o,
+              walletAddress: bufferToHexString(o.walletAddress),
+            })),
+          }));
+        },
       },
     );
   }
 
-  findOne(contractAddress: string) {
-    return this.prisma.project.findFirstOrThrow({
+  async findOne(contractAddress: string) {
+    const project = await this.prisma.project.findFirstOrThrow({
       where: {
         contractAddress: {
           equals: hexStringToBuffer(contractAddress),
         },
       },
+
       include: {
         _count: {
           select: {
@@ -85,6 +101,11 @@ export class ProjectService {
         },
       },
     });
+
+    return {
+      ...project,
+      contractAddress: bufferToHexString(project.contractAddress),
+    };
   }
 
   async update(id: number, updateProjectDto: UpdateProjectDto) {
@@ -117,20 +138,51 @@ export class ProjectService {
     });
   }
 
-  getBeneficiaries(address: string) {
-    return this.prisma.project.findUniqueOrThrow({
-      where: {
-        contractAddress: hexStringToBuffer(address),
-      },
-      select: {
-        _count: {
-          select: {
-            beneficiaries: true,
-          },
+  // TODO: implement search and pagination feature and create dto
+  async getBeneficiaries(address: string) {
+    const select: Prisma.BeneficiarySelect = {
+      uuid: true,
+      name: true,
+      bankStatus: true,
+      internetStatus: true,
+      phoneStatus: true,
+      gender: true,
+      latitude: true,
+      longitude: true,
+      walletAddress: true,
+      tokensAssigned: true,
+      tokensClaimed: true,
+      isApproved: true,
+    };
+
+    const orderBy: Prisma.BeneficiaryOrderByWithRelationInput = {
+      name: 'asc',
+    };
+
+    const where: Prisma.BeneficiaryWhereInput = {
+      deletedAt: null,
+      projects: {
+        some: {
+          contractAddress: hexStringToBuffer(address),
         },
-        contractAddress: true,
-        beneficiaries: true,
       },
-    });
+    };
+
+    return paginate(
+      this.prisma.beneficiary,
+      {
+        where,
+        select,
+        orderBy,
+      },
+      {
+        page: 1,
+        transformRows: (rows) =>
+          rows.map((r) => ({
+            ...r,
+            walletAddress: bufferToHexString(r.walletAddress),
+          })),
+      },
+    );
   }
 }

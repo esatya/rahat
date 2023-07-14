@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
-interface DistributorFilter {
+interface VendorFilter {
   name?: string;
   orderBy?: string;
 }
 
-export class ListDistributorDto {
+export class ListVendorDto {
   @ApiProperty({
     description: 'Page to load',
     example: '1',
@@ -29,11 +29,11 @@ export class ListDistributorDto {
     required: false,
   })
   @IsOptional()
-  name?: DistributorFilter['name'];
+  name?: VendorFilter['name'];
 
   @ApiProperty({
     type: 'string',
     required: false,
   })
-  orderBy: DistributorFilter['orderBy'];
+  orderBy: VendorFilter['orderBy'];
 }

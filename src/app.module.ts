@@ -9,11 +9,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthsModule } from './auths/auths.module';
 import { BeneficiaryModule } from './beneficiary/beneficiary.module';
-import { DistributorModule } from './distributor/distributor.module';
 import { ProjectModule } from './project/project.module';
 import { ReportsModule } from './reports/reports.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UserModule } from './user/user.module';
+import { VendorsModule } from './vendors/vendors.module';
 
 @Module({
   imports: [
@@ -22,7 +22,6 @@ import { UserModule } from './user/user.module';
     AbilityModule,
     ProjectModule,
     BeneficiaryModule,
-    DistributorModule,
     ReportsModule,
     AuthsModule,
     TransactionsModule,
@@ -37,6 +36,7 @@ import { UserModule } from './user/user.module';
       //   },
       // ],
     }),
+    VendorsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: AbilitiesGuard }],
