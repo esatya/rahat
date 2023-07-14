@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -64,85 +63,78 @@ model AppSettings {
   value     Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
-model User {
-  id            Int       @id @default(autoincrement())
-  name          String
-  email         String    @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
-  walletAddress Bytes?    @unique
-  profileImage  String?
-
-  projects Project[] @relation("UserProjects")
-}
-
-model Project {
-  id              Int       @id @default(autoincrement())
-  name            String
-  startDate       DateTime
-  endDate         DateTime
-  budget          Int       @default(0)
-  disbursed       Int       @default(0)
-  extras          Json?
-  location        String?
-  projectType     String?
-  projectManager  String?
-  description     String?
-  contractAddress Bytes?    @unique
-  deletedAt       DateTime?
-  isApproved      Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  owner         User[]        @relation("UserProjects")
-  beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
-  vendors       Vendor[] @relation("ProjectVendors")
+  @@map(name: "tbl_settings")
 }
 
 model Beneficiary {
   id             Int            @id @default(autoincrement())
   uuid           String         @unique @default(uuid())
   name           String
-  gender         Gender         @default(UNKNOWN)
-  walletAddress  Bytes         @unique
   phone          String?
-  email          String?
   dob            DateTime?
-  isApproved     Boolean?       @default(false)
-  address        Json?
-  tokensAssigned Int?            @default(0)
-  tokensClaimed  Int?            @default(0)
-  bankStatus     BankStatus?     @default(UNKNOWN)
-  phoneStatus    PhoneOwnership? @default(UNKNOWN)
-  internetStatus InternetAccess? @default(UNKNOWN)
-  latitude       Float?
-  longitude      Float?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  deletedAt      DateTime?
+  gender         Gender         @default(UNKNOWN)
+  walletAddress  Bytes?
+  address        String?
+  longitude     Float?
+  latitude      Float?
+  isApproved     Boolean        @default(false)
+  bankStatus     BankStatus     @default(UNKNOWN)
+  phoneOwnership PhoneOwnership @default(UNKNOWN)
+  internetAccess InternetAccess @default(UNKNOWN)
+  extras         Json?
 
-  projects Project[] @relation("BeneficiaryProjects")
+  projects  Project[] @relation("BeneficiaryProjects")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map(name: "tbl_beneficiaries")
+}
+
+model Project {
+  id              Int      @id @default(autoincrement())
+  name            String
+  startDate       DateTime
+  endDate         DateTime
+  budget          Int      @default(0)
+  disbursed       Int      @default(0)
+  extras          Json?
+  location        String?
+  projectType     String?
+  projectManager  String?
+  description     String?
+  contractAddress Bytes?   @unique
+  isApproved      Boolean  @default(false)
+
+  owner         User[]        @relation("UserProjects")
+  beneficiaries Beneficiary[] @relation("BeneficiaryProjects")
+  vendors       Vendor[]      @relation("ProjectDistributors")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map(name: "tbl_projects")
 }
 
 model Vendor {
-  id             Int       @id @default(autoincrement())
+  id             Int     @id @default(autoincrement())
   name           String
-  walletAddress  Bytes?    @unique
+  walletAddress  Bytes?  @unique
   phone          String?
   email          String?
   address        Json
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  deletedAt      DateTime?
-  isActive       Boolean   @default(false)
-  tokenBalance   Int       @default(0)
-  tokenPending   Int       @default(0)
-  tokenDisbursed Int       @default(0)
+  isApproved       Boolean @default(false)
 
-  projects Project[] @relation("ProjectVendors")
+  projects Project[] @relation("ProjectDistributors")
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@map(name: "tbl_vendors")
 }
 
 model Transaction {
@@ -162,4 +154,18 @@ model Transaction {
   events          Json     @default("{}")
 
   @@map(name: "tbl_transactions")
+}
+
+model User {
+  id            Int     @id @default(autoincrement())
+  name          String
+  email         String  @unique
+  walletAddress Bytes?  @unique
+  profileImage  String?
+
+  projects  Project[] @relation("UserProjects")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map(name: "tbl_users")
 }
