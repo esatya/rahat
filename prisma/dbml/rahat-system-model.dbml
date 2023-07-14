@@ -54,19 +54,19 @@ Table Beneficiary {
   uuid String [unique, not null]
   name String [not null]
   gender Gender [not null, default: 'UNKNOWN']
-  walletAddress Bytes [unique]
+  walletAddress Bytes [unique, not null]
   phone String
   email String
   dob DateTime
-  isApproved Boolean [not null]
-  address Json [not null]
-  tokensAssigned Int [not null, default: 0]
-  tokensClaimed Int [not null, default: 0]
-  bankStatus BankStatus [not null, default: 'UNKNOWN']
-  phoneStatus PhoneOwnership [not null, default: 'UNKNOWN']
-  internetStatus InternetAccess [not null, default: 'UNKNOWN']
-  latitude Float [not null]
-  longitude Float [not null]
+  isApproved Boolean [default: false]
+  address Json
+  tokensAssigned Int [default: 0]
+  tokensClaimed Int [default: 0]
+  bankStatus BankStatus [default: 'UNKNOWN']
+  phoneStatus PhoneOwnership [default: 'UNKNOWN']
+  internetStatus InternetAccess [default: 'UNKNOWN']
+  latitude Float
+  longitude Float
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime

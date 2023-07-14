@@ -106,19 +106,19 @@ model Beneficiary {
   uuid           String         @unique @default(uuid())
   name           String
   gender         Gender         @default(UNKNOWN)
-  walletAddress  Bytes?         @unique
+  walletAddress  Bytes         @unique
   phone          String?
   email          String?
   dob            DateTime?
-  isApproved     Boolean
-  address        Json
-  tokensAssigned Int            @default(0)
-  tokensClaimed  Int            @default(0)
-  bankStatus     BankStatus     @default(UNKNOWN)
-  phoneStatus    PhoneOwnership @default(UNKNOWN)
-  internetStatus InternetAccess @default(UNKNOWN)
-  latitude       Float
-  longitude      Float
+  isApproved     Boolean?       @default(false)
+  address        Json?
+  tokensAssigned Int?            @default(0)
+  tokensClaimed  Int?            @default(0)
+  bankStatus     BankStatus?     @default(UNKNOWN)
+  phoneStatus    PhoneOwnership? @default(UNKNOWN)
+  internetStatus InternetAccess? @default(UNKNOWN)
+  latitude       Float?
+  longitude      Float?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   deletedAt      DateTime?

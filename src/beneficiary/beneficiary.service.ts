@@ -27,13 +27,8 @@ export class BeneficiaryService {
   }
 
   create(createBeneficiaryDto: CreateBeneficiaryDto) {
-    let optional: { walletAddress: Buffer | null; project: any | null };
+    let optional: { project: any | null };
 
-    if (createBeneficiaryDto.walletAddress) {
-      optional.walletAddress = hexStringToBuffer(
-        createBeneficiaryDto.walletAddress,
-      );
-    }
     if (createBeneficiaryDto.projectId) {
       optional.project = {
         connect: {
@@ -45,7 +40,7 @@ export class BeneficiaryService {
     return this.prisma.beneficiary.create({
       data: {
         ...createBeneficiaryDto,
-        ...optional,
+        walletAddress: hexStringToBuffer(createBeneficiaryDto.walletAddress),
       },
     });
   }
