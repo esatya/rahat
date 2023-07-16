@@ -121,7 +121,7 @@ export class VendorsService {
         walletAddress: hexStringToBuffer(walletAddress),
       },
       data: {
-        isActive: true,
+        isApproved: true,
       },
     });
   }

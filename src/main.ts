@@ -15,7 +15,7 @@ async function bootstrap() {
     // new FastifyAdapter({ logger: false }), // turn on/off for production
   );
   const configService = app.get(ConfigService);
-  const appPort = configService.get<number>('PORT', 3000);
+  const appPort = configService.get<number>('PORT', 5400);
 
   app.enableCors();
 

@@ -7,7 +7,7 @@ Project "Rahat System" {
   Note: 'Rahat System'
 }
 
-Table AppSettings {
+Table tbl_settings {
   id Int [pk, increment]
   name String [not null]
   value Json [not null]
@@ -15,19 +15,29 @@ Table AppSettings {
   updatedAt DateTime [not null]
 }
 
-Table User {
+Table tbl_beneficiaries {
   id Int [pk, increment]
+  uuid String [unique, not null]
   name String [not null]
-  email String [unique, not null]
+  phone String
+  dob DateTime
+  gender Gender [not null, default: 'UNKNOWN']
+  walletAddress Bytes
+  address String
+  longitude Float
+  latitude Float
+  isApproved Boolean [not null, default: false]
+  bankStatus BankStatus [not null, default: 'UNKNOWN']
+  phoneOwnership PhoneOwnership [not null, default: 'UNKNOWN']
+  internetAccess InternetAccess [not null, default: 'UNKNOWN']
+  extras Json
+  projects tbl_projects [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
-  walletAddress Bytes [unique]
-  profileImage String
-  projects Project [not null]
 }
 
-Table Project {
+Table tbl_projects {
   id Int [pk, increment]
   name String [not null]
   startDate DateTime [not null]
@@ -40,54 +50,27 @@ Table Project {
   projectManager String
   description String
   contractAddress Bytes [unique]
-  deletedAt DateTime
   isApproved Boolean [not null, default: false]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [not null]
-  owner User [not null]
-  beneficiaries Beneficiary [not null]
-  vendors Vendor [not null]
-}
-
-Table Beneficiary {
-  id Int [pk, increment]
-  uuid String [unique, not null]
-  name String [not null]
-  gender Gender [not null, default: 'UNKNOWN']
-  walletAddress Bytes [unique, not null]
-  phone String
-  email String
-  dob DateTime
-  isApproved Boolean [default: false]
-  address Json
-  tokensAssigned Int [default: 0]
-  tokensClaimed Int [default: 0]
-  bankStatus BankStatus [default: 'UNKNOWN']
-  phoneStatus PhoneOwnership [default: 'UNKNOWN']
-  internetStatus InternetAccess [default: 'UNKNOWN']
-  latitude Float
-  longitude Float
+  owner tbl_users [not null]
+  beneficiaries tbl_beneficiaries [not null]
+  vendors tbl_vendors [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
-  projects Project [not null]
 }
 
-Table Vendor {
+Table tbl_vendors {
   id Int [pk, increment]
   name String [not null]
   walletAddress Bytes [unique]
   phone String
   email String
   address Json [not null]
+  isApproved Boolean [not null, default: false]
+  projects tbl_projects [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   deletedAt DateTime
-  isActive Boolean [not null, default: false]
-  tokenBalance Int [not null, default: 0]
-  tokenPending Int [not null, default: 0]
-  tokenDisbursed Int [not null, default: 0]
-  projects Project [not null]
 }
 
 Table tbl_transactions {
@@ -105,6 +88,18 @@ Table tbl_transactions {
   value String
   remarks String
   events Json [not null, default: '{}']
+}
+
+Table tbl_users {
+  id Int [pk, increment]
+  name String [not null]
+  email String [unique, not null]
+  walletAddress Bytes [unique]
+  profileImage String
+  projects tbl_projects [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  deletedAt DateTime
 }
 
 Enum Gender {

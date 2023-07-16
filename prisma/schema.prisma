@@ -1,7 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -166,6 +166,7 @@ model User {
   projects  Project[] @relation("UserProjects")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@map(name: "tbl_users")
 }

@@ -90,12 +90,9 @@ async function seed() {
     latitude: 27.713009571767344,
     longitude: 85.38533286023136,
     bankStatus: BankStatus.BANKED,
-    internetStatus: InternetAccess.HOME_INTERNET,
-    phoneStatus: PhoneOwnership.SMART,
-    address: {
-      location: 'ktm',
-    },
-
+    internetAccess: InternetAccess.HOME_INTERNET,
+    phoneOwnership: PhoneOwnership.SMART,
+    address: 'Kathmandu',
     projects: {
       connect: { id: proj1.id },
     },
@@ -119,11 +116,9 @@ async function seed() {
     latitude: 27.713009571767344,
     longitude: 85.38533286023136,
     bankStatus: BankStatus.UNDERBANKED,
-    internetStatus: InternetAccess.PHONE_INTERNET,
-    phoneStatus: PhoneOwnership.FEATURE,
-    address: {
-      location: 'ktm',
-    },
+    internetAccess: InternetAccess.PHONE_INTERNET,
+    phoneOwnership: PhoneOwnership.FEATURE,
+    address: 'Chitwan',
 
     projects: {
       connect: { id: proj2.id },

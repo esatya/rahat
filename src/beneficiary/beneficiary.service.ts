@@ -73,12 +73,12 @@ export class BeneficiaryService {
       where.bankStatus = rest.bankStatus;
     }
 
-    if (rest.internetStatus) {
-      where.internetStatus = rest.internetStatus;
+    if (rest.internetAccess) {
+      where.internetAccess = rest.internetAccess;
     }
 
-    if (rest.phoneStatus) {
-      where.phoneStatus = rest.phoneStatus;
+    if (rest.phoneOwnership) {
+      where.phoneOwnership = rest.phoneOwnership;
     }
 
     // if (rest.isTokenAssigned) {
@@ -225,14 +225,14 @@ export class BeneficiaryService {
     SUM(CASE WHEN "bankStatus" = 'UNBANKED' THEN 1 ELSE 0 END) as "unbankedCount",
     SUM(CASE WHEN "bankStatus" = 'BANKED' THEN 1 ELSE 0 END) as "bankedCount",
     SUM(CASE WHEN "bankStatus" = 'UNDERBANKED' THEN 1 ELSE 0 END) as "underbankedCount",
-    SUM(CASE WHEN "phoneStatus" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownPhoneCount",
-    SUM(CASE WHEN "phoneStatus" = 'NO_PHONE' THEN 1 ELSE 0 END) as "noPhoneCount",
-    SUM(CASE WHEN "phoneStatus" = 'FEATURE_PHONE' THEN 1 ELSE 0 END) as "featurePhoneCount",
-    SUM(CASE WHEN "phoneStatus" = 'SMART_PHONE' THEN 1 ELSE 0 END) as "smartPhoneCount",
-    SUM(CASE WHEN "internetStatus" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownInternetCount",
-    SUM(CASE WHEN "internetStatus" = 'NO_INTERNET' THEN 1 ELSE  0 END) as "noInternetCount",
-    SUM(CASE WHEN "internetStatus" = 'PHONE_INTERNET' THEN 1 ELSE 0 END) as "phoneInternetCount",
-    SUM(CASE WHEN "internetStatus" = 'HOME_INTERNET' THEN 1 ELSE 0 END) as "homeInternetCount"
+    SUM(CASE WHEN "phoneOwnership" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownPhoneCount",
+    SUM(CASE WHEN "phoneOwnership" = 'NO_PHONE' THEN 1 ELSE 0 END) as "noPhoneCount",
+    SUM(CASE WHEN "phoneOwnership" = 'FEATURE_PHONE' THEN 1 ELSE 0 END) as "featurePhoneCount",
+    SUM(CASE WHEN "phoneOwnership" = 'SMART_PHONE' THEN 1 ELSE 0 END) as "smartPhoneCount",
+    SUM(CASE WHEN "internetAccess" = 'UNKNOWN' THEN 1 ELSE 0 END) as "unknownInternetCount",
+    SUM(CASE WHEN "internetAccess" = 'NO_INTERNET' THEN 1 ELSE  0 END) as "noInternetCount",
+    SUM(CASE WHEN "internetAccess" = 'PHONE_INTERNET' THEN 1 ELSE 0 END) as "phoneInternetCount",
+    SUM(CASE WHEN "internetAccess" = 'HOME_INTERNET' THEN 1 ELSE 0 END) as "homeInternetCount"
   FROM "Beneficiary"
 `;
 
@@ -252,14 +252,14 @@ export class BeneficiaryService {
       UNDERBANKED: totalCount[0].underbankedCount,
     };
 
-    const phoneStatus = {
+    const phoneOwnership = {
       UNKNOWN: totalCount[0].unknownPhoneCount,
       NO_PHONE: totalCount[0].noPhoneCount,
       FEATURE_PHONE: totalCount[0].featurePhoneCount,
       SMART_PHONE: totalCount[0].smartPhoneCount,
     };
 
-    const internetStatus = {
+    const internetAccess = {
       UNKNOWN: totalCount[0].unknownInternetCount,
       NO_INTERNET: totalCount[0].noInternetCount,
       PHONE_INTERNET: totalCount[0].phoneInternetCount,
@@ -268,8 +268,8 @@ export class BeneficiaryService {
 
     const groups = {
       gender,
-      internetStatus,
-      phoneStatus,
+      internetAccess,
+      phoneOwnership,
       bankStatus,
     };
 

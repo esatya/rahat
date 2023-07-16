@@ -7,8 +7,8 @@ interface BeneficiaryFilter {
   orderBy?: string;
   order?: 'asc' | 'desc';
   bankStatus: BankStatus;
-  phoneStatus: PhoneOwnership;
-  internetStatus: InternetAccess;
+  phoneOwnership: PhoneOwnership;
+  internetAccess: InternetAccess;
 }
 
 export class ListBeneficiaryDto {
@@ -55,7 +55,7 @@ export class ListBeneficiaryDto {
     required: false,
   })
   @IsOptional()
-  phoneStatus?: BeneficiaryFilter['phoneStatus'];
+  phoneOwnership?: BeneficiaryFilter['phoneOwnership'];
 
   @ApiProperty({
     type: BankStatus,
@@ -69,7 +69,7 @@ export class ListBeneficiaryDto {
     required: false,
   })
   @IsOptional()
-  internetStatus?: BeneficiaryFilter['internetStatus'];
+  internetAccess?: BeneficiaryFilter['internetAccess'];
 }
 
 export class ListBeneficiaryTransactionsDto {

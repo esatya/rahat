@@ -144,14 +144,12 @@ export class ProjectService {
       uuid: true,
       name: true,
       bankStatus: true,
-      internetStatus: true,
-      phoneStatus: true,
+      internetAccess: true,
+      phoneOwnership: true,
       gender: true,
       latitude: true,
       longitude: true,
       walletAddress: true,
-      tokensAssigned: true,
-      tokensClaimed: true,
       isApproved: true,
     };
 

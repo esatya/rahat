@@ -71,7 +71,7 @@ export class CreateBeneficiaryDto {
   })
   @IsOptional()
   @IsString()
-  phoneStatus: PhoneOwnership;
+  phoneOwnership: PhoneOwnership;
 
   @ApiProperty({
     type: 'string',
@@ -91,7 +91,7 @@ export class CreateBeneficiaryDto {
   })
   @IsString()
   @IsOptional()
-  internetStatus?: InternetAccess;
+  internetAccess?: InternetAccess;
 
   @ApiProperty({
     type: 'string',
