@@ -151,7 +151,7 @@ model Transaction {
   to              String?
   value           String?
   remarks         String?
-  events          Json     @default("{}")
+  events          Json[]
 
   @@map(name: "tbl_transactions")
 }

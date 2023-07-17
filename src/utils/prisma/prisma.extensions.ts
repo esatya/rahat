@@ -1,8 +1,10 @@
 import { Prisma } from '@prisma/client';
+import { processChainEvents } from 'src/blockchain/chainEvents';
 
 const _defineExtension = (params) => {
   return Prisma.defineExtension((prisma) =>
-    prisma.$extends(PrismaLog()).$extends(params),
+    //prisma.$extends(PrismaLog()).$extends(params),
+    prisma.$extends(params),
   );
 };
 
@@ -26,7 +28,6 @@ export const PrismaLog = () => {
             const result = await query(args);
             const end = performance.now();
             const time = end - start;
-            console.log('---------------------->', time);
             return result;
           },
         },
@@ -41,7 +42,11 @@ export const PrismaTransaction = _defineExtension(
       query: {
         transaction: {
           update({ operation, model, args, query }) {
-            console.log('xxxx------', model);
+            try {
+              processChainEvents(args.data, args.where);
+            } catch (e) {
+              console.log(e.message);
+            }
             return query(args);
           },
         },

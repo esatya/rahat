@@ -11,6 +11,13 @@ export class UpdateTransactionDto {
   public txStatus: TxStatus;
 
   @ApiProperty({
+    example: 'Rahat',
+    description: 'Contract name',
+  })
+  @IsString()
+  public contractName: string;
+
+  @ApiProperty({
     example: '0x1234567890',
     description: 'Contract Address',
   })
