@@ -120,7 +120,7 @@ CREATE TABLE "tbl_transactions" (
     "to" TEXT,
     "value" TEXT,
     "remarks" TEXT,
-    "events" JSONB NOT NULL DEFAULT '{}',
+    "events" JSONB[],
 
     CONSTRAINT "tbl_transactions_pkey" PRIMARY KEY ("id")
 );

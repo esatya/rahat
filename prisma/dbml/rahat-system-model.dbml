@@ -104,7 +104,7 @@ Table tbl_transactions {
   to String
   value String
   remarks String
-  events Json [not null, default: '{}']
+  events Json[] [not null]
 }
 
 Enum Gender {

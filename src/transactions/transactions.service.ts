@@ -39,7 +39,6 @@ export class TransactionsService {
   }
 
   async findOne(txHash: string) {
-    console.log(txHash);
     const result = await this.prisma.transaction.findFirstOrThrow({
       where: {
         txHash: hexStringToBuffer(txHash),

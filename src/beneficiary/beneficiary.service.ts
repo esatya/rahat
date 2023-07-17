@@ -41,7 +41,6 @@ export class BeneficiaryService {
         },
       };
     }
-    console.log('optional', optional);
 
     return this.prisma.beneficiary.create({
       data: {
