@@ -1,41 +1,84 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Rahat - Blockchain-based Aid Distribution
+
+Rahat is a blockchain-based digital relief distribution management platform for humanitarian agencies to support marginalized communities. It issues, manages and monitors relief distribution in the form of digital tokens. It creates a transparent, efficient and cheaper way to distribute cash or goods. It mobilizes the local community encouraging financial resilience and freedom. For more information please visit https://rahat.io . 
+
+Rahat’s main features are:
+- Dashboard for aid agencies to issue relief tokens to recipients & to onboard local community vendors. Agencies can audit all transactional information real-time. 
+- Mobile based wallet app for local vendors to initiate & record relief token transaction in a blockchain network & cash transfer from banks.
+- A SMS feature for recipients to receive their token and/or assigned digital card with QR code to buy relief products from participating local merchants.
+- Transaction data in blockchain network to verify the flow of tokens.
+- A platform for local authorities & aid agencies to connect.
+
+# Getting started
+
+This is a web-based application with node-js as backend with nest-js framework.
+It uses Postgres as a database for regular non-blockchain data persistence and solidity smart contract to execute transactions on Ethereum blockchain.
+
+## Pre-requisite
+To run Rahat in your system please make user you have following app and libraries installed.
+
+- ```Node-js --version >= 16.x.x```
+- ```Yarn --version >= 1.22.x```
+- ```Postgresql --version >= 14.6```
 
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Complete Rahat Package
+Currently, Rahat consists four applications. For complete aid distribution process all four applications have to be installed and setup.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1. **Rahat Server**: 
 
-## Description
+This is the main server (this project) which provides API services for other applications. It also contains source code for solidity smart contracts that needs to be compliled and deployed to Ethereum network of your choice. Please deploy this application before deploying other projects.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+2. **Agency Dashboard** (https://github.com/esatya/rahat-agency): 
+
+This project is react-based dashboard for managing Rahat for agencies. It utilizes API to connect to the server and can directly communicate with Ethereum network using Metamask. After installing the server, you can use this app to setup Rahat in user-friendly way.
+
+3. **OTP Server** (https://github.com/esatya/rahat-otp): 
+
+It is a stand alone server to manage OTP that it sent to beneficiary phone during a transaction. This service adds hash of OTP to the smart-contract that should match with the OTP sent by the vendor to complete the transaction. Use your favorite SMS service like Twilio, GOIP as plugins to send SMS.
+
+4. **Vendor Web-based App** (https://github.com/esatya/rahat-vendor) 
+
+This is a mobile friendly vendor user interface that can request fund from beneficiary account after beneficiary provide OTP to the vendor. It is a fully functioning mobile wallet that vendor can use to transfer fund to the bank or back to the agency to redeem local currency.
+
+5. **Mobilizer Web-based App** (https://github.com/esatya/rahat-mobilizer) 
+
+This is a mobile friendly mobilizer user interface that can onboard beneficiries to the agency. It is a fully functioning mobile wallet that mobilizer can use to register beneficiaries and issue token to them.
+
+6. **Mobile-based vendor app** (https://github.com/esatya/rahat-vendor-app) 
+
+Rahat Vendor app is a wallet-based mobile app for the vendors of Rahat. It is used by the vendors, who provides aid material to beneficiaries in exchange of token, to receive and redeem token.
+
+7. **Rahat Documentation** (https://github.com/esatya/rahat-documentation) 
+
+This is a documentation website of Rahat built using [Docusaurus 2](https://docusaurus.io/). It is mainly focused on the technical documents of Rahat. 
+
+8. **Rahat UAT** (https://github.com/esatya/rahat-uat) 
+
+This includes the UI/UX User Acceptance Testing of Rahat Applications. 
+
+9. **Rumsan wallet**
+
+This is the wallet used by agencies to login and sign transactions in agency app.
+
+
+![Rahat - System Workflow](https://pbs.twimg.com/media/Erl_kZdUUAActLM?format=jpg&name=medium)
 
 ## Installation
 
+Install the dependencies and devDependencies of the server.
 ```bash
 $ yarn install
 ```
 
+Generate the database migration files and run the migration.
 ```bash
 npx generate
+```
 
+Copy the .env.example file to .env and update the values accordingly.
+```bash
+$ cp .env.example .env
 ```
 
 ## Running the app
@@ -64,16 +107,14 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
-## Support
+## Coding Styles
+This repository uses eslint to enforce air-bnb coding styles. Please make sure you have eslint installed in your IDE and follow the coding styles.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Contributing
+Everyone is very welcome to contribute on the codebase of Rahat. Please reach us in [Discord](https://discord.gg/AV5j2T94VR) in case of any query/feedback/suggestion.
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+For more information on the contributing procedure, see [Contribution](https://docs.rahat.io/docs/next/Contribution-Guidelines).
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+Rahat is built under AGPL 3.0 License
