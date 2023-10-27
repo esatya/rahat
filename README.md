@@ -10,7 +10,7 @@
   </a>
 </p>
 
-> **Latest Updates:** The content of this repository has been moved to the [rahat-backend repository](https://github.com/esatya/rahat-backend) due to significant breaking changes. To access the most recent releases, please visit the [rahat-backend releases page](https://github.com/esatya/rahat-backend/releases).
+> **Latest Updates:** The content of this repository has been moved to the [rahat-backend repository](https://github.com/rahataid/rahat-backend) due to significant breaking changes. To access the most recent releases, please visit the [rahat-backend releases page](https://github.com/esatya/rahat-backend/releases).
 
 # Rahat - Blockchain-based Aid Distribution
 
